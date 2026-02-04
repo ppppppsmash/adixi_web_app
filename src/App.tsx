@@ -4,9 +4,7 @@ import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler"
 import { useDarkMode } from "./lib/useDarkMode"
 
-const DARK_GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
-//const LIGHT_GLITCH_COLORS = ['#1a5c2e', '#0d6b5c', '#4a6b1a', '#1a4d5c']
-const LIGHT_GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
+const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
 function App() {
   const isDark = useDarkMode()
@@ -17,9 +15,9 @@ function App() {
         <AnimatedThemeToggler />
       </div>
       <div className="min-h-svh w-full flex justify-center items-center relative z-0">
-        <div className="w-[600px] h-[50svh]">
+        <div className="w-[40svw] h-[65svh]">
           <LiquidGlass
-            borderRadius={10}
+            borderRadius={30}
             blur={isDark ? 1 : 1.2}
             contrast={isDark ? 1.2 : 1.45}
             brightness={isDark ? 1.2 : 1.15}
@@ -32,10 +30,10 @@ function App() {
       </div>
       <LetterGlitch
         glitchSpeed={50}
-        centerVignette={true}
+        centerVignette={isDark}
         outerVignette={true}
         smooth={true}
-        glitchColors={isDark ? DARK_GLITCH_COLORS : LIGHT_GLITCH_COLORS}
+        glitchColors={GLITCH_COLORS}
         characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
       />
     </>
