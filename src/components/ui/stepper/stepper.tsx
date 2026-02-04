@@ -22,6 +22,8 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
     currentStep: number;
     onStepClick: (clicked: number) => void;
   }) => ReactNode;
+  renderBackButton?: (props: { onClick: () => void; children: ReactNode }) => ReactNode;
+  renderNextButton?: (props: { onClick: () => void; isLastStep: boolean; children: ReactNode }) => ReactNode;
 }
 
 export default function Stepper({
@@ -39,6 +41,8 @@ export default function Stepper({
   nextButtonText = 'Continue',
   disableStepIndicators = false,
   renderStepIndicator,
+  renderBackButton,
+  renderNextButton,
   ...rest
 }: StepperProps) {
   const [currentStep, setCurrentStep] = useState<number>(initialStep);
@@ -78,7 +82,7 @@ export default function Stepper({
 
   return (
     <div
-      className="flex min-h-full w-full flex-1 flex-col items-center justify-center p-4"
+      className="flex min-h-full w-full flex-1 flex-col items-center justify-start p-4"
       {...rest}
     >
       <div
@@ -128,24 +132,35 @@ export default function Stepper({
         {!isCompleted && (
           <div className={`px-8 pb-8 ${footerClassName}`}>
             <div className={`mt-10 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'}`}>
-              {currentStep !== 1 && (
+              {currentStep !== 1 &&
+                (renderBackButton ? (
+                  renderBackButton({ onClick: handleBack, children: backButtonText })
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="rounded px-2 py-1 text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+                    {...backButtonProps}
+                  >
+                    {backButtonText}
+                  </button>
+                ))}
+              {renderNextButton ? (
+                renderNextButton({
+                  onClick: isLastStep ? handleComplete : handleNext,
+                  isLastStep,
+                  children: isLastStep ? 'Complete' : nextButtonText
+                })
+              ) : (
                 <button
                   type="button"
-                  onClick={handleBack}
-                  className="rounded px-2 py-1 text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
-                  {...backButtonProps}
+                  onClick={isLastStep ? handleComplete : handleNext}
+                  className="flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 py-2.5 font-medium tracking-tight text-[var(--color-button-text)] transition hover:opacity-90"
+                  {...nextButtonProps}
                 >
-                  {backButtonText}
+                  {isLastStep ? 'Complete' : nextButtonText}
                 </button>
               )}
-              <button
-                type="button"
-                onClick={isLastStep ? handleComplete : handleNext}
-                className="flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 py-2.5 font-medium tracking-tight text-[var(--color-button-text)] transition hover:opacity-90"
-                {...nextButtonProps}
-              >
-                {isLastStep ? 'Complete' : nextButtonText}
-              </button>
             </div>
           </div>
         )}
