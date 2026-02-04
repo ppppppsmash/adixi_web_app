@@ -3,6 +3,8 @@ import LetterGlitch from "./components/background/LetterGlitch";
 import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
+import DecryptedText from "./components/ui/text/decrypted-text";
+import FuzzyText from "./components/ui/text/fuzzy-text";
 //import { SurveyForm, SurveyFormSection } from "./components/survey";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
 
@@ -25,7 +27,20 @@ function App() {
             brightness={isDark ? 1.2 : 1.15}
             saturation={isDark ? 1.2 : 1.35}
           >
-            <Stepper
+            <div className="flex h-full min-w-0 flex-col pt-6 w-full">
+              <div className="min-w-0 shrink-0 overflow-hidden flex justify-center">
+                <FuzzyText
+                  baseIntensity={0.2}
+                  hoverIntensity={0.5}
+                  fontSize="4rem"
+                  enableHover
+                  color={isDark ? '#fff' : '#333'}
+                >
+                  ADiXi Survey
+                </FuzzyText>
+              </div>
+              <div className="min-h-0 min-w-0 flex-1">
+                <Stepper
               initialStep={1}
               onStepChange={(step) => {
                 console.log(step);
@@ -51,7 +66,9 @@ function App() {
                 <h2>Final Step</h2>
                 <p>You made it!</p>
               </Step>
-            </Stepper>
+                </Stepper>
+              </div>
+            </div>
           </LiquidGlass>
         </div>
       </div>

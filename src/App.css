@@ -42,16 +42,30 @@
   color: #888;
 }
 
-/* ステッパー：カレントのハッカー風グロー */
+/* ステッパー：カレントのグロー（GLITCH_COLORS #61dca3） */
 @keyframes stepper-glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 12px #00ff41, 0 0 24px rgba(0, 255, 65, 0.35);
+    box-shadow: 0 0 12px #61dca3, 0 0 24px rgba(97, 220, 163, 0.35);
   }
   50% {
-    box-shadow: 0 0 18px #00ff41, 0 0 36px rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 18px #61dca3, 0 0 36px rgba(97, 220, 163, 0.5);
   }
 }
 .stepper-active-glow {
   animation: stepper-glow-pulse 2s ease-in-out infinite;
+}
+
+/* ステッパー：完了（チェック）のグロー */
+@keyframes stepper-complete-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(97, 220, 163, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(97, 220, 163, 0.55);
+  }
+}
+.stepper-complete-glow {
+  animation: stepper-complete-glow-pulse 3s ease-in-out infinite;
 }

@@ -276,24 +276,24 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
           },
           active: {
             scale: 1,
-            backgroundColor: '#00ff41',
-            color: '#00ff41',
-            boxShadow: '0 0 12px #00ff41, 0 0 24px rgba(0,255,65,0.35)'
+            backgroundColor: '#61dca3',
+            color: '#61dca3',
+            boxShadow: '0 0 12px #61dca3, 0 0 24px rgba(97,220,163,0.35)'
           },
           complete: {
             scale: 1,
-            backgroundColor: 'var(--color-accent)',
-            color: 'var(--color-button-text)',
-            boxShadow: 'none'
+            backgroundColor: '#61dca3',
+            color: '#2b4539',
+            boxShadow: '0 0 8px rgba(97,220,163,0.4)'
           }
         }}
         transition={{ duration: 0.3 }}
-        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold ${status === 'active' ? 'stepper-active-glow' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
       >
         {status === 'complete' ? (
-          <CheckIcon className="h-4 w-4 text-[var(--color-button-text)]" />
+          <CheckIcon className="h-4 w-4 text-[#2b4539]" />
         ) : status === 'active' ? (
-          <div className="h-3 w-3 rounded-full bg-[#0a0a0a] shadow-[inset_0_0_4px_rgba(0,255,65,0.5)]" />
+          <div className="h-3 w-3 rounded-full bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
         ) : (
           <span className="text-sm">{step}</span>
         )}
@@ -309,7 +309,7 @@ interface StepConnectorProps {
 function StepConnector({ isComplete }: StepConnectorProps) {
   const lineVariants: Variants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: 'var(--color-accent)' }
+    complete: { width: '100%', backgroundColor: '#61dca3' }
   };
 
   return (
