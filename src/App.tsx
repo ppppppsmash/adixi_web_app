@@ -115,6 +115,7 @@ function App() {
         smooth={true}
         glitchColors={GLITCH_COLORS}
         characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+        adixiLoopIntervalMs={10000}
       />
     </>
   )
