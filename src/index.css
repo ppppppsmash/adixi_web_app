@@ -18,8 +18,10 @@
   --color-border: rgba(0, 0, 0, 0.1);
   --color-button-bg: #1a1a1a;
   --color-button-text: #ffffff;
-  --glitch-bg: #e8e8ed;
-  --glitch-vignette: rgba(0, 0, 0, 0.15);
+  /* ダークモード同様にエフェクトがはっきり見えるよう、やや暗めの背景＋強めのビネット */
+  --glitch-bg: #c8cad0;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.55);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.28);
 }
 
 html.dark {
@@ -34,7 +36,8 @@ html.dark {
   --color-button-bg: #2d2d2d;
   --color-button-text: rgba(255, 255, 255, 0.87);
   --glitch-bg: #0a0a0c;
-  --glitch-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
 }
 
 :root {
