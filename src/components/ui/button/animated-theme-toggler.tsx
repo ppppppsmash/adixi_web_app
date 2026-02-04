@@ -76,6 +76,7 @@ export const AnimatedThemeToggler = ({
       onClick={toggleTheme}
       className={cn(
         "border-0 bg-transparent p-0 outline-none focus:outline-none focus:ring-0 cursor-pointer",
+        !isDark && "text-white",
         className
       )}
       {...props}

@@ -20,7 +20,7 @@
   --color-button-text: #ffffff;
   /* ダークモード同様にエフェクトがはっきり見えるよう、やや暗めの背景＋強めのビネット */
   --glitch-bg: #c8cad0;
-  --glitch-outer-vignette: rgba(0, 0, 0, 0.55);
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.78);
   --glitch-center-vignette: rgba(0, 0, 0, 0.28);
 }
 

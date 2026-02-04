@@ -5,7 +5,8 @@ import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-togg
 import { useDarkMode } from "./lib/useDarkMode"
 
 const DARK_GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
-const LIGHT_GLITCH_COLORS = ['#0a3d26', '#0c5c38', '#0a3d5c', '#0d4d6b']
+//const LIGHT_GLITCH_COLORS = ['#1a5c2e', '#0d6b5c', '#4a6b1a', '#1a4d5c']
+const LIGHT_GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
 function App() {
   const isDark = useDarkMode()
