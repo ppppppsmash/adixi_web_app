@@ -41,3 +41,17 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ステッパー：カレントのハッカー風グロー */
+@keyframes stepper-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 12px #00ff41, 0 0 24px rgba(0, 255, 65, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 18px #00ff41, 0 0 36px rgba(0, 255, 65, 0.5);
+  }
+}
+.stepper-active-glow {
+  animation: stepper-glow-pulse 2s ease-in-out infinite;
+}

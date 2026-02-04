@@ -1,5 +1,7 @@
-import React, { useState, Children, useRef, useLayoutEffect, HTMLAttributes, ReactNode } from 'react';
-import { motion, AnimatePresence, Variants } from 'motion/react';
+import React, { useState, Children, useRef, useLayoutEffect } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import type { Variants } from 'motion/react';
 
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -76,12 +78,11 @@ export default function Stepper({
 
   return (
     <div
-      className="flex min-h-full flex-1 flex-col items-center justify-center p-4 sm:aspect-[4/3] md:aspect-[2/1]"
+      className="flex min-h-full w-full flex-1 flex-col items-center justify-center p-4"
       {...rest}
     >
       <div
-        className={`mx-auto w-full max-w-md rounded-4xl shadow-xl ${stepCircleContainerClassName}`}
-        style={{ border: '1px solid #222' }}
+        className={`w-full ${stepCircleContainerClassName}`}
       >
         <div className={`${stepContainerClassName} flex w-full items-center p-8`}>
           {stepsArray.map((_, index) => {
@@ -119,7 +120,7 @@ export default function Stepper({
           isCompleted={isCompleted}
           currentStep={currentStep}
           direction={direction}
-          className={`space-y-2 px-8 ${contentClassName}`}
+          className={`space-y-2 px-8 text-[var(--color-text)] ${contentClassName}`}
         >
           {stepsArray[currentStep - 1]}
         </StepContentWrapper>
@@ -129,20 +130,18 @@ export default function Stepper({
             <div className={`mt-10 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'}`}>
               {currentStep !== 1 && (
                 <button
+                  type="button"
                   onClick={handleBack}
-                  className={`duration-350 rounded px-2 py-1 transition ${
-                    currentStep === 1
-                      ? 'pointer-events-none opacity-50 text-neutral-400'
-                      : 'text-neutral-400 hover:text-neutral-700'
-                  }`}
+                  className="rounded px-2 py-1 text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
                   {...backButtonProps}
                 >
                   {backButtonText}
                 </button>
               )}
               <button
+                type="button"
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="duration-350 flex items-center justify-center rounded-full bg-green-500 py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-green-600 active:bg-green-700"
+                className="flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 py-2.5 font-medium tracking-tight text-[var(--color-button-text)] transition hover:opacity-90"
                 {...nextButtonProps}
               >
                 {isLastStep ? 'Complete' : nextButtonText}
@@ -241,7 +240,7 @@ interface StepProps {
 }
 
 export function Step({ children }: StepProps) {
-  return <div className="px-8">{children}</div>;
+  return <div className="px-0">{children}</div>;
 }
 
 interface StepIndicatorProps {
@@ -269,17 +268,32 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
     >
       <motion.div
         variants={{
-          inactive: { scale: 1, backgroundColor: '#222', color: '#a3a3a3' },
-          active: { scale: 1, backgroundColor: '#5227FF', color: '#5227FF' },
-          complete: { scale: 1, backgroundColor: '#5227FF', color: '#3b82f6' }
+          inactive: {
+            scale: 1,
+            backgroundColor: 'var(--color-border)',
+            color: 'var(--color-text-muted)',
+            boxShadow: 'none'
+          },
+          active: {
+            scale: 1,
+            backgroundColor: '#00ff41',
+            color: '#00ff41',
+            boxShadow: '0 0 12px #00ff41, 0 0 24px rgba(0,255,65,0.35)'
+          },
+          complete: {
+            scale: 1,
+            backgroundColor: 'var(--color-accent)',
+            color: 'var(--color-button-text)',
+            boxShadow: 'none'
+          }
         }}
         transition={{ duration: 0.3 }}
-        className="flex h-8 w-8 items-center justify-center rounded-full font-semibold"
+        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold ${status === 'active' ? 'stepper-active-glow' : ''}`}
       >
         {status === 'complete' ? (
-          <CheckIcon className="h-4 w-4 text-black" />
+          <CheckIcon className="h-4 w-4 text-[var(--color-button-text)]" />
         ) : status === 'active' ? (
-          <div className="h-3 w-3 rounded-full bg-[#060010]" />
+          <div className="h-3 w-3 rounded-full bg-[#0a0a0a] shadow-[inset_0_0_4px_rgba(0,255,65,0.5)]" />
         ) : (
           <span className="text-sm">{step}</span>
         )}
@@ -295,11 +309,11 @@ interface StepConnectorProps {
 function StepConnector({ isComplete }: StepConnectorProps) {
   const lineVariants: Variants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: '#5227FF' }
+    complete: { width: '100%', backgroundColor: 'var(--color-accent)' }
   };
 
   return (
-    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-neutral-600">
+    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-[var(--color-border)]">
       <motion.div
         className="absolute left-0 top-0 h-full"
         variants={lineVariants}
@@ -311,7 +325,7 @@ function StepConnector({ isComplete }: StepConnectorProps) {
   );
 }
 
-interface CheckIconProps extends React.SVGProps<SVGSVGElement> {}
+type CheckIconProps = React.SVGProps<SVGSVGElement>;
 
 function CheckIcon(props: CheckIconProps) {
   return (
