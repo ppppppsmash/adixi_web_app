@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
@@ -14,29 +14,181 @@ import {
   Radio,
   Field,
   Label,
-  Description,
   Fieldset,
   Legend,
 } from '@headlessui/react'
+import { getPublicSurvey, getLatestPublicSurvey, type PublicSurvey, type SurveyItem } from "./api/survey";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
 /** 問題内容用フォント（日本語対応・ネオ風） */
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
 
-const PLAN_OPTIONS = [
-  { id: 'startup', name: 'Startup', desc: '個人・小規模' },
-  { id: 'business', name: 'Business', desc: 'チーム向け' },
-  { id: 'enterprise', name: 'Enterprise', desc: '大規模・カスタム' },
-]
+function getSurveyId(): string | null {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('surveyId') ?? import.meta.env.VITE_DEFAULT_SURVEY_ID ?? null
+}
+
+function SurveyStepContent({
+  item,
+  value,
+  onChange,
+  isDark,
+}: {
+  item: SurveyItem
+  value: string | string[]
+  onChange: (v: string | string[]) => void
+  isDark: boolean
+}) {
+  const options = item.options?.split(',').map((o) => o.trim()).filter(Boolean) ?? []
+
+  return (
+    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
+      <h2 className="step-title w-full min-w-0 text-left">
+        <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+          {item.question}
+          {item.isRequired && <span className="text-red-500 ml-1">*</span>}
+        </FuzzyText>
+      </h2>
+
+      {item.questionType === 'text' && (
+        <Field className="form-field-group w-full min-w-0 px-5">
+          <Input
+            type="text"
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="入力してください"
+            className="form-input-base"
+          />
+        </Field>
+      )}
+
+      {item.questionType === 'textarea' && (
+        <Field className="form-field-group w-full min-w-0 px-5">
+          <Textarea
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="入力してください"
+            rows={4}
+            className="form-input-base resize-y min-h-[100px]"
+          />
+        </Field>
+      )}
+
+      {item.questionType === 'radio' && (
+        <Fieldset className="w-full min-w-0 px-5">
+          <Legend className="sr-only">{item.question}</Legend>
+          <RadioGroup
+            value={options.find((o) => o === value) ?? ''}
+            onChange={(v: string) => onChange(v)}
+            className="flex flex-col gap-3"
+          >
+            {options.map((opt) => (
+              <Field key={opt} className="flex items-center gap-3">
+                <Radio value={opt} className="form-radio-outer group">
+                  <span className="form-radio-dot group-data-[checked]:visible" />
+                </Radio>
+                <Label className="form-label mb-0 cursor-pointer">{opt}</Label>
+              </Field>
+            ))}
+          </RadioGroup>
+        </Fieldset>
+      )}
+
+      {item.questionType === 'checkbox' && (
+        <div className="flex w-full min-w-0 flex-col gap-4 px-5">
+          {options.map((opt) => {
+            const list = (value as string[]) ?? []
+            const checked = list.includes(opt)
+            return (
+              <Field key={opt} className="flex items-center gap-3">
+                <Checkbox
+                  checked={checked}
+                  onChange={(v) => {
+                    if (v) onChange([...list, opt])
+                    else onChange(list.filter((x) => x !== opt))
+                  }}
+                  className="form-checkbox-box group"
+                >
+                  <svg className="size-3 stroke-[var(--color-button-text)] opacity-0 group-data-[checked]:opacity-100 transition" viewBox="0 0 14 14" fill="none">
+                    <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Checkbox>
+                <Label className="form-label mb-0 cursor-pointer">{opt}</Label>
+              </Field>
+            )
+          })}
+        </div>
+      )}
+
+      {item.questionType === 'select' && (
+        <Field className="form-field-group w-full min-w-0 px-5">
+          <select
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            className="form-input-base"
+          >
+            <option value="">選択してください</option>
+            {options.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </Field>
+      )}
+    </div>
+  )
+}
 
 function App() {
   const isDark = useDarkMode()
-  const [name, setName] = useState('')
-  const [agreeTerms, setAgreeTerms] = useState(false)
-  const [agreeNewsletter, setAgreeNewsletter] = useState(false)
-  const [plan, setPlan] = useState(PLAN_OPTIONS[0])
-  const [feedback, setFeedback] = useState('')
+  const [survey, setSurvey] = useState<PublicSurvey | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
+
+  const surveyId = getSurveyId()
+
+  useEffect(() => {
+    let cancelled = false
+    const fetchSurvey = surveyId ? getPublicSurvey(surveyId) : getLatestPublicSurvey()
+    fetchSurvey
+      .then((data) => {
+        if (cancelled) return
+        setSurvey(data ?? null)
+        if (!data) setError('アンケートが見つかりません。公開済みのアンケートが1件もないか、管理画面で「公開」にしてください。')
+      })
+      .catch((e) => {
+        if (cancelled) return
+        const msg = e instanceof Error ? e.message : String(e)
+        setError('取得に失敗しました。' + (msg ? `（${msg}）` : ''))
+        console.error(e)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [surveyId])
+
+  const setAnswer = (itemId: string, value: string | string[]) => {
+    setAnswers((prev) => ({ ...prev, [itemId]: value }))
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-[100svh] w-full items-center justify-center text-[var(--color-text)]">
+        読み込み中...
+      </div>
+    )
+  }
+
+  if (error || !survey) {
+    const message = error ?? 'アンケートを取得できませんでした。'
+    return (
+      <div className="flex h-[100svh] w-full items-center justify-center px-4 text-center text-[var(--color-text)]">
+        {message}
+      </div>
+    )
+  }
 
   return (
     <React.Fragment>
@@ -51,176 +203,51 @@ function App() {
             hoverIntensity={0.5}
             fontSize="4rem"
             enableHover
-            color={isDark ? '#61dca3' : '#2b4539'}
+            color={isDark ? '#61dca3' : '#FFF'}
           >
             ADiXi Survey
           </FuzzyText>
         </div>
         <div className="h-[70svh] flex-1 w-full flex justify-center items-center relative z-0 overflow-hidden">
           <div className="w-[46svw] max-w-full">
-            <LiquidGlass borderRadius={0} blur={2} shadowIntensity={0.06}>
-            <div className="flex min-w-0 flex-col pt-12 w-full gap-y-10 px-14">
-              <div className="min-w-0 flex flex-col justify-start">
-                <Stepper
-                  initialStep={1}
-                  progressBarOnly
-                  onStepChange={(step) => {
-                    console.log(step);
-                  }}
-                  contentClassName="mt-10"
-                  onFinalStepCompleted={() => console.log("All steps completed!")}
-                  backButtonText="Previous"
-                  nextButtonText="Next"
-                  renderBackButton={({ onClick, children }) => (
-                    <Button
-                      type="button"
-                      onClick={onClick}
-                      className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]"
-                    >
-                      {children}
-                    </Button>
-                  )}
-                  renderNextButton={({ onClick, children }) => (
-                    <Button
-                      type="button"
-                      onClick={onClick}
-                      className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]"
-                    >
-                      {children}
-                    </Button>
-                  )}
-                >
-                  <Step>
-                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-                      <h2 className="step-title w-full min-w-0 text-left">
-                        <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                          お名前
-                        </FuzzyText>
-                      </h2>
-                      <Field className="form-field-group w-full min-w-0 px-5">
-                        <Label className="form-label">氏名（ニックネーム可）</Label>
-                        <Description className="form-description">
-                          アンケート結果の表示に使用します。
-                        </Description>
-                        <Input
-                          name="name"
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="例: 山田 太郎"
-                          className="form-input-base"
+            <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}>
+              <div className="flex min-w-0 flex-col pt-12 w-full gap-y-10 px-14">
+                <div className="min-w-0 flex flex-col justify-start">
+                  <Stepper
+                    initialStep={1}
+                    progressBarOnly
+                    onStepChange={() => {}}
+                    contentClassName="mt-10"
+                    onFinalStepCompleted={() => console.log('All steps completed!', answers)}
+                    backButtonText="前へ"
+                    nextButtonText="次へ"
+                    renderBackButton={({ onClick, children }) => (
+                      <Button type="button" onClick={onClick} className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                        {children}
+                      </Button>
+                    )}
+                    renderNextButton={({ onClick, children }) => (
+                      <Button type="button" onClick={onClick} className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                        {children}
+                      </Button>
+                    )}
+                  >
+                    {survey.items.map((item) => (
+                      <Step key={item.id}>
+                        <SurveyStepContent
+                          item={item}
+                          value={answers[item.id]}
+                          onChange={(v) => setAnswer(item.id, v)}
+                          isDark={isDark}
                         />
-                      </Field>
-                    </div>
-                  </Step>
-
-                  {/* Step 2: Headless UI Checkbox（複数） */}
-                  <Step>
-                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-                      <h2 className="step-title w-full min-w-0 text-left">
-                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                          同意事項
-                        </FuzzyText>
-                      </h2>
-                      <div className="flex w-full min-w-0 flex-col gap-4">
-                      <Field className="flex items-center gap-3 px-5">
-                        <Checkbox
-                          checked={agreeTerms}
-                          onChange={setAgreeTerms}
-                          className="form-checkbox-box group"
-                        >
-                          <svg className="size-3 stroke-[var(--color-button-text)] opacity-0 group-data-[checked]:opacity-100 transition" viewBox="0 0 14 14" fill="none">
-                            <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </Checkbox>
-                        <Label className="form-label mb-0 cursor-pointer">
-                          利用規約に同意する
-                        </Label>
-                      </Field>
-                      <Field className="flex items-center gap-3 px-5">
-                        <Checkbox
-                          checked={agreeNewsletter}
-                          onChange={setAgreeNewsletter}
-                          className="form-checkbox-box group"
-                        >
-                          <svg className="size-3 stroke-[var(--color-button-text)] opacity-0 group-data-[checked]:opacity-100 transition" viewBox="0 0 14 14" fill="none">
-                            <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </Checkbox>
-                        <Label className="form-label mb-0 cursor-pointer">
-                          ニュースレターを受け取る（任意）
-                        </Label>
-                      </Field>
-                      </div>
-                    </div>
-                  </Step>
-
-                  {/* Step 3: Headless UI RadioGroup */}
-                  <Step>
-                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-                      <h2 className="step-title w-full min-w-0 text-left">
-                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                          プラン選択
-                        </FuzzyText>
-                      </h2>
-                      <Fieldset className="w-full min-w-0 px-5">
-                      <Legend className="form-legend">利用予定のプランを選んでください</Legend>
-                      <RadioGroup
-                        value={plan}
-                        onChange={setPlan}
-                        by="id"
-                        aria-label="プラン"
-                        className="flex flex-col gap-3"
-                      >
-                        {PLAN_OPTIONS.map((option) => (
-                          <Field key={option.id} className="flex items-center gap-3">
-                            <Radio
-                              value={option}
-                              className="form-radio-outer group"
-                            >
-                              <span className="form-radio-dot group-data-[checked]:visible" />
-                            </Radio>
-                            <div className="flex flex-col">
-                              <Label className="form-label mb-0 cursor-pointer">{option.name}</Label>
-                              <span className="text-sm text-[var(--color-text-muted)]">{option.desc}</span>
-                            </div>
-                          </Field>
-                        ))}
-                      </RadioGroup>
-                    </Fieldset>
-                    </div>
-                  </Step>
-
-                  {/* Step 4: Headless UI Textarea */}
-                  <Step>
-                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-                      <h2 className="step-title w-full min-w-0 text-left">
-                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                          ご意見・フィードバック
-                        </FuzzyText>
-                      </h2>
-                      <Field className="form-field-group w-full min-w-0 px-5">
-                      <Label className="form-label">自由記述（任意）</Label>
-                      <Description className="form-description">
-                        改善の参考にさせていただきます。
-                      </Description>
-                      <Textarea
-                        name="feedback"
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
-                        placeholder="ご要望や不具合報告など..."
-                        rows={4}
-                        className="form-input-base resize-y min-h-[100px]"
-                      />
-                    </Field>
-                    </div>
-                  </Step>
-                </Stepper>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </div>
               </div>
-            </div>
-          </LiquidGlass>
+            </LiquidGlass>
+          </div>
         </div>
-      </div>
       </div>
       <LetterGlitch
         glitchSpeed={50}
