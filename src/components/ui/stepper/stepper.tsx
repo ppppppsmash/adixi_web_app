@@ -19,6 +19,8 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   backButtonText?: string;
   nextButtonText?: string;
   disableStepIndicators?: boolean;
+  /** true のとき数字付き円ではなく単一のプログレスバーを表示 */
+  progressBarOnly?: boolean;
   renderStepIndicator?: (props: {
     step: number;
     currentStep: number;
@@ -42,6 +44,7 @@ export default function Stepper({
   backButtonText = 'Back',
   nextButtonText = 'Continue',
   disableStepIndicators = false,
+  progressBarOnly = false,
   renderStepIndicator,
   renderBackButton,
   renderNextButton,
@@ -100,37 +103,59 @@ export default function Stepper({
         </StepContentWrapper>
 
         <div className="shrink-0 py-6">
-          <div className={`${stepContainerClassName} flex w-full min-w-0 items-center px-4 py-4 sm:px-6`}>
-          {stepsArray.map((_, index) => {
-            const stepNumber = index + 1;
-            const isNotLastStep = index < totalSteps - 1;
-            return (
-              <React.Fragment key={stepNumber}>
-                {renderStepIndicator ? (
-                  renderStepIndicator({
-                    step: stepNumber,
-                    currentStep,
-                    onStepClick: clicked => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    }
-                  })
-                ) : (
-                  <StepIndicator
-                    step={stepNumber}
-                    disableStepIndicators={disableStepIndicators}
-                    currentStep={currentStep}
-                    onClickStep={clicked => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    }}
-                  />
-                )}
-                {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
-              </React.Fragment>
-            );
-          })}
-          </div>
+          {progressBarOnly ? (
+            <div className={`${stepContainerClassName} w-full min-w-0 px-4 sm:px-6`}>
+              <div
+                className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-stepper-connector)]"
+                role="progressbar"
+                aria-valuenow={isCompleted ? totalSteps : currentStep}
+                aria-valuemin={1}
+                aria-valuemax={totalSteps}
+                aria-label="進捗"
+              >
+                <motion.div
+                  className="h-full rounded-full stepper-connector-complete"
+                  initial={false}
+                  transition={{ duration: 0.4 }}
+                  style={{
+                    width: `${isCompleted ? 100 : (currentStep / totalSteps) * 100}%`
+                  }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className={`${stepContainerClassName} flex w-full min-w-0 items-center px-4 py-4 sm:px-6`}>
+              {stepsArray.map((_, index) => {
+                const stepNumber = index + 1;
+                const isNotLastStep = index < totalSteps - 1;
+                return (
+                  <React.Fragment key={stepNumber}>
+                    {renderStepIndicator ? (
+                      renderStepIndicator({
+                        step: stepNumber,
+                        currentStep,
+                        onStepClick: clicked => {
+                          setDirection(clicked > currentStep ? 1 : -1);
+                          updateStep(clicked);
+                        }
+                      })
+                    ) : (
+                      <StepIndicator
+                        step={stepNumber}
+                        disableStepIndicators={disableStepIndicators}
+                        currentStep={currentStep}
+                        onClickStep={clicked => {
+                          setDirection(clicked > currentStep ? 1 : -1);
+                          updateStep(clicked);
+                        }}
+                      />
+                    )}
+                    {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {!isCompleted && (

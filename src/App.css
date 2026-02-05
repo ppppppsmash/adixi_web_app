@@ -260,10 +260,27 @@ html.dark .stepper-crt::after {
   @apply text-sm font-medium mb-2;
 }
 
-/* ステップ：問題タイトルと質問内容の幅・上端を揃える ＋ ハッカー/ネオ風フォント */
+/* ステップ：問題タイトルと質問内容の幅・上端を揃える ＋ ネオ風 */
 .step-content {
-  font-family: var(--font-hacker-neo) !important;
   @apply block w-full min-w-0 max-w-full;
+}
+/* ネオ風テキスト（軽いグロー・字間） */
+.step-content-neo,
+.step-content-neo label,
+.step-content-neo input,
+.step-content-neo textarea,
+.step-content-neo legend,
+.step-content-neo p,
+.step-content-neo span {
+  letter-spacing: 0.02em;
+}
+.step-content-neo label,
+.step-content-neo legend {
+  text-shadow: 0 0 20px rgba(97, 220, 163, 0.15);
+}
+.step-content-neo input::placeholder,
+.step-content-neo textarea::placeholder {
+  letter-spacing: 0.02em;
 }
 .step-title {
   @apply block w-full min-w-0 max-w-full text-left;

@@ -21,6 +21,9 @@ import {
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
+/** 問題内容用フォント（日本語対応・ネオ風） */
+const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
+
 const PLAN_OPTIONS = [
   { id: 'startup', name: 'Startup', desc: '個人・小規模' },
   { id: 'business', name: 'Business', desc: 'チーム向け' },
@@ -62,6 +65,7 @@ function App() {
               <div className="min-h-0 min-w-0 flex-1 flex flex-col justify-start">
                 <Stepper
                   initialStep={1}
+                  progressBarOnly
                   onStepChange={(step) => {
                     console.log(step);
                   }}
@@ -89,7 +93,7 @@ function App() {
                   )}
                 >
                   <Step>
-                    <div className="step-content w-full min-w-0 space-y-4">
+                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
                       <h2 className="step-title w-full min-w-0 text-left">
                         <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
                           お名前
@@ -114,7 +118,7 @@ function App() {
 
                   {/* Step 2: Headless UI Checkbox（複数） */}
                   <Step>
-                    <div className="step-content w-full min-w-0 space-y-4">
+                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
                       <h2 className="step-title w-full min-w-0 text-left">
                         <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
                           同意事項
@@ -155,7 +159,7 @@ function App() {
 
                   {/* Step 3: Headless UI RadioGroup */}
                   <Step>
-                    <div className="step-content w-full min-w-0 space-y-4">
+                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
                       <h2 className="step-title w-full min-w-0 text-left">
                         <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
                           プラン選択
@@ -191,7 +195,7 @@ function App() {
 
                   {/* Step 4: Headless UI Textarea */}
                   <Step>
-                    <div className="step-content w-full min-w-0 space-y-4">
+                    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
                       <h2 className="step-title w-full min-w-0 text-left">
                         <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
                           ご意見・フィードバック
