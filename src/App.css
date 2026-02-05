@@ -69,3 +69,72 @@
 .stepper-complete-glow {
   animation: stepper-complete-glow-pulse 3s ease-in-out infinite;
 }
+
+/* Headless UI フォーム共通（テーマ連動） */
+.form-input-base {
+  @apply w-full rounded-lg border px-3 py-2 text-[length:inherit] transition;
+  border-color: var(--color-border);
+  background-color: transparent;
+  color: var(--color-text);
+}
+.form-input-base::placeholder {
+  color: var(--color-text-muted);
+}
+.form-input-base[data-focus],
+.form-input-base:focus {
+  outline: none;
+  border-color: #61dca3;
+  box-shadow: 0 0 0 3px rgba(97, 220, 163, 0.25);
+}
+.form-input-base[data-hover]:not([data-focus]) {
+  border-color: rgba(97, 220, 163, 0.5);
+}
+.form-input-base[data-disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-label {
+  color: var(--color-text);
+  @apply block text-sm font-medium mb-1;
+}
+.form-description {
+  color: var(--color-text-muted);
+  @apply text-sm mb-2;
+}
+.form-field-group {
+  @apply flex flex-col gap-1;
+}
+.form-checkbox-box {
+  @apply flex size-5 shrink-0 items-center justify-center rounded border transition;
+  border-color: var(--color-border);
+  background-color: transparent;
+}
+.form-checkbox-box[data-checked] {
+  background-color: #61dca3;
+  border-color: #61dca3;
+}
+.form-checkbox-box[data-focus] {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(97, 220, 163, 0.35);
+}
+.form-radio-dot {
+  @apply invisible size-2 rounded-full bg-[#2b4539] transition;
+}
+.form-radio-outer {
+  @apply flex size-5 shrink-0 items-center justify-center rounded-full border transition;
+  border-color: var(--color-border);
+  background-color: transparent;
+}
+.form-radio-outer[data-checked] {
+  border-color: #61dca3;
+  background-color: rgba(97, 220, 163, 0.2);
+}
+.form-radio-outer[data-focus] {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(97, 220, 163, 0.35);
+}
+.form-legend {
+  color: var(--color-text);
+  @apply text-sm font-medium mb-2;
+}

@@ -285,8 +285,8 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
         variants={{
           inactive: {
             scale: 1,
-            backgroundColor: 'var(--color-border)',
-            color: 'var(--color-text-muted)',
+            backgroundColor: 'var(--color-stepper-inactive-bg, rgba(0,0,0,0.12))',
+            color: 'var(--color-text)',
             boxShadow: 'none'
           },
           active: {
@@ -303,7 +303,7 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
           }
         }}
         transition={{ duration: 0.3 }}
-        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
       >
         {status === 'complete' ? (
           <CheckIcon className="h-4 w-4 text-[#2b4539]" />
@@ -328,7 +328,7 @@ function StepConnector({ isComplete }: StepConnectorProps) {
   };
 
   return (
-    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-[var(--color-border)]">
+    <div className="relative mx-2 h-1 flex-1 overflow-hidden rounded bg-[var(--color-stepper-connector, rgba(0,0,0,0.2))] min-w-[24px]">
       <motion.div
         className="absolute left-0 top-0 h-full"
         variants={lineVariants}

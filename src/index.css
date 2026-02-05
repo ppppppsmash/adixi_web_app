@@ -16,6 +16,8 @@
   --color-accent: #646cff;
   --color-accent-hover: #535bf2;
   --color-border: rgba(0, 0, 0, 0.1);
+  --color-stepper-inactive-bg: rgba(0, 0, 0, 0.14);
+  --color-stepper-connector: rgba(0, 0, 0, 0.22);
   --color-button-bg: #1a1a1a;
   --color-button-text: #ffffff;
   /* ダークモード同様にエフェクトがはっきり見えるよう、やや暗めの背景＋強めのビネット */
@@ -33,6 +35,8 @@ html.dark {
   --color-accent: #646cff;
   --color-accent-hover: #818cf8;
   --color-border: rgba(255, 255, 255, 0.1);
+  --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);
+  --color-stepper-connector: rgba(255, 255, 255, 0.25);
   --color-button-bg: #2d2d2d;
   --color-button-text: rgba(255, 255, 255, 0.87);
   --glitch-bg: #0a0a0c;
