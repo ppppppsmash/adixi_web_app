@@ -82,13 +82,23 @@ export default function Stepper({
 
   return (
     <div
-      className="flex min-h-full w-full flex-1 flex-col items-center justify-start p-4"
+      className="flex min-h-full w-full min-w-0 flex-1 flex-col items-stretch justify-start p-4"
       {...rest}
     >
       <div
-        className={`w-full ${stepCircleContainerClassName}`}
+        className={`w-full min-w-0 ${stepCircleContainerClassName}`}
       >
-        <div className={`${stepContainerClassName} flex w-full items-center p-8`}>
+        <StepContentWrapper
+          isCompleted={isCompleted}
+          currentStep={currentStep}
+          direction={direction}
+          className={`min-w-0 space-y-2 px-4 pb-2 text-[var(--color-text)] sm:px-6 ${contentClassName}`}
+        >
+          {stepsArray[currentStep - 1]}
+        </StepContentWrapper>
+
+        <div className="shrink-0 py-6">
+          <div className={`${stepContainerClassName} flex w-full min-w-0 items-center px-4 py-4 sm:px-6`}>
           {stepsArray.map((_, index) => {
             const stepNumber = index + 1;
             const isNotLastStep = index < totalSteps - 1;
@@ -118,19 +128,11 @@ export default function Stepper({
               </React.Fragment>
             );
           })}
+          </div>
         </div>
 
-        <StepContentWrapper
-          isCompleted={isCompleted}
-          currentStep={currentStep}
-          direction={direction}
-          className={`space-y-2 px-8 text-[var(--color-text)] ${contentClassName}`}
-        >
-          {stepsArray[currentStep - 1]}
-        </StepContentWrapper>
-
         {!isCompleted && (
-          <div className={`px-8 pb-8 ${footerClassName}`}>
+          <div className={`px-4 pb-8 sm:px-6 ${footerClassName}`}>
             <div className={`mt-10 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'}`}>
               {currentStep !== 1 &&
                 (renderBackButton ? (
@@ -188,7 +190,7 @@ function StepContentWrapper({
 
   return (
     <motion.div
-      style={{ position: 'relative', overflow: 'hidden' }}
+      style={{ position: 'relative', overflow: 'hidden', minWidth: 0 }}
       animate={{ height: isCompleted ? 0 : parentHeight }}
       transition={{ type: 'spring', duration: 0.4 }}
       className={className}
@@ -228,7 +230,8 @@ function SlideTransition({ children, direction, onHeightReady }: SlideTransition
       animate="center"
       exit="exit"
       transition={{ duration: 0.4 }}
-      style={{ position: 'absolute', left: 0, right: 0, top: 0 }}
+      style={{ position: 'absolute', left: 0, right: 0, top: 0, minWidth: 0 }}
+      className="w-full"
     >
       {children}
     </motion.div>
@@ -255,7 +258,11 @@ interface StepProps {
 }
 
 export function Step({ children }: StepProps) {
-  return <div className="px-0">{children}</div>;
+  return (
+    <div className="w-full min-w-0 max-w-full overflow-hidden px-0">
+      {children}
+    </div>
+  );
 }
 
 interface StepIndicatorProps {

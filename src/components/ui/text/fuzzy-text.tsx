@@ -111,7 +111,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
       const textBoundingWidth = Math.ceil(letterSpacing !== 0 ? totalWidth : actualLeft + actualRight);
       const tightHeight = Math.ceil(actualAscent + actualDescent);
 
-      const extraWidthBuffer = 10;
+      const extraWidthBuffer = 4;
       const offscreenWidth = textBoundingWidth + extraWidthBuffer;
 
       offscreen.width = offscreenWidth;
@@ -139,8 +139,8 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
         offCtx.fillText(text, xOffset - actualLeft, actualAscent);
       }
 
-      const horizontalMargin = fuzzRange + 20;
-      const verticalMargin = direction === 'vertical' || direction === 'both' ? fuzzRange + 10 : 0;
+      const horizontalMargin = Math.ceil(fuzzRange * 0.6);
+      const verticalMargin = direction === 'vertical' || direction === 'both' ? Math.ceil(fuzzRange * 0.3) : 0;
       canvas.width = offscreenWidth + horizontalMargin * 2;
       canvas.height = tightHeight + verticalMargin * 2;
       ctx.translate(horizontalMargin, verticalMargin);
@@ -182,10 +182,10 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
         lastFrameTime = timestamp;
 
         ctx.clearRect(
-          -fuzzRange - 20,
-          -fuzzRange - 10,
-          offscreenWidth + 2 * (fuzzRange + 20),
-          tightHeight + 2 * (fuzzRange + 10)
+          -horizontalMargin,
+          -verticalMargin,
+          offscreenWidth + horizontalMargin * 2,
+          tightHeight + verticalMargin * 2
         );
 
         if (isClicking) {

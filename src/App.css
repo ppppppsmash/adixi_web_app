@@ -70,11 +70,11 @@
   animation: stepper-complete-glow-pulse 3s ease-in-out infinite;
 }
 
-/* Headless UI フォーム共通（テーマ連動） */
+/* Headless UI フォーム共通（テーマ連動・枠をはっきり） */
 .form-input-base {
-  @apply w-full rounded-lg border px-3 py-2 text-[length:inherit] transition;
-  border-color: var(--color-border);
-  background-color: transparent;
+  @apply w-full min-w-0 max-w-full rounded-lg border-2 px-3 py-2 text-[length:inherit] transition box-border;
+  border-color: var(--color-form-border);
+  background-color: var(--color-form-bg);
   color: var(--color-text);
 }
 .form-input-base::placeholder {
@@ -84,10 +84,11 @@
 .form-input-base:focus {
   outline: none;
   border-color: #61dca3;
+  background-color: var(--color-form-bg);
   box-shadow: 0 0 0 3px rgba(97, 220, 163, 0.25);
 }
 .form-input-base[data-hover]:not([data-focus]) {
-  border-color: rgba(97, 220, 163, 0.5);
+  border-color: rgba(97, 220, 163, 0.45);
 }
 .form-input-base[data-disabled] {
   opacity: 0.6;
@@ -103,12 +104,12 @@
   @apply text-sm mb-2;
 }
 .form-field-group {
-  @apply flex flex-col gap-1;
+  @apply flex min-w-0 max-w-full flex-col gap-1;
 }
 .form-checkbox-box {
-  @apply flex size-5 shrink-0 items-center justify-center rounded border transition;
-  border-color: var(--color-border);
-  background-color: transparent;
+  @apply flex size-5 shrink-0 items-center justify-center rounded border-2 transition;
+  border-color: var(--color-form-border);
+  background-color: var(--color-form-bg);
 }
 .form-checkbox-box[data-checked] {
   background-color: #61dca3;
@@ -122,9 +123,9 @@
   @apply invisible size-2 rounded-full bg-[#2b4539] transition;
 }
 .form-radio-outer {
-  @apply flex size-5 shrink-0 items-center justify-center rounded-full border transition;
-  border-color: var(--color-border);
-  background-color: transparent;
+  @apply flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition;
+  border-color: var(--color-form-border);
+  background-color: var(--color-form-bg);
 }
 .form-radio-outer[data-checked] {
   border-color: #61dca3;
@@ -137,4 +138,21 @@
 .form-legend {
   color: var(--color-text);
   @apply text-sm font-medium mb-2;
+}
+
+/* ステップ：問題タイトルと質問内容の幅・上端を揃える */
+.step-content {
+  @apply block w-full min-w-0 max-w-full;
+}
+.step-title {
+  @apply block w-full min-w-0 max-w-full text-left;
+  margin: 0;
+  padding: 0;
+}
+.step-title canvas {
+  display: block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
 }

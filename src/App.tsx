@@ -42,13 +42,13 @@ function App() {
         <AnimatedThemeToggler />
       </div>
       <div className="min-h-svh w-full flex justify-center items-center relative z-0">
-        <div className="w-[40svw] h-[100svh]">
+        <div className="w-[50svw] h-[100svh]">
           <LiquidGlass
             borderRadius={0}
             blur={2}
             shadowIntensity={0.06}
           >
-            <div className="flex h-full min-w-0 flex-col pt-6 w-full gap-y-10">
+            <div className="flex h-full min-w-0 flex-col pt-6 w-full gap-y-10 px-14">
               <div className="min-w-0 shrink-0 overflow-hidden flex justify-center">
                 <FuzzyText
                   baseIntensity={0.2}
@@ -66,6 +66,7 @@ function App() {
                   onStepChange={(step) => {
                     console.log(step);
                   }}
+                  contentClassName="mt-10"
                   onFinalStepCompleted={() => console.log("All steps completed!")}
                   backButtonText="Previous"
                   nextButtonText="Next"
@@ -88,38 +89,40 @@ function App() {
                     </PulsatingButton>
                   )}
                 >
-                  {/* Step 1: Headless UI Input */}
                   <Step>
-                    <div className="mb-3">
-                      <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                        お名前
-                      </FuzzyText>
+                    <div className="step-content w-full min-w-0 space-y-4">
+                      <h2 className="step-title w-full min-w-0 text-left">
+                        <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+                          お名前
+                        </FuzzyText>
+                      </h2>
+                      <Field className="form-field-group w-full min-w-0 px-5">
+                        <Label className="form-label">氏名（ニックネーム可）</Label>
+                        <Description className="form-description">
+                          アンケート結果の表示に使用します。
+                        </Description>
+                        <Input
+                          name="name"
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="例: 山田 太郎"
+                          className="form-input-base"
+                        />
+                      </Field>
                     </div>
-                    <Field className="form-field-group">
-                      <Label className="form-label">氏名（ニックネーム可）</Label>
-                      <Description className="form-description">
-                        アンケート結果の表示に使用します。
-                      </Description>
-                      <Input
-                        name="name"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="例: 山田 太郎"
-                        className="form-input-base"
-                      />
-                    </Field>
                   </Step>
 
                   {/* Step 2: Headless UI Checkbox（複数） */}
                   <Step>
-                    <div className="mb-3">
-                      <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                        同意事項
-                      </FuzzyText>
-                    </div>
-                    <div className="flex flex-col gap-4">
-                      <Field className="flex items-center gap-3">
+                    <div className="step-content w-full min-w-0 space-y-4">
+                      <h2 className="step-title w-full min-w-0 text-left">
+                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+                          同意事項
+                        </FuzzyText>
+                      </h2>
+                      <div className="flex w-full min-w-0 flex-col gap-4">
+                      <Field className="flex items-center gap-3 px-5">
                         <Checkbox
                           checked={agreeTerms}
                           onChange={setAgreeTerms}
@@ -133,7 +136,7 @@ function App() {
                           利用規約に同意する
                         </Label>
                       </Field>
-                      <Field className="flex items-center gap-3">
+                      <Field className="flex items-center gap-3 px-5">
                         <Checkbox
                           checked={agreeNewsletter}
                           onChange={setAgreeNewsletter}
@@ -147,17 +150,19 @@ function App() {
                           ニュースレターを受け取る（任意）
                         </Label>
                       </Field>
+                      </div>
                     </div>
                   </Step>
 
                   {/* Step 3: Headless UI RadioGroup */}
                   <Step>
-                    <div className="mb-3">
-                      <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                        プラン選択
-                      </FuzzyText>
-                    </div>
-                    <Fieldset>
+                    <div className="step-content w-full min-w-0 space-y-4">
+                      <h2 className="step-title w-full min-w-0 text-left">
+                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+                          プラン選択
+                        </FuzzyText>
+                      </h2>
+                      <Fieldset className="w-full min-w-0 px-5">
                       <Legend className="form-legend">利用予定のプランを選んでください</Legend>
                       <RadioGroup
                         value={plan}
@@ -182,16 +187,18 @@ function App() {
                         ))}
                       </RadioGroup>
                     </Fieldset>
+                    </div>
                   </Step>
 
                   {/* Step 4: Headless UI Textarea */}
                   <Step>
-                    <div className="mb-3">
-                      <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
-                        ご意見・フィードバック
-                      </FuzzyText>
-                    </div>
-                    <Field className="form-field-group">
+                    <div className="step-content w-full min-w-0 space-y-4">
+                      <h2 className="step-title w-full min-w-0 text-left">
+                        <FuzzyText fontSize="1.5rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+                          ご意見・フィードバック
+                        </FuzzyText>
+                      </h2>
+                      <Field className="form-field-group w-full min-w-0 px-5">
                       <Label className="form-label">自由記述（任意）</Label>
                       <Description className="form-description">
                         改善の参考にさせていただきます。
@@ -205,6 +212,7 @@ function App() {
                         className="form-input-base resize-y min-h-[100px]"
                       />
                     </Field>
+                    </div>
                   </Step>
                 </Stepper>
               </div>
