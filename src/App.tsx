@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
@@ -39,30 +39,28 @@ function App() {
   const [feedback, setFeedback] = useState('')
 
   return (
-    <>
+    <React.Fragment>
       <div className="absolute top-4 right-6 z-50">
         <AnimatedThemeToggler />
       </div>
-      <div className="min-h-svh w-full flex justify-center items-center relative z-0">
-        <div className="w-[50svw] h-[100svh]">
-          <LiquidGlass
-            borderRadius={0}
-            blur={2}
-            shadowIntensity={0.06}
+
+      <div className="flex h-[100svh] w-full flex-col overflow-hidden">
+        <div className="min-h-0 shrink-0 flex justify-center py-8">
+          <FuzzyText
+            baseIntensity={0.2}
+            hoverIntensity={0.5}
+            fontSize="4rem"
+            enableHover
+            color={isDark ? '#61dca3' : '#2b4539'}
           >
-            <div className="flex h-full min-w-0 flex-col pt-6 w-full gap-y-10 px-14">
-              <div className="min-w-0 shrink-0 overflow-hidden flex justify-center">
-                <FuzzyText
-                  baseIntensity={0.2}
-                  hoverIntensity={0.5}
-                  fontSize="4rem"
-                  enableHover
-                  color={isDark ? '#fff' : '#333'}
-                >
-                  ADiXi Survey
-                </FuzzyText>
-              </div>
-              <div className="min-h-0 min-w-0 flex-1 flex flex-col justify-start">
+            ADiXi Survey
+          </FuzzyText>
+        </div>
+        <div className="h-[70svh] flex-1 w-full flex justify-center items-center relative z-0 overflow-hidden">
+          <div className="w-[46svw] max-w-full">
+            <LiquidGlass borderRadius={0} blur={2} shadowIntensity={0.06}>
+            <div className="flex min-w-0 flex-col pt-12 w-full gap-y-10 px-14">
+              <div className="min-w-0 flex flex-col justify-start">
                 <Stepper
                   initialStep={1}
                   progressBarOnly
@@ -223,16 +221,17 @@ function App() {
           </LiquidGlass>
         </div>
       </div>
+      </div>
       <LetterGlitch
         glitchSpeed={50}
         centerVignette={isDark}
         outerVignette={true}
         smooth={true}
         glitchColors={GLITCH_COLORS}
-        characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+        characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'}
         adixiLoopIntervalMs={10000}
       />
-    </>
+    </React.Fragment>
   )
 }
 

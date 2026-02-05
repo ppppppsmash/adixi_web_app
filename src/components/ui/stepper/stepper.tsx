@@ -87,11 +87,11 @@ export default function Stepper({
 
   return (
     <div
-      className="flex min-h-full w-full min-w-0 flex-1 flex-col items-stretch justify-start p-4"
+      className="flex min-h-full w-full min-w-0 flex-1 flex-col items-stretch justify-center p-4"
       {...rest}
     >
       <div
-        className={`stepper-crt w-full min-w-0 ${stepCircleContainerClassName}`}
+        className={`stepper-crt flex w-full min-w-0 flex-col ${stepCircleContainerClassName}`}
       >
         <StepContentWrapper
           isCompleted={isCompleted}
@@ -102,7 +102,7 @@ export default function Stepper({
           {stepsArray[currentStep - 1]}
         </StepContentWrapper>
 
-        <div className="shrink-0 py-6">
+        <div className="shrink-0 pt-12 pb-6">
           {progressBarOnly ? (
             <div className={`${stepContainerClassName} w-full min-w-0 px-4 sm:px-6`}>
               <div
