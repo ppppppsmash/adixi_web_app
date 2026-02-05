@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import './App.css'
 import App from './App.tsx'
 
 // 描画前に保存済みテーマを適用（フラッシュ防止）

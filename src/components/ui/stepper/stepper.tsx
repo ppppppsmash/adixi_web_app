@@ -2,6 +2,8 @@ import React, { useState, Children, useRef, useLayoutEffect } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Variants } from 'motion/react';
+import FuzzyText from '../text/fuzzy-text';
+import { useDarkMode } from '../../../lib/useDarkMode';
 
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -86,13 +88,13 @@ export default function Stepper({
       {...rest}
     >
       <div
-        className={`w-full min-w-0 ${stepCircleContainerClassName}`}
+        className={`stepper-crt w-full min-w-0 ${stepCircleContainerClassName}`}
       >
         <StepContentWrapper
           isCompleted={isCompleted}
           currentStep={currentStep}
           direction={direction}
-          className={`min-w-0 space-y-2 px-4 pb-2 text-[var(--color-text)] sm:px-6 ${contentClassName}`}
+          className={`step-content-font min-w-0 space-y-2 px-4 pb-2 text-[var(--color-text)] sm:px-6 ${contentClassName}`}
         >
           {stepsArray[currentStep - 1]}
         </StepContentWrapper>
@@ -273,6 +275,7 @@ interface StepIndicatorProps {
 }
 
 function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators = false }: StepIndicatorProps) {
+  const isDark = useDarkMode();
   const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
 
   const handleClick = () => {
@@ -310,14 +313,22 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
           }
         }}
         transition={{ duration: 0.3 }}
-        className={`flex h-8 w-8 items-center justify-center rounded-full font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
       >
         {status === 'complete' ? (
-          <CheckIcon className="h-4 w-4 text-[#2b4539]" />
+          <CheckIcon className="stepper-check-icon h-4 w-4 text-[#2b4539]" />
         ) : status === 'active' ? (
-          <div className="h-3 w-3 rounded-full bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
+          <div className="stepper-active-dot h-3 w-3 rounded-full bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
         ) : (
-          <span className="text-sm">{step}</span>
+          <FuzzyText
+            fontSize="0.875rem"
+            baseIntensity={0.12}
+            hoverIntensity={0.35}
+            color={isDark ? 'rgba(255,255,255,0.9)' : '#1d1d1f'}
+            enableHover
+          >
+            {step}
+          </FuzzyText>
         )}
       </motion.div>
     </motion.div>
@@ -330,14 +341,14 @@ interface StepConnectorProps {
 
 function StepConnector({ isComplete }: StepConnectorProps) {
   const lineVariants: Variants = {
-    incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: '#61dca3' }
+    incomplete: { width: 0 },
+    complete: { width: '100%' }
   };
 
   return (
     <div className="relative mx-2 h-1 flex-1 overflow-hidden rounded bg-[var(--color-stepper-connector, rgba(0,0,0,0.2))] min-w-[24px]">
       <motion.div
-        className="absolute left-0 top-0 h-full"
+        className={`absolute left-0 top-0 h-full ${isComplete ? 'stepper-connector-complete' : ''}`}
         variants={lineVariants}
         initial={false}
         animate={isComplete ? 'complete' : 'incomplete'}

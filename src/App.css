@@ -42,36 +42,152 @@
   color: #888;
 }
 
-/* ステッパー：カレントのグロー（GLITCH_COLORS #61dca3） */
+/* ステッパー：FuzzyText / グリッチと統一した雰囲気（#2b4539, #61dca3, #61b3dc） */
+
+/* カレントの丸：デュアルトーンのグロー */
 @keyframes stepper-glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 12px #61dca3, 0 0 24px rgba(97, 220, 163, 0.35);
+    box-shadow: 0 0 12px #61dca3, 0 0 24px rgba(97, 220, 163, 0.35), 0 0 0 1px rgba(97, 179, 220, 0.2);
   }
   50% {
-    box-shadow: 0 0 18px #61dca3, 0 0 36px rgba(97, 220, 163, 0.5);
+    box-shadow: 0 0 18px #61dca3, 0 0 36px rgba(97, 220, 163, 0.5), 0 0 0 1px rgba(97, 179, 220, 0.4);
   }
 }
 .stepper-active-glow {
   animation: stepper-glow-pulse 2s ease-in-out infinite;
 }
 
-/* ステッパー：完了（チェック）のグロー */
+/* アクティブの内側ドット：ふわっとした脈動 */
+@keyframes stepper-active-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: inset 0 0 4px rgba(97, 220, 163, 0.5); }
+  50% { opacity: 0.9; transform: scale(1.05); box-shadow: inset 0 0 6px rgba(97, 220, 163, 0.7); }
+}
+.stepper-active-dot {
+  animation: stepper-active-dot-pulse 2.5s ease-in-out infinite;
+}
+
+/* 完了（チェック）のグロー＋チェック線のトーン */
 @keyframes stepper-complete-glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 8px rgba(97, 220, 163, 0.4);
+    box-shadow: 0 0 8px rgba(97, 220, 163, 0.4), 0 0 0 1px rgba(43, 69, 57, 0.15);
   }
   50% {
-    box-shadow: 0 0 12px rgba(97, 220, 163, 0.55);
+    box-shadow: 0 0 12px rgba(97, 220, 163, 0.55), 0 0 0 1px rgba(97, 179, 220, 0.25);
   }
 }
 .stepper-complete-glow {
   animation: stepper-complete-glow-pulse 3s ease-in-out infinite;
 }
+.stepper-check-icon {
+  filter: drop-shadow(0 0 2px rgba(97, 220, 163, 0.4));
+}
+
+/* コネクター（プログレスバー）完了時：グラデ＋軽いグロー */
+.stepper-connector-complete {
+  background: linear-gradient(90deg, #61dca3 0%, #61b3dc 100%);
+  box-shadow: 0 0 8px rgba(97, 220, 163, 0.35);
+}
+
+/* ステッパー：Previous / Next ボタン（Headless UI Button）ネオ風ピカピカ */
+@keyframes stepper-btn-glow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(97, 220, 163, 0.5), 0 0 24px rgba(97, 220, 163, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(97, 220, 163, 0.7), 0 0 40px rgba(97, 179, 220, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+@keyframes stepper-btn-shine {
+  0% { opacity: 0; transform: translateX(-100%) skewX(-12deg); }
+  60% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateX(200%) skewX(-12deg); }
+}
+.stepper-back-button {
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-form-border);
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.3s;
+}
+.stepper-back-button:hover {
+  color: var(--color-text);
+  border-color: rgba(97, 220, 163, 0.6);
+  box-shadow: 0 0 12px rgba(97, 220, 163, 0.25);
+}
+.stepper-next-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%) #61dca3;
+  color: #2b4539;
+  border: none;
+  text-shadow: 0 0 20px rgba(43, 69, 57, 0.3);
+  animation: stepper-btn-glow 2.5s ease-in-out infinite;
+}
+.stepper-next-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 60%
+  );
+  pointer-events: none;
+  animation: stepper-btn-shine 3s ease-in-out infinite;
+}
+.stepper-next-button:hover {
+  animation-duration: 1.8s;
+}
+
+/* ステッパー全体：ブラウン管風の静かな揺れ（FuzzyText のような生きている感じ） */
+@keyframes stepper-crt-drift {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(0.4px, -0.2px); }
+  30% { transform: translate(-0.3px, 0.3px); }
+  45% { transform: translate(0.2px, 0.4px); }
+  60% { transform: translate(-0.4px, -0.1px); }
+  75% { transform: translate(0.3px, 0.2px); }
+}
+@keyframes stepper-crt-flicker {
+  0%, 90%, 100% { opacity: 1; }
+  92% { opacity: 0.98; }
+  95% { opacity: 1; }
+  97% { opacity: 0.99; }
+}
+.stepper-crt {
+  position: relative;
+  animation: stepper-crt-drift 5s ease-in-out infinite, stepper-crt-flicker 8s ease-in-out infinite;
+}
+/* ごく薄いスキャンライン（CRT の走査線っぽさ） */
+.stepper-crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 3px
+  );
+}
+html.dark .stepper-crt::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.02) 2px,
+    rgba(255, 255, 255, 0.02) 3px
+  );
+}
 
 /* Headless UI フォーム共通（テーマ連動・枠をはっきり） */
 .form-input-base {
+  font-family: var(--font-hacker-neo) !important;
   @apply w-full min-w-0 max-w-full rounded-lg border-2 px-3 py-2 text-[length:inherit] transition box-border;
   border-color: var(--color-form-border);
   background-color: var(--color-form-bg);
@@ -79,6 +195,7 @@
 }
 .form-input-base::placeholder {
   color: var(--color-text-muted);
+  font-family: var(--font-hacker-neo) !important;
 }
 .form-input-base[data-focus],
 .form-input-base:focus {
@@ -97,10 +214,12 @@
 
 .form-label {
   color: var(--color-text);
+  font-family: var(--font-hacker-neo) !important;
   @apply block text-sm font-medium mb-1;
 }
 .form-description {
   color: var(--color-text-muted);
+  font-family: var(--font-hacker-neo) !important;
   @apply text-sm mb-2;
 }
 .form-field-group {
@@ -137,11 +256,13 @@
 }
 .form-legend {
   color: var(--color-text);
+  font-family: var(--font-hacker-neo) !important;
   @apply text-sm font-medium mb-2;
 }
 
-/* ステップ：問題タイトルと質問内容の幅・上端を揃える */
+/* ステップ：問題タイトルと質問内容の幅・上端を揃える ＋ ハッカー/ネオ風フォント */
 .step-content {
+  font-family: var(--font-hacker-neo) !important;
   @apply block w-full min-w-0 max-w-full;
 }
 .step-title {

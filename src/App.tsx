@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import './App.css'
 import LetterGlitch from "./components/background/LetterGlitch";
 import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
 import FuzzyText from "./components/ui/text/fuzzy-text";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
-import { PulsatingButton } from "./components/ui/button/pulsating-button";
 import {
+  Button,
   Input,
   Textarea,
   Checkbox,
@@ -71,22 +70,22 @@ function App() {
                   backButtonText="Previous"
                   nextButtonText="Next"
                   renderBackButton={({ onClick, children }) => (
-                    <PulsatingButton
+                    <Button
                       type="button"
                       onClick={onClick}
-                      className="min-w-[100px] shadow-lg"
+                      className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]"
                     >
                       {children}
-                    </PulsatingButton>
+                    </Button>
                   )}
                   renderNextButton={({ onClick, children }) => (
-                    <PulsatingButton
+                    <Button
                       type="button"
                       onClick={onClick}
-                      className="min-w-[100px] shadow-lg"
+                      className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]"
                     >
                       {children}
-                    </PulsatingButton>
+                    </Button>
                   )}
                 >
                   <Step>
