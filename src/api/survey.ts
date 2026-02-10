@@ -13,6 +13,8 @@ import { supabase } from "../lib/supabase";
  *   CREATE POLICY "anon_read_survey_items" ON survey_items FOR SELECT TO anon USING (
  *     survey_id IN (SELECT id FROM surveys WHERE is_published = true)
  *   );
+ *
+ * 回答送信時は survey_responses / survey_response_items への anon の INSERT ポリシーも必要（下記 submitSurveyResponse 付近のコメント参照）。
  */
 
 export type SurveyItemType = "text" | "textarea" | "select" | "radio" | "checkbox";
@@ -96,4 +98,33 @@ export async function getLatestPublicSurvey(): Promise<PublicSurvey | null> {
   if (!survey) return null;
 
   return getPublicSurvey(survey.id);
+}
+
+/**
+ * 回答を DB に送信（kh-project の survey_responses / survey_response_items スキーマ準拠）。
+ * 送信内容: survey_responses → survey_id, respondent_name（null 可） / survey_response_items → response_id, survey_item_id, answer（文字列、配列は JSON 文字列）。
+ * RPC を使うため RLS をバイパス。Supabase SQL Editor で supabase-rpc-submit-response.sql を実行すること。
+ */
+export async function submitSurveyResponse(
+  surveyId: string,
+  answers: Record<string, string | string[]>,
+  respondentName?: string | null
+): Promise<{ responseId: string }> {
+  const answersJson: Record<string, string> = {};
+  for (const [itemId, value] of Object.entries(answers)) {
+    answersJson[itemId] = Array.isArray(value) ? JSON.stringify(value) : String(value);
+  }
+
+  const { data: responseId, error } = await supabase.rpc("submit_survey_response", {
+    p_survey_id: surveyId,
+    p_respondent_name: respondentName ?? null,
+    p_answers: answersJson,
+  });
+
+  if (error) {
+    console.error("[submitSurveyResponse] RPC error:", error);
+    throw new Error(error.message);
+  }
+
+  return { responseId: responseId as string };
 }

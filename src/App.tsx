@@ -17,7 +17,7 @@ import {
   Fieldset,
   Legend,
 } from '@headlessui/react'
-import { getPublicSurvey, getLatestPublicSurvey, type PublicSurvey, type SurveyItem } from "./api/survey";
+import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, type PublicSurvey, type SurveyItem } from "./api/survey";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
@@ -145,6 +145,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const surveyId = getSurveyId()
 
@@ -171,6 +173,20 @@ function App() {
 
   const setAnswer = (itemId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [itemId]: value }))
+  }
+
+  const handleSubmit = async () => {
+    if (!survey || submitStatus === 'sending') return
+    setSubmitStatus('sending')
+    setSubmitError(null)
+    try {
+      await submitSurveyResponse(survey.id, answers)
+      setSubmitStatus('success')
+    } catch (e) {
+      setSubmitStatus('error')
+      setSubmitError(e instanceof Error ? e.message : String(e))
+      console.error(e)
+    }
   }
 
   if (loading) {
@@ -218,7 +234,7 @@ function App() {
                     progressBarOnly
                     onStepChange={() => {}}
                     contentClassName="mt-10"
-                    onFinalStepCompleted={() => console.log('All steps completed!', answers)}
+                    onFinalStepCompleted={handleSubmit}
                     backButtonText="前へ"
                     nextButtonText="次へ"
                     renderBackButton={({ onClick, children }) => (
@@ -243,6 +259,19 @@ function App() {
                       </Step>
                     ))}
                   </Stepper>
+                  {submitStatus === 'sending' && (
+                    <p className="mt-6 text-center text-[var(--color-text-muted)]">送信中...</p>
+                  )}
+                  {submitStatus === 'success' && (
+                    <p className="mt-6 text-center text-[var(--color-text)] font-medium">
+                      送信しました。ありがとうございます。
+                    </p>
+                  )}
+                  {submitStatus === 'error' && (
+                    <p className="mt-6 text-center text-red-500">
+                      送信に失敗しました。{submitError && `（${submitError}）`}
+                    </p>
+                  )}
                 </div>
               </div>
             </LiquidGlass>
