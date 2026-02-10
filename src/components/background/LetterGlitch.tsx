@@ -22,7 +22,7 @@ const LetterGlitch = ({
   outerVignette = true,
   smooth = true,
   characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789',
-  adixiLoopIntervalMs = 0
+  adixiLoopIntervalMs = ADIXI_LOOP_INTERVAL_MS
 }: {
   glitchColors: string[];
   glitchSpeed: number;

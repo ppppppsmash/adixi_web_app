@@ -18,6 +18,8 @@ import {
   Legend,
 } from '@headlessui/react'
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, type PublicSurvey, type SurveyItem } from "./api/survey";
+import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
+import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
@@ -149,6 +151,17 @@ function App() {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const surveyId = getSurveyId()
+  const { otherCursors, setMyCursor } = useRealtimeCursors(survey?.id ?? null)
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 100
+      const y = (e.clientY / window.innerHeight) * 100
+      setMyCursor(x, y)
+    }
+    window.addEventListener("mousemove", onMove)
+    return () => window.removeEventListener("mousemove", onMove)
+  }, [setMyCursor])
 
   useEffect(() => {
     let cancelled = false
@@ -211,6 +224,7 @@ function App() {
       <div className="absolute top-4 right-6 z-50">
         <AnimatedThemeToggler />
       </div>
+      <RealtimeCursorsOverlay cursors={otherCursors} />
 
       <div className="flex h-[100svh] w-full flex-col overflow-hidden">
         <div className="min-h-0 shrink-0 flex justify-center py-8">
