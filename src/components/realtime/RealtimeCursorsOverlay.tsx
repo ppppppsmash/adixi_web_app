@@ -26,7 +26,7 @@ function MyCursorVideo({ stream }: { stream: MediaStream }) {
       autoPlay
       playsInline
       muted
-      className="h-14 w-14 rounded-full border-2 border-white object-cover object-center shadow-md"
+      className="h-18 w-18 rounded-full border-2 border-white object-cover object-center shadow-md"
     />
   );
 }
@@ -49,10 +49,8 @@ export function RealtimeCursorsOverlay({
           ref={myCursorRef}
           className={`cursor-neo absolute z-50 ${showVideo ? "flex items-center gap-2" : "h-4 w-4"}`}
           style={{
-            left: 0,
-            top: 0,
             pointerEvents: "none",
-            transition: CURSOR_TRANSITION,
+            transition: "none",
             ["--cursor-color" as string]: myCursorInfo.color,
             ...(showVideo ? { transform: "translate(-50%, -50%)" } : {}),
           }}

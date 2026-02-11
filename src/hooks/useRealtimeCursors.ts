@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { supabase } from "../lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -115,6 +114,8 @@ export function useRealtimeCursors(
   const myCursorRef = useRef<HTMLDivElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
+  const pendingPosRef = useRef<{ x: number; y: number } | null>(null);
+  const rafIdRef = useRef<number | null>(null);
   const [myPresenceKey, setMyPresenceKey] = useState<string | null>(null);
   const [cursorColor] = useState(() => randomCursorColor());
   const nameToSend = (displayName?.trim() || "ゲスト").slice(0, 20);
@@ -202,6 +203,14 @@ export function useRealtimeCursors(
     };
   }, [surveyId, cursorColor]);
 
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+      pendingPosRef.current = null;
+    };
+  }, []);
+
   // お名前入力が変わったら即時 presence を更新し、自カーソル表示の名前も更新
   useEffect(() => {
     const ch = channelRef.current;
@@ -216,22 +225,42 @@ export function useRealtimeCursors(
     );
   }, [nameToSend]);
 
-  const setMyCursor = useRef(
+  // 他ユーザーへの送信は throttle で送信頻度を抑える
+  const throttledTrack = useRef(
     throttle((x: number, y: number) => {
       const ch = channelRef.current;
+      if (!ch) return;
       const payload: CursorPresence = {
         ...currentPayloadRef.current,
         cursor: { x, y },
       };
       currentPayloadRef.current = payload;
-      if (ch) ch.track(payload);
-      const el = myCursorRef.current;
-      if (el) {
-        el.style.left = `${x}%`;
-        el.style.top = `${y}%`;
-      }
+      ch.track(payload);
     }, 100)
   ).current;
+
+  // 自カーソル: rAF で 1 フレーム 1 回だけ DOM 更新 + transform で GPU レイヤー化（left/top より軽い）
+  const setMyCursor = useRef((x: number, y: number) => {
+    const payload: CursorPresence = {
+      ...currentPayloadRef.current,
+      cursor: { x, y },
+    };
+    currentPayloadRef.current = payload;
+    throttledTrack(x, y);
+
+    pendingPosRef.current = { x, y };
+    if (rafIdRef.current !== null) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      rafIdRef.current = null;
+      const p = pendingPosRef.current;
+      if (!p) return;
+      const el = myCursorRef.current;
+      if (el) {
+        el.style.left = `${p.x}%`;
+        el.style.top = `${p.y}%`;
+      }
+    });
+  }).current;
 
   return { otherCursors, myCursorRef, myCursorInfo, setMyCursor, myPresenceKey };
 }
