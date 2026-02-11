@@ -35,8 +35,8 @@
   --color-text-muted: #6e6e73;
   --color-accent: #646cff;
   --color-accent-hover: #535bf2;
-  --color-border: #dfdfdf;
-  --color-border-title: #eee;
+  --color-border: #c4c4c8;
+  --color-border-title: #d0d0d4;
   --color-form-border: rgba(0, 0, 0, 0.28);
   --color-form-bg: rgba(0, 0, 0, 0.04);
   --color-stepper-inactive-bg: rgba(0, 0, 0, 0.14);
@@ -60,8 +60,8 @@ html.dark {
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-accent: #646cff;
   --color-accent-hover: #818cf8;
-  --color-border: #292929;
-  --color-border-title: #3a3a3a;
+  --color-border: #3d3d3d;
+  --color-border-title: #4a4a4a;
   --color-form-border: rgba(255, 255, 255, 0.35);
   --color-form-bg: rgba(255, 255, 255, 0.06);
   --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);

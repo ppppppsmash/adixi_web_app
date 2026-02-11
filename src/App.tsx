@@ -21,6 +21,7 @@ import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurvey
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
+import NoiseLoading from "./components/loading/noise-loading";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
@@ -232,7 +233,7 @@ function App() {
   if (loading) {
     return (
       <div className="flex h-[100svh] w-full items-center justify-center text-[var(--color-text)]">
-        読み込み中...
+        <span className="text-2xl font-bold text-[#2b4539]">Loading...</span><NoiseLoading />
       </div>
     )
   }
@@ -250,7 +251,7 @@ function App() {
 
   return (
     <div className="survey-cursor-none">
-      <div className="absolute top-4 right-6 z-50">
+      <div className="absolute top-22 right-6 z-50">
         <AnimatedThemeToggler />
       </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} />
@@ -278,10 +279,6 @@ function App() {
               </div>
             </div>
           )}
-          {/* 上部余白：枠は border のみ（背景は全幅レイヤーで表示） */}
-          <div className={`hidden h-16 w-full shrink-0 justify-center border-t ${borderClass} sm:flex`}>
-            <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
-          </div>
           {/* タイトル帯：border のみ */}
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
@@ -298,7 +295,7 @@ function App() {
                 }
                 gradientSpeed={0.4}
                 strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
-                strokeWidth={2}
+                strokeWidth={1}
               >
                 ADiXi SESSION SURVEY
               </FuzzyText>
