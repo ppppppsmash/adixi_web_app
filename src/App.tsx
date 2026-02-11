@@ -49,7 +49,7 @@ function SurveyStepContent({
 
   return (
     <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-      <h2 className="step-title w-full min-w-0 text-left">
+      <h2 className="step-title w-full min-w-0 text-left mb-6! ml-2!">
         <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
           {item.question}
           {item.isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -287,15 +287,15 @@ function App() {
                 strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
                 strokeWidth={2}
               >
-                ADiXi Survey
+                ADiXi SESSION SURVEY
               </FuzzyText>
             </div>
           </div>
 
           {/* アンケートカード帯：border の内側全体に背景（max-w-[1120px] の枠内） */}
           <div className={`flex w-full flex-1 justify-center border-b ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
-              <div className="w-full max-w-[min(46rem,90%)]">
+            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
                 {/* <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}> */}
                   <div className="flex min-w-0 flex-col gap-y-10 px-6 pt-10 pb-8 w-full sm:px-14">
                     <div className="min-w-0 flex flex-col justify-start">

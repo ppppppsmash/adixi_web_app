@@ -295,6 +295,56 @@ html.dark .stepper-crt::after {
   vertical-align: top;
 }
 
+/* アンケートエリア：ブラウン管風エフェクト（スキャンライン＋ビネット） */
+.survey-area-crt {
+  position: relative;
+  overflow: hidden;
+}
+.survey-area-crt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 85% 85% at 50% 50%,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  z-index: 1;
+}
+html.dark .survey-area-crt::before {
+  background: radial-gradient(
+    ellipse 85% 85% at 50% 50%,
+    transparent 0%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.25) 100%
+  );
+}
+.survey-area-crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 3px
+  );
+  z-index: 2;
+}
+html.dark .survey-area-crt::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 3px
+  );
+}
+
 /* カーソルUI：ネオ風の弱い点滅グロー（--cursor-color で色を指定） */
 @keyframes cursor-neo-pulse {
   0%,
