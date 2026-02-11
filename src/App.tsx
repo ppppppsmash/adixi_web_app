@@ -20,6 +20,7 @@ import {
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, type PublicSurvey, type SurveyItem } from "./api/survey";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
+import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
@@ -265,10 +266,6 @@ function App() {
           <div className={`hidden h-16 w-full shrink-0 justify-center border-t ${borderClass} sm:flex`}>
             <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
-          <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
-            <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
-          </div>
-
           {/* タイトル帯：border のみ */}
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
@@ -289,6 +286,29 @@ function App() {
               >
                 ADiXi SESSION SURVEY
               </FuzzyText>
+            </div>
+          </div>
+
+          {/* タイトル下の border 内：お名前入力者のアイコン（小） */}
+          <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+              {(() => {
+                const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
+                const people: { key: string; name: string; color: string }[] = [];
+                if (myCursorInfo && hasName(myCursorInfo.name))
+                  people.push({ key: "me", name: myCursorInfo.name.trim(), color: myCursorInfo.color });
+                otherCursors.forEach((c) => {
+                  if (hasName(c.name)) people.push({ key: c.key, name: c.name.trim(), color: c.color });
+                });
+                const avatarItems = people.map((p, i) => ({
+                  id: i,
+                  name: p.name,
+                  designation: "参加中",
+                  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
+                }));
+                if (avatarItems.length === 0) return null;
+                return <AnimatedAvatar items={avatarItems} size="sm" />;
+              })()}
             </div>
           </div>
 

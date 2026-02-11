@@ -11,6 +11,7 @@ import {
 
 export const AnimatedAvatar = ({
   items,
+  size = "md",
 }: {
   items: {
     id: number;
@@ -18,7 +19,10 @@ export const AnimatedAvatar = ({
     designation: string;
     image: string;
   }[];
+  size?: "sm" | "md";
 }) => {
+  const sizeClass = size === "sm" ? "h-10 w-10" : "h-14 w-14";
+  const imgSize = size === "sm" ? 40 : 100;
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const springConfig = { stiffness: 100, damping: 15 };
   const x = useMotionValue(0);
@@ -49,7 +53,7 @@ export const AnimatedAvatar = ({
       {items.map((item) => (
         <div
           className="group relative -mr-4"
-          key={item.name}
+          key={item.id}
           onMouseEnter={() => setHoveredIndex(item.id)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
@@ -73,7 +77,7 @@ export const AnimatedAvatar = ({
                   rotate: rotate,
                   whiteSpace: "nowrap",
                 }}
-                className="absolute -top-16 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center justify-center rounded-md bg-black px-4 py-2 text-xs shadow-xl"
+                className={`absolute left-1/2 z-50 flex -translate-x-1/2 flex-col items-center justify-center rounded-md bg-black px-3 py-1.5 text-xs shadow-xl ${size === "sm" ? "-top-12" : "-top-16"}`}
               >
                 <div className="absolute inset-x-10 -bottom-px z-30 h-px w-[20%] bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
                 <div className="absolute -bottom-px left-10 z-30 h-px w-[40%] bg-gradient-to-r from-transparent via-sky-500 to-transparent" />
@@ -86,11 +90,11 @@ export const AnimatedAvatar = ({
           </AnimatePresence>
           <img
             onMouseMove={handleMouseMove}
-            height={100}
-            width={100}
+            height={imgSize}
+            width={imgSize}
             src={item.image}
             alt={item.name}
-            className="relative !m-0 h-14 w-14 rounded-full border-2 border-white object-cover object-top !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105"
+            className={`relative !m-0 rounded-full border-2 border-white object-cover object-top !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105 ${sizeClass}`}
           />
         </div>
       ))}
