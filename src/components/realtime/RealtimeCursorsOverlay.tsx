@@ -26,7 +26,7 @@ function MyCursorVideo({ stream }: { stream: MediaStream }) {
       autoPlay
       playsInline
       muted
-      className="h-12 w-12 rounded-full border-2 border-white object-cover object-center shadow-md"
+      className="h-14 w-14 rounded-full border-2 border-white object-cover object-center shadow-md"
     />
   );
 }

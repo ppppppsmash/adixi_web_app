@@ -24,7 +24,6 @@ import { useCamera } from "./hooks/useCamera";
 import { useWebRTCCameraShare } from "./hooks/useWebRTCCameraShare";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
-import { CameraAvatar } from "./components/ui/avatar/camera-avatar";
 import NoiseLoading from "./components/loading/noise-loading";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
@@ -321,7 +320,7 @@ function App() {
             </div>
           </div>
 
-          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン。カメラONで自分の顔を表示 */}
+          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン（カメラON/OFFに関係なく常にアイコンのみ表示） */}
           <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
@@ -347,26 +346,15 @@ function App() {
                     byName.set(n, { name: n, color: c.color, designation: "参加中" });
                   }
                 });
-                const myName = myCursorInfo && hasName(myCursorInfo.name) ? myCursorInfo.name.trim() : null;
-                const forAvatarList = isCameraOn && myName ? Array.from(byName.entries()).filter(([name]) => name !== myName) : Array.from(byName.entries());
-                const avatarItems = forAvatarList.map(([name, p], i) => {
-                  const key = otherCursors.find((c) => c.name.trim() === name)?.key;
-                  return {
-                    id: i,
-                    name: p.name,
-                    designation: p.designation,
-                    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
-                    stream: key != null ? remoteStreams.get(key) ?? null : null,
-                  };
-                });
-                return (
-                  <>
-                    {isCameraOn && cameraStream && myName && (
-                      <CameraAvatar stream={cameraStream} name={myName} size="sm" />
-                    )}
-                    {avatarItems.length > 0 && <AnimatedAvatar items={avatarItems} size="sm" />}
-                  </>
-                );
+                const forAvatarList = Array.from(byName.entries());
+                const avatarItems = forAvatarList.map(([, p], i) => ({
+                  id: i,
+                  name: p.name,
+                  designation: p.designation,
+                  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
+                  stream: null,
+                }));
+                return avatarItems.length > 0 ? <AnimatedAvatar items={avatarItems} size="sm" /> : null;
               })()}
             </div>
           </div>

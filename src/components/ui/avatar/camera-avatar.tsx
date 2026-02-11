@@ -10,7 +10,7 @@ export function CameraAvatar({
   size?: "sm" | "md";
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const sizeClass = size === "sm" ? "h-10 w-10" : "h-14 w-14";
+  const sizeClass = size === "sm" ? "h-12 w-12" : "h-16 w-16";
 
   useEffect(() => {
     const video = videoRef.current;
