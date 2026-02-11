@@ -16,12 +16,8 @@ export type OtherCursor = {
   name: string;
 };
 
-/** 自クライアントのカーソル表示用（オーバーレイで同じ UI を出すため） */
-export type MyCursor = {
-  cursor: { x: number; y: number };
-  color: string;
-  name: string;
-} | null;
+/** 自クライアントのカーソル表示用（位置は ref で DOM 直接更新するため、色と名前のみ） */
+export type MyCursorInfo = { color: string; name: string } | null;
 
 const CURSOR_COLORS = [
   "#61dca3",
@@ -66,10 +62,8 @@ export function useRealtimeCursors(
   displayName: string = "ゲスト"
 ) {
   const [otherCursors, setOtherCursors] = useState<OtherCursor[]>([]);
-  const [myCursor, setMyCursorState] = useState<MyCursor>(null);
-  const setMyCursorStateRef = useRef(setMyCursorState);
-  setMyCursorStateRef.current = setMyCursorState;
-
+  const [myCursorInfo, setMyCursorInfo] = useState<MyCursorInfo>(null);
+  const myCursorRef = useRef<HTMLDivElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
   const [cursorColor] = useState(() =>
@@ -87,7 +81,7 @@ export function useRealtimeCursors(
   useEffect(() => {
     if (!surveyId) {
       setOtherCursors([]);
-      setMyCursorState(null);
+      setMyCursorInfo(null);
       return;
     }
 
@@ -124,8 +118,8 @@ export function useRealtimeCursors(
             const p = prevByKey.get(o.key);
             return (
               !p ||
-              Math.abs(p.cursor.x - o.cursor.x) > 0.5 ||
-              Math.abs(p.cursor.y - o.cursor.y) > 0.5
+              Math.abs(p.cursor.x - o.cursor.x) > 1.5 ||
+              Math.abs(p.cursor.y - o.cursor.y) > 1.5
             );
           });
         if (changed) {
@@ -137,6 +131,15 @@ export function useRealtimeCursors(
         if (status !== "SUBSCRIBED") return;
         const payload = currentPayloadRef.current;
         await channel.track(payload);
+        setMyCursorInfo({
+          color: payload.color ?? cursorColor,
+          name: payload.name ?? "ゲスト",
+        });
+        const el = myCursorRef.current;
+        if (el) {
+          el.style.left = `${payload.cursor.x}%`;
+          el.style.top = `${payload.cursor.y}%`;
+        }
       });
 
     channelRef.current = channel;
@@ -145,9 +148,9 @@ export function useRealtimeCursors(
       supabase.removeChannel(channel);
       channelRef.current = null;
       setOtherCursors([]);
-      setMyCursorState(null);
+      setMyCursorInfo(null);
     };
-  }, [surveyId]);
+  }, [surveyId, cursorColor]);
 
   // お名前入力が変わったら即時 presence を更新し、自カーソル表示の名前も更新
   useEffect(() => {
@@ -158,7 +161,7 @@ export function useRealtimeCursors(
     };
     currentPayloadRef.current = payload;
     if (ch) ch.track(payload);
-    setMyCursorState((prev) =>
+    setMyCursorInfo((prev) =>
       prev ? { ...prev, name: nameToSend } : null
     );
   }, [nameToSend]);
@@ -172,13 +175,13 @@ export function useRealtimeCursors(
       };
       currentPayloadRef.current = payload;
       if (ch) ch.track(payload);
-      setMyCursorStateRef.current?.({
-        cursor: { x, y },
-        color: payload.color ?? cursorColor,
-        name: payload.name ?? "ゲスト",
-      });
-    }, 80)
+      const el = myCursorRef.current;
+      if (el) {
+        el.style.left = `${x}%`;
+        el.style.top = `${y}%`;
+      }
+    }, 100)
   ).current;
 
-  return { otherCursors, myCursor, setMyCursor };
+  return { otherCursors, myCursorRef, myCursorInfo, setMyCursor };
 }

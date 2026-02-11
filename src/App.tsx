@@ -158,7 +158,7 @@ function App() {
     survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
       ? (answers[survey.items[0].id] as string).trim()
       : ""
-  const { otherCursors, myCursor, setMyCursor } = useRealtimeCursors(
+  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
   )
@@ -242,7 +242,7 @@ function App() {
       <div className="absolute top-4 right-6 z-50">
         <AnimatedThemeToggler />
       </div>
-      <RealtimeCursorsOverlay cursors={otherCursors} myCursor={myCursor} />
+      <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} />
 
       <div className="flex h-[100svh] w-full flex-col overflow-hidden">
         <div className="min-h-0 shrink-0 flex justify-center py-8">
