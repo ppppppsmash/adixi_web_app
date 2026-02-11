@@ -50,22 +50,28 @@ function throttle<A extends unknown[]>(
 /**
  * 同じ surveyId の画面にいる他ユーザーの Presence を購読し、
  * 自クライアントのカーソルを track するためのフック。
+ * displayName は 1 問目（お名前）の入力値で、入力のたびに即時カーソルに反映される。
  * @see https://supabase.com/docs/guides/realtime/presence
  * @see https://supabase.com/docs/guides/realtime/getting_started
  */
-export function useRealtimeCursors(surveyId: string | null) {
+export function useRealtimeCursors(
+  surveyId: string | null,
+  displayName: string = "ゲスト"
+) {
   const [otherCursors, setOtherCursors] = useState<OtherCursor[]>([]);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
   const [cursorColor] = useState(() =>
     CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]
   );
+  const nameToSend = (displayName?.trim() || "ゲスト").slice(0, 20);
   const currentPayloadRef = useRef<CursorPresence>({
     cursor: { x: 0, y: 0 },
     color: cursorColor,
-    name: "ゲスト",
+    name: nameToSend,
   });
   currentPayloadRef.current.color = cursorColor;
+  currentPayloadRef.current.name = nameToSend;
 
   useEffect(() => {
     if (!surveyId) {
@@ -114,8 +120,19 @@ export function useRealtimeCursors(surveyId: string | null) {
     };
   }, [surveyId]);
 
+  // お名前入力が変わったら即時 presence を更新
+  useEffect(() => {
+    const ch = channelRef.current;
+    if (!ch) return;
+    const payload: CursorPresence = {
+      ...currentPayloadRef.current,
+      name: nameToSend,
+    };
+    currentPayloadRef.current = payload;
+    ch.track(payload);
+  }, [nameToSend]);
+
   const setMyCursor = useRef(
-    // eslint-disable-next-line react-hooks/refs
     throttle((x: number, y: number) => {
       const ch = channelRef.current;
       if (!ch) return;

@@ -36,13 +36,16 @@ function SurveyStepContent({
   value,
   onChange,
   isDark,
+  isFirstItem,
 }: {
   item: SurveyItem
   value: string | string[]
   onChange: (v: string | string[]) => void
   isDark: boolean
+  isFirstItem?: boolean
 }) {
   const options = item.options?.split(',').map((o) => o.trim()).filter(Boolean) ?? []
+  const namePlaceholder = isFirstItem ? "お名前を入力" : "入力してください"
 
   return (
     <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
@@ -59,7 +62,7 @@ function SurveyStepContent({
             type="text"
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="入力してください"
+            placeholder={namePlaceholder}
             className="form-input-base"
           />
         </Field>
@@ -70,7 +73,7 @@ function SurveyStepContent({
           <Textarea
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="入力してください"
+            placeholder={namePlaceholder}
             rows={4}
             className="form-input-base resize-y min-h-[100px]"
           />
@@ -151,7 +154,14 @@ function App() {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const surveyId = getSurveyId()
-  const { otherCursors, setMyCursor } = useRealtimeCursors(survey?.id ?? null)
+  const cursorDisplayName =
+    survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
+      ? (answers[survey.items[0].id] as string).trim()
+      : ""
+  const { otherCursors, setMyCursor } = useRealtimeCursors(
+    survey?.id ?? null,
+    cursorDisplayName
+  )
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -262,13 +272,14 @@ function App() {
                       </Button>
                     )}
                   >
-                    {survey.items.map((item) => (
+                    {survey.items.map((item, index) => (
                       <Step key={item.id}>
                         <SurveyStepContent
                           item={item}
                           value={answers[item.id]}
                           onChange={(v) => setAnswer(item.id, v)}
                           isDark={isDark}
+                          isFirstItem={index === 0}
                         />
                       </Step>
                     ))}
