@@ -237,6 +237,8 @@ function App() {
     )
   }
 
+  const borderClass = 'border-[var(--color-border)]'
+
   return (
     <div className="survey-cursor-none">
       <div className="absolute top-4 right-6 z-50">
@@ -244,92 +246,116 @@ function App() {
       </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} />
 
-      <div className="relative h-[100svh] w-full overflow-hidden">
-        {/* アンケートカードだけを画面の上下左右中央に配置 */}
-        <div className="absolute inset-0 flex items-center justify-center z-0">
-          <div className="w-[46svw] max-w-full">
-            <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}>
-              <div className="flex min-w-0 flex-col pt-12 w-full gap-y-10 px-14">
-                <div className="min-w-0 flex flex-col justify-start">
-                  <Stepper
-                    initialStep={1}
-                    progressBarOnly
-                    onStepChange={() => {}}
-                    contentClassName="mt-10"
-                    onFinalStepCompleted={handleSubmit}
-                    backButtonText="前へ"
-                    nextButtonText="次へ"
-                    renderBackButton={({ onClick, children }) => (
-                      <Button type="button" onClick={onClick} className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
-                        {children}
-                      </Button>
-                    )}
-                    renderNextButton={({ onClick, children }) => (
-                      <Button type="button" onClick={onClick} className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
-                        {children}
-                      </Button>
-                    )}
-                  >
-                    {survey.items.map((item, index) => (
-                      <Step key={item.id}>
-                        <SurveyStepContent
-                          item={item}
-                          value={answers[item.id]}
-                          onChange={(v) => setAnswer(item.id, v)}
-                          isDark={isDark}
-                          isFirstItem={index === 0}
-                        />
-                      </Step>
-                    ))}
-                  </Stepper>
-                  {submitStatus === 'sending' && (
-                    <p className="mt-6 text-center text-[var(--color-text-muted)]">送信中...</p>
-                  )}
-                  {submitStatus === 'success' && (
-                    <p className="mt-6 text-center text-[var(--color-text)] font-medium">
-                      送信しました。ありがとうございます。
-                    </p>
-                  )}
-                  {submitStatus === 'error' && (
-                    <p className="mt-6 text-center text-red-500">
-                      送信に失敗しました。{submitError && `（${submitError}）`}
-                    </p>
-                  )}
-                </div>
+      {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ */}
+      <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <LetterGlitch
+            glitchSpeed={50}
+            centerVignette={isDark}
+            outerVignette={true}
+            smooth={true}
+            glitchColors={GLITCH_COLORS}
+            characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'}
+            adixiLoopIntervalMs={10000}
+          />
+        </div>
+        <div className="absolute inset-0 z-[1] bg-[var(--color-bg-center)]" aria-hidden />
+        <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
+          {/* 上部余白：枠は border のみ（背景は全幅レイヤーで表示） */}
+          <div className={`hidden h-16 w-full shrink-0 justify-center border-t ${borderClass} sm:flex`}>
+            <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
+          </div>
+          <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
+            <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
+          </div>
+
+          {/* タイトル帯：border のみ */}
+          <div className={`flex w-full justify-center border-y ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <FuzzyText
+                baseIntensity={0.2}
+                hoverIntensity={0.5}
+                fontSize="clamp(2rem, 5vw, 4rem)"
+                enableHover
+                color={isDark ? '#61dca3' : '#FFF'}
+                gradient={
+                  isDark
+                    ? ['#2b4539', '#61dca3', '#61b3dc']
+                    : ['#0d6b42', '#61dca3', '#b8f0d8', '#fff']
+                }
+                gradientSpeed={0.4}
+                strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
+                strokeWidth={2}
+              >
+                ADiXi Survey
+              </FuzzyText>
+            </div>
+          </div>
+
+          {/* アンケートカード帯：border の内側全体に背景（max-w-[1120px] の枠内） */}
+          <div className={`flex w-full flex-1 justify-center border-b ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <div className="w-full max-w-[min(46rem,90%)]">
+                {/* <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}> */}
+                  <div className="flex min-w-0 flex-col gap-y-10 px-6 pt-10 pb-8 w-full sm:px-14">
+                    <div className="min-w-0 flex flex-col justify-start">
+                      <Stepper
+                        initialStep={1}
+                        progressBarOnly
+                        onStepChange={() => {}}
+                        contentClassName="mt-10"
+                        onFinalStepCompleted={handleSubmit}
+                        backButtonText="前へ"
+                        nextButtonText="次へ"
+                        renderBackButton={({ onClick, children }) => (
+                          <Button type="button" onClick={onClick} className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                            {children}
+                          </Button>
+                        )}
+                        renderNextButton={({ onClick, children }) => (
+                          <Button type="button" onClick={onClick} className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                            {children}
+                          </Button>
+                        )}
+                      >
+                        {survey.items.map((item, index) => (
+                          <Step key={item.id}>
+                            <SurveyStepContent
+                              item={item}
+                              value={answers[item.id]}
+                              onChange={(v) => setAnswer(item.id, v)}
+                              isDark={isDark}
+                              isFirstItem={index === 0}
+                            />
+                          </Step>
+                        ))}
+                      </Stepper>
+                      {submitStatus === 'sending' && (
+                        <p className="mt-6 text-center text-[var(--color-text-muted)]">送信中...</p>
+                      )}
+                      {submitStatus === 'success' && (
+                        <p className="mt-6 text-center text-[var(--color-text)] font-medium">
+                          送信しました。ありがとうございます。
+                        </p>
+                      )}
+                      {submitStatus === 'error' && (
+                        <p className="mt-6 text-center text-red-500">
+                          送信に失敗しました。{submitError && `（${submitError}）`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                {/* </LiquidGlass> */}
               </div>
-            </LiquidGlass>
+            </div>
+          </div>
+
+          {/* 下部余白：他のエリアと同じく border のみ・常に表示 */}
+          <div className={`flex h-16 w-full flex-grow justify-center border-b ${borderClass}`}>
+            <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
         </div>
-        {/* タイトルは上部に重ねて表示（中央寄せの邪魔をしない） */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-8">
-          <FuzzyText
-            baseIntensity={0.2}
-            hoverIntensity={0.5}
-            fontSize="4rem"
-            enableHover
-            color={isDark ? '#61dca3' : '#FFF'}
-            gradient={
-              isDark
-                ? ['#2b4539', '#61dca3', '#61b3dc']
-                : ['#0d6b42', '#61dca3', '#b8f0d8', '#fff']
-            }
-            gradientSpeed={0.4}
-            strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
-            strokeWidth={2}
-          >
-            ADiXi Survey
-          </FuzzyText>
-        </div>
       </div>
-      <LetterGlitch
-        glitchSpeed={50}
-        centerVignette={isDark}
-        outerVignette={true}
-        smooth={true}
-        glitchColors={GLITCH_COLORS}
-        characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'}
-        adixiLoopIntervalMs={10000}
-      />
     </div>
   )
 }

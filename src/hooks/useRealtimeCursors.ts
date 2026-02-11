@@ -26,14 +26,57 @@ export type OtherCursor = {
 /** 自クライアントのカーソル表示用（位置は ref で DOM 直接更新するため、色と名前のみ） */
 export type MyCursorInfo = { color: string; name: string } | null;
 
-const CURSOR_COLORS = [
-  "#61dca3",
-  "#61b3dc",
-  "#dc61b3",
-  "#dca361",
-  "#b361dc",
-  "#61dcb3",
-];
+/**
+ * ランダムなカーソル色を1つ生成する。
+ * HSL で彩度・明度を固定し、白文字が読みやすいトーンにしている。
+ */
+function randomCursorColor(): string {
+  const h = Math.floor(Math.random() * 360);
+  const s = 65 + Math.floor(Math.random() * 25); // 65–90%
+  const l = 42 + Math.floor(Math.random() * 18); // 42–60%
+  return hslToHex(h, s, l);
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  s /= 100;
+  l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (h < 60) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (h < 120) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (h < 180) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (h < 240) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (h < 300) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+  const toHex = (n: number) =>
+    Math.round((n + m) * 255)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
 
 function throttle<A extends unknown[]>(
   fn: (...args: A) => void,
@@ -58,9 +101,6 @@ function throttle<A extends unknown[]>(
 }
 
 /**
- * 同じ surveyId の画面にいる他ユーザーの Presence を購読し、
- * 自クライアントのカーソルを track するためのフック。
- * displayName は 1 問目（お名前）の入力値で、入力のたびに即時カーソルに反映される。
  * @see https://supabase.com/docs/guides/realtime/presence
  * @see https://supabase.com/docs/guides/realtime/getting_started
  */
@@ -73,9 +113,7 @@ export function useRealtimeCursors(
   const myCursorRef = useRef<HTMLDivElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
-  const [cursorColor] = useState(() =>
-    CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)]
-  );
+  const [cursorColor] = useState(() => randomCursorColor());
   const nameToSend = (displayName?.trim() || "ゲスト").slice(0, 20);
   const currentPayloadRef = useRef<CursorPresence>({
     cursor: { x: 0, y: 0 },

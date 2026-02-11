@@ -24,15 +24,18 @@
   -moz-osx-font-smoothing: grayscale;
   --font-hacker-neo: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
 
-  /* Light mode (default) */
+  /* Light mode (default) - Cover.vue の中央背景に合わせる */
   color-scheme: light;
-  /* --color-bg: #f5f5f7; */
-  --color-bg-elevated: #ffffff;
+  --color-bg: #fff;
+  --color-bg-center: rgba(245, 245, 248, 0.62);
+  --color-bg-elevated: #fdfdfd;
+  /* アンケート border 内：目立たせつつ LetterGlitch が透ける */
+  --color-bg-survey: rgba(253, 253, 253, 0.82);
   --color-text: #1d1d1f;
   --color-text-muted: #6e6e73;
   --color-accent: #646cff;
   --color-accent-hover: #535bf2;
-  --color-border: rgba(0, 0, 0, 0.1);
+  --color-border: #dfdfdf;
   --color-form-border: rgba(0, 0, 0, 0.28);
   --color-form-bg: rgba(0, 0, 0, 0.04);
   --color-stepper-inactive-bg: rgba(0, 0, 0, 0.14);
@@ -47,13 +50,16 @@
 
 html.dark {
   color-scheme: dark;
-  /* --color-bg: #0d0d0f; */
-  --color-bg-elevated: #1a1a1a;
+  /* Cover.vue の中央背景に合わせる (--j-bg-base: #100F0F) */
+  --color-bg: #100F0F;
+  --color-bg-center: rgba(28, 28, 30, 0.58);
+  --color-bg-elevated: #161515;
+  --color-bg-survey: rgba(22, 21, 21, 0.82);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-accent: #646cff;
   --color-accent-hover: #818cf8;
-  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border: #292929;
   --color-form-border: rgba(255, 255, 255, 0.35);
   --color-form-bg: rgba(255, 255, 255, 0.06);
   --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);
