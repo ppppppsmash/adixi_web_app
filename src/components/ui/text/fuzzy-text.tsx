@@ -19,6 +19,10 @@ interface FuzzyTextProps {
   glitchDuration?: number;
   gradient?: string[] | null;
   letterSpacing?: number;
+  /** 文字の境界線（ストローク）色。指定時は strokeWidth も必要 */
+  strokeColor?: string | null;
+  /** 境界線の太さ（px）。0 または未指定でストロークなし */
+  strokeWidth?: number;
   className?: string;
 }
 
@@ -41,6 +45,8 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
   glitchDuration = 200,
   gradient = null,
   letterSpacing = 0,
+  strokeColor = null,
+  strokeWidth = 0,
   className = ''
 }) => {
   const canvasRef = useRef<HTMLCanvasElement & { cleanupFuzzyText?: () => void }>(null);
@@ -111,15 +117,44 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
       const textBoundingWidth = Math.ceil(letterSpacing !== 0 ? totalWidth : actualLeft + actualRight);
       const tightHeight = Math.ceil(actualAscent + actualDescent);
 
+      const hasStroke = strokeWidth > 0 && strokeColor;
       const extraWidthBuffer = 4;
-      const offscreenWidth = textBoundingWidth + extraWidthBuffer;
+      const effectiveStrokeWidth = hasStroke
+        ? Math.max(1, strokeWidth * (numericFontSize / 32))
+        : 0;
+      const strokePadding = hasStroke ? Math.ceil(effectiveStrokeWidth * 3) : 0;
+      const offscreenWidth = textBoundingWidth + extraWidthBuffer + strokePadding;
+      const offscreenHeight = tightHeight + strokePadding;
 
       offscreen.width = offscreenWidth;
-      offscreen.height = tightHeight;
+      offscreen.height = offscreenHeight;
 
-      const xOffset = extraWidthBuffer / 2;
+      const xOffset = extraWidthBuffer / 2 + (hasStroke ? effectiveStrokeWidth : 0);
+      const yOffset = actualAscent + (hasStroke ? effectiveStrokeWidth : 0);
       offCtx.font = `${fontWeight} ${fontSizeStr} ${computedFontFamily}`;
       offCtx.textBaseline = 'alphabetic';
+
+      const drawText = (fillOrStroke: 'fill' | 'stroke') => {
+        if (letterSpacing !== 0) {
+          let xPos = xOffset - actualLeft;
+          for (const char of text) {
+            if (fillOrStroke === 'stroke') offCtx.strokeText(char, xPos, yOffset);
+            else offCtx.fillText(char, xPos, yOffset);
+            xPos += offCtx.measureText(char).width + letterSpacing;
+          }
+        } else {
+          if (fillOrStroke === 'stroke') offCtx.strokeText(text, xOffset - actualLeft, yOffset);
+          else offCtx.fillText(text, xOffset - actualLeft, yOffset);
+        }
+      };
+
+      if (hasStroke) {
+        offCtx.strokeStyle = strokeColor;
+        offCtx.lineWidth = effectiveStrokeWidth;
+        offCtx.lineJoin = 'round';
+        offCtx.lineCap = 'round';
+        drawText('stroke');
+      }
 
       if (gradient && Array.isArray(gradient) && gradient.length >= 2) {
         const grad = offCtx.createLinearGradient(0, 0, offscreenWidth, 0);
@@ -128,24 +163,15 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
       } else {
         offCtx.fillStyle = color;
       }
-
-      if (letterSpacing !== 0) {
-        let xPos = xOffset;
-        for (const char of text) {
-          offCtx.fillText(char, xPos, actualAscent);
-          xPos += offCtx.measureText(char).width + letterSpacing;
-        }
-      } else {
-        offCtx.fillText(text, xOffset - actualLeft, actualAscent);
-      }
+      drawText('fill');
 
       const horizontalMargin = Math.ceil(fuzzRange * 0.6);
       const verticalMargin = direction === 'vertical' || direction === 'both' ? Math.ceil(fuzzRange * 0.3) : 0;
       canvas.width = offscreenWidth + horizontalMargin * 2;
-      canvas.height = tightHeight + verticalMargin * 2;
+      canvas.height = offscreenHeight + verticalMargin * 2;
       ctx.translate(horizontalMargin, verticalMargin);
 
-      const interactiveLeft = horizontalMargin + xOffset;
+      const interactiveLeft = horizontalMargin + xOffset - actualLeft;
       const interactiveTop = verticalMargin;
       const interactiveRight = interactiveLeft + textBoundingWidth;
       const interactiveBottom = interactiveTop + tightHeight;
@@ -185,7 +211,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
           -horizontalMargin,
           -verticalMargin,
           offscreenWidth + horizontalMargin * 2,
-          tightHeight + verticalMargin * 2
+          offscreenHeight + verticalMargin * 2
         );
 
         if (isClicking) {
@@ -209,7 +235,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
           currentIntensity = targetIntensity;
         }
 
-        for (let j = 0; j < tightHeight; j++) {
+        for (let j = 0; j < offscreenHeight; j++) {
           let dx = 0,
             dy = 0;
           if (direction === 'horizontal' || direction === 'both') {
@@ -323,7 +349,9 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
     glitchInterval,
     glitchDuration,
     gradient,
-    letterSpacing
+    letterSpacing,
+    strokeColor,
+    strokeWidth
   ]);
 
   return <canvas ref={canvasRef} className={className} />;

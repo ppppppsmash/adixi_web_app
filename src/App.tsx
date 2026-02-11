@@ -244,19 +244,9 @@ function App() {
       </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} />
 
-      <div className="flex h-[100svh] w-full flex-col overflow-hidden">
-        <div className="min-h-0 shrink-0 flex justify-center py-8">
-          <FuzzyText
-            baseIntensity={0.2}
-            hoverIntensity={0.5}
-            fontSize="4rem"
-            enableHover
-            color={isDark ? '#61dca3' : '#FFF'}
-          >
-            ADiXi Survey
-          </FuzzyText>
-        </div>
-        <div className="h-[70svh] flex-1 w-full flex justify-center items-center relative z-0 overflow-hidden">
+      <div className="relative h-[100svh] w-full overflow-hidden">
+        {/* アンケートカードだけを画面の上下左右中央に配置 */}
+        <div className="absolute inset-0 flex items-center justify-center z-0">
           <div className="w-[46svw] max-w-full">
             <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}>
               <div className="flex min-w-0 flex-col pt-12 w-full gap-y-10 px-14">
@@ -309,6 +299,25 @@ function App() {
               </div>
             </LiquidGlass>
           </div>
+        </div>
+        {/* タイトルは上部に重ねて表示（中央寄せの邪魔をしない） */}
+        <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-8">
+          <FuzzyText
+            baseIntensity={0.2}
+            hoverIntensity={0.5}
+            fontSize="4rem"
+            enableHover
+            color={isDark ? '#61dca3' : '#FFF'}
+            gradient={
+              isDark
+                ? ['#2b4539', '#61dca3', '#61b3dc']
+                : ['#0d6b42', '#61dca3', '#b8f0d8', '#fff']
+            }
+            strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
+            strokeWidth={2}
+          >
+            ADiXi Survey
+          </FuzzyText>
         </div>
       </div>
       <LetterGlitch
