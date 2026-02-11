@@ -313,6 +313,7 @@ function App() {
                 ? ['#2b4539', '#61dca3', '#61b3dc']
                 : ['#0d6b42', '#61dca3', '#b8f0d8', '#fff']
             }
+            gradientSpeed={0.4}
             strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
             strokeWidth={2}
           >

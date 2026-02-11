@@ -1,5 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 
+function parseHex(s: string): [number, number, number] {
+  const m = s.replace(/^#/, '').match(/.{2}/g);
+  if (m && m.length >= 3) return [parseInt(m[0], 16), parseInt(m[1], 16), parseInt(m[2], 16)];
+  return [0, 0, 0];
+}
+function toHex(r: number, g: number, b: number): string {
+  return '#' + [r, g, b].map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+}
+function lerpColor(a: string, b: string, t: number): string {
+  const [r1, g1, b1] = a.startsWith('#') ? parseHex(a) : [0, 0, 0];
+  const [r2, g2, b2] = b.startsWith('#') ? parseHex(b) : [0, 0, 0];
+  return toHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
+}
+
 interface FuzzyTextProps {
   children: React.ReactNode;
   fontSize?: number | string;
@@ -18,6 +32,8 @@ interface FuzzyTextProps {
   glitchInterval?: number;
   glitchDuration?: number;
   gradient?: string[] | null;
+  /** グラデーションを流す速度。0 で静止、0.5 で約2秒で1周など */
+  gradientSpeed?: number;
   letterSpacing?: number;
   /** 文字の境界線（ストローク）色。指定時は strokeWidth も必要 */
   strokeColor?: string | null;
@@ -44,6 +60,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
   glitchInterval = 2000,
   glitchDuration = 200,
   gradient = null,
+  gradientSpeed = 0,
   letterSpacing = 0,
   strokeColor = null,
   strokeWidth = 0,
@@ -148,22 +165,36 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
         }
       };
 
-      if (hasStroke) {
-        offCtx.strokeStyle = strokeColor;
-        offCtx.lineWidth = effectiveStrokeWidth;
-        offCtx.lineJoin = 'round';
-        offCtx.lineCap = 'round';
-        drawText('stroke');
-      }
+      const drawOffscreen = (phase: number) => {
+        offCtx.clearRect(0, 0, offscreenWidth, offscreenHeight);
+        if (hasStroke) {
+          offCtx.strokeStyle = strokeColor;
+          offCtx.lineWidth = effectiveStrokeWidth;
+          offCtx.lineJoin = 'round';
+          offCtx.lineCap = 'round';
+          drawText('stroke');
+        }
+        if (gradient && Array.isArray(gradient) && gradient.length >= 2) {
+          const n = gradient.length;
+          const grad = offCtx.createLinearGradient(0, 0, offscreenWidth, 0);
+          const shift = phase * n;
+          const base = Math.floor(shift) % n;
+          const t = shift % 1;
+          for (let i = 0; i < n; i++) {
+            const c0 = gradient[(i + base) % n];
+            const c1 = gradient[(i + base + 1) % n];
+            const color = t < 1e-6 ? c0 : lerpColor(c0, c1, t);
+            grad.addColorStop(i / (n - 1), color);
+          }
+          offCtx.fillStyle = grad;
+          drawText('fill');
+        } else {
+          offCtx.fillStyle = color;
+          drawText('fill');
+        }
+      };
 
-      if (gradient && Array.isArray(gradient) && gradient.length >= 2) {
-        const grad = offCtx.createLinearGradient(0, 0, offscreenWidth, 0);
-        gradient.forEach((c, i) => grad.addColorStop(i / (gradient.length - 1), c));
-        offCtx.fillStyle = grad;
-      } else {
-        offCtx.fillStyle = color;
-      }
-      drawText('fill');
+      drawOffscreen(0);
 
       const horizontalMargin = Math.ceil(fuzzRange * 0.6);
       const verticalMargin = direction === 'vertical' || direction === 'both' ? Math.ceil(fuzzRange * 0.3) : 0;
@@ -206,6 +237,11 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
           return;
         }
         lastFrameTime = timestamp;
+
+        if (gradientSpeed > 0 && gradient && gradient.length >= 2) {
+          const phase = ((timestamp / 1000) * gradientSpeed) % 1;
+          drawOffscreen(phase);
+        }
 
         ctx.clearRect(
           -horizontalMargin,
@@ -349,6 +385,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
     glitchInterval,
     glitchDuration,
     gradient,
+    gradientSpeed,
     letterSpacing,
     strokeColor,
     strokeWidth
