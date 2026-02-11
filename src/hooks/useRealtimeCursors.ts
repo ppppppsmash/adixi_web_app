@@ -8,6 +8,8 @@ export type UseRealtimeCursorsReturn = {
   myCursorRef: RefObject<HTMLDivElement | null>;
   myCursorInfo: MyCursorInfo;
   setMyCursor: (x: number, y: number) => void;
+  /** 自クライアントの presence キー（WebRTC シグナリング等で使用） */
+  myPresenceKey: string | null;
 };
 
 export type CursorPresence = {
@@ -113,6 +115,7 @@ export function useRealtimeCursors(
   const myCursorRef = useRef<HTMLDivElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
+  const [myPresenceKey, setMyPresenceKey] = useState<string | null>(null);
   const [cursorColor] = useState(() => randomCursorColor());
   const nameToSend = (displayName?.trim() || "ゲスト").slice(0, 20);
   const currentPayloadRef = useRef<CursorPresence>({
@@ -176,6 +179,7 @@ export function useRealtimeCursors(
         if (status !== "SUBSCRIBED") return;
         const payload = currentPayloadRef.current;
         await channel.track(payload);
+        setMyPresenceKey(myKeyRef.current);
         setMyCursorInfo({
           color: payload.color ?? cursorColor,
           name: payload.name ?? "ゲスト",
@@ -194,6 +198,7 @@ export function useRealtimeCursors(
       channelRef.current = null;
       setOtherCursors([]);
       setMyCursorInfo(null);
+      setMyPresenceKey(null);
     };
   }, [surveyId, cursorColor]);
 
@@ -228,5 +233,5 @@ export function useRealtimeCursors(
     }, 100)
   ).current;
 
-  return { otherCursors, myCursorRef, myCursorInfo, setMyCursor };
+  return { otherCursors, myCursorRef, myCursorInfo, setMyCursor, myPresenceKey };
 }

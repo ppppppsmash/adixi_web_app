@@ -103,6 +103,7 @@ export async function getLatestPublicSurvey(): Promise<PublicSurvey | null> {
 /**
  * 回答を DB に送信（kh-project の survey_responses / survey_response_items スキーマ準拠）。
  * 送信内容: survey_responses → survey_id, respondent_name（null 可） / survey_response_items → response_id, survey_item_id, answer（文字列、配列は JSON 文字列）。
+ * カメラ映像は送信・保存しない（プライベート）。
  * RPC を使うため RLS をバイパス。Supabase SQL Editor で supabase-rpc-submit-response.sql を実行すること。
  */
 export async function submitSurveyResponse(

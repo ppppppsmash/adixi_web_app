@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
+import { Camera, CameraOff } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
 import FuzzyText from "./components/ui/text/fuzzy-text";
@@ -19,8 +20,11 @@ import {
 } from '@headlessui/react'
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurveyRespondentNames, type PublicSurvey, type SurveyItem } from "./api/survey";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
+import { useCamera } from "./hooks/useCamera";
+import { useWebRTCCameraShare } from "./hooks/useWebRTCCameraShare";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
+import { CameraAvatar } from "./components/ui/avatar/camera-avatar";
 import NoiseLoading from "./components/loading/noise-loading";
 
 const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
@@ -161,9 +165,16 @@ function App() {
     survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
       ? (answers[survey.items[0].id] as string).trim()
       : ""
-  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor } = useRealtimeCursors(
+  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor, myPresenceKey } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
+  )
+  const { stream: cameraStream, start: startCamera, stop: stopCamera, isOn: isCameraOn } = useCamera()
+  const { remoteStreams } = useWebRTCCameraShare(
+    survey?.id ?? null,
+    myPresenceKey,
+    otherCursors.map((c) => c.key),
+    isCameraOn ? cameraStream ?? null : null
   )
 
   useEffect(() => {
@@ -251,10 +262,18 @@ function App() {
 
   return (
     <div className="survey-cursor-none">
-      <div className="absolute top-22 right-6 z-50">
+      <div className="absolute top-12 right-6 z-50 flex flex-col items-end gap-3">
         <AnimatedThemeToggler />
+        <button
+          type="button"
+          onClick={() => (isCameraOn ? stopCamera() : startCamera())}
+          className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
+          title={isCameraOn ? "カメラOFF" : "カメラON"}
+        >
+          {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+        </button>
       </div>
-      <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} />
+      <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} cameraStream={isCameraOn ? cameraStream ?? null : null} />
 
       {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ */}
       <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden">
@@ -302,9 +321,9 @@ function App() {
             </div>
           </div>
 
-          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン（リロード後も送信済みは表示される） */}
+          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン。カメラONで自分の顔を表示 */}
           <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
                 const AVATAR_COLORS = ["61dca3", "61b3dc", "dc61b3", "dca361", "b361dc", "8b5cf6", "f59e0b", "ec4899", "14b8a6", "6366f1"];
                 const colorForName = (name: string) => {
@@ -328,14 +347,26 @@ function App() {
                     byName.set(n, { name: n, color: c.color, designation: "参加中" });
                   }
                 });
-                const avatarItems = Array.from(byName.entries()).map(([_, p], i) => ({
-                  id: i,
-                  name: p.name,
-                  designation: p.designation,
-                  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
-                }));
-                if (avatarItems.length === 0) return null;
-                return <AnimatedAvatar items={avatarItems} size="sm" />;
+                const myName = myCursorInfo && hasName(myCursorInfo.name) ? myCursorInfo.name.trim() : null;
+                const forAvatarList = isCameraOn && myName ? Array.from(byName.entries()).filter(([name]) => name !== myName) : Array.from(byName.entries());
+                const avatarItems = forAvatarList.map(([name, p], i) => {
+                  const key = otherCursors.find((c) => c.name.trim() === name)?.key;
+                  return {
+                    id: i,
+                    name: p.name,
+                    designation: p.designation,
+                    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
+                    stream: key != null ? remoteStreams.get(key) ?? null : null,
+                  };
+                });
+                return (
+                  <>
+                    {isCameraOn && cameraStream && myName && (
+                      <CameraAvatar stream={cameraStream} name={myName} size="sm" />
+                    )}
+                    {avatarItems.length > 0 && <AnimatedAvatar items={avatarItems} size="sm" />}
+                  </>
+                );
               })()}
             </div>
           </div>
@@ -398,7 +429,6 @@ function App() {
             </div>
           </div>
 
-          {/* 下部余白：他のエリアと同じく border のみ・常に表示 */}
           <div className={`flex h-16 w-full flex-grow justify-center border-b ${borderClass}`}>
             <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
