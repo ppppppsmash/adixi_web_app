@@ -1,51 +1,91 @@
+import { motion, AnimatePresence } from "motion/react";
 import type { OtherCursor } from "../../hooks/useRealtimeCursors";
 
 type Props = {
   cursors: OtherCursor[];
 };
 
-/** 他ユーザーのカーソルを表示するオーバーレイ（pointer-events: none でクリックは透過） */
+/** following-pointer と同じ UI で他ユーザーのカーソルを表示（pointer-events: none） */
 export function RealtimeCursorsOverlay({ cursors }: Props) {
-  if (cursors.length === 0) return null;
-
   return (
     <div
       className="pointer-events-none fixed inset-0 z-[100]"
       aria-hidden
     >
-      {cursors.map(({ key, cursor, color, name }) => (
-        <div
-          key={key}
-          className="absolute transition-[left,top] duration-75 ease-out"
-          style={{
-            left: `${cursor.x}%`,
-            top: `${cursor.y}%`,
-            transform: "translate(-2px, -2px)",
-          }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="drop-shadow-md"
-            style={{ color }}
-          >
-            <path
-              d="M5 3L5 21L10 14L14 21L16 19L12 12L20 10L5 3Z"
-              fill="currentColor"
-              stroke="rgba(0,0,0,0.3)"
-              strokeWidth="1"
-            />
-          </svg>
-          <span
-            className="ml-4 -mt-5 block rounded px-2 py-0.5 text-xs font-medium text-white shadow"
-            style={{ backgroundColor: color, maxWidth: "120px" }}
-          >
-            {name}
-          </span>
-        </div>
-      ))}
+      <AnimatePresence>
+        {cursors.map(({ key, cursor, color, name }) => (
+          <RemoteCursor
+            key={key}
+            xPercent={cursor.x}
+            yPercent={cursor.y}
+            color={color}
+            name={name}
+          />
+        ))}
+      </AnimatePresence>
     </div>
+  );
+}
+
+/** following-pointer と同じ矢印＋ラベルスタイルのリモートカーソル */
+function RemoteCursor({
+  xPercent,
+  yPercent,
+  color,
+  name,
+}: {
+  xPercent: number;
+  yPercent: number;
+  color: string;
+  name: string;
+}) {
+  return (
+    <motion.div
+      className="absolute z-50 h-4 w-4"
+      style={{ pointerEvents: "none" }}
+      initial={{
+        left: `${xPercent}%`,
+        top: `${yPercent}%`,
+        scale: 0.5,
+        opacity: 0,
+      }}
+      animate={{
+        left: `${xPercent}%`,
+        top: `${yPercent}%`,
+        scale: 1,
+        opacity: 1,
+      }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{
+        left: { type: "spring", stiffness: 500, damping: 28 },
+        top: { type: "spring", stiffness: 500, damping: 28 },
+        scale: { duration: 0.2 },
+        opacity: { duration: 0.2 },
+      }}
+    >
+      <svg
+        stroke="currentColor"
+        fill="currentColor"
+        strokeWidth="1"
+        viewBox="0 0 16 16"
+        className="h-6 w-6 -translate-x-[12px] -translate-y-[10px] -rotate-[70deg] drop-shadow-md"
+        style={{ color }}
+        height="1em"
+        width="1em"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z" />
+      </svg>
+      <motion.div
+        style={{ backgroundColor: color }}
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.5, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+      >
+        {name}
+      </motion.div>
+    </motion.div>
   );
 }
