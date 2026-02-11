@@ -128,3 +128,31 @@ export async function submitSurveyResponse(
 
   return { responseId: responseId as string };
 }
+
+/**
+ * 送信済み回答者の名前一覧を取得（公開済みアンケートのみ）。
+ * RPC get_survey_respondent_names を使用（Supabase で supabase-rpc-get-respondent-names.sql を実行すること）。
+ */
+export async function getSurveyRespondentNames(surveyId: string): Promise<string[]> {
+  const { data, error } = await supabase.rpc("get_survey_respondent_names", {
+    p_survey_id: surveyId,
+  });
+
+  if (error) {
+    console.error("[getSurveyRespondentNames] RPC error:", error.message, error);
+    return [];
+  }
+
+  const raw = (data ?? []) as unknown[];
+  const names: string[] = [];
+  for (const row of raw) {
+    if (typeof row === "string" && row.trim() !== "") {
+      names.push(row.trim());
+    } else if (row && typeof row === "object" && !Array.isArray(row)) {
+      const o = row as Record<string, unknown>;
+      const v = o.respondent_name ?? o.name ?? Object.values(o)[0];
+      if (typeof v === "string" && v.trim() !== "") names.push(v.trim());
+    }
+  }
+  return names;
+}

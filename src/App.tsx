@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
-import { LiquidGlass } from '@liquidglass/react';
+// import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
 import FuzzyText from "./components/ui/text/fuzzy-text";
@@ -17,7 +17,7 @@ import {
   Fieldset,
   Legend,
 } from '@headlessui/react'
-import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, type PublicSurvey, type SurveyItem } from "./api/survey";
+import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurveyRespondentNames, type PublicSurvey, type SurveyItem } from "./api/survey";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
@@ -153,6 +153,7 @@ function App() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submittedNames, setSubmittedNames] = useState<string[]>([])
 
   const surveyId = getSurveyId()
   const cursorDisplayName =
@@ -195,6 +196,11 @@ function App() {
     return () => { cancelled = true }
   }, [surveyId])
 
+  useEffect(() => {
+    if (!survey?.id) return
+    getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => setSubmittedNames([]))
+  }, [survey?.id])
+
   const setAnswer = (itemId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [itemId]: value }))
   }
@@ -211,9 +217,11 @@ function App() {
     if (!survey || submitStatus === 'sending') return
     setSubmitStatus('sending')
     setSubmitError(null)
+    const respondentName = survey.items?.[0] ? (answers[survey.items[0].id] as string)?.trim() || undefined : undefined
     try {
-      await submitSurveyResponse(survey.id, answers)
+      await submitSurveyResponse(survey.id, answers, respondentName)
       setSubmitStatus('success')
+      getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => {})
     } catch (e) {
       setSubmitStatus('error')
       setSubmitError(e instanceof Error ? e.message : String(e))
@@ -262,6 +270,14 @@ function App() {
         </div>
         <div className="absolute inset-0 z-[1] bg-[var(--color-bg-center)]" aria-hidden />
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
+          {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
+          {submittedNames.length > 0 && (
+            <div className={`flex w-full shrink-0 justify-center border-t ${borderClass}`}>
+              <div className={`mx-4 flex w-full max-w-[1120px] flex-wrap items-center justify-center gap-x-4 gap-y-2 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+                
+              </div>
+            </div>
+          )}
           {/* 上部余白：枠は border のみ（背景は全幅レイヤーで表示） */}
           <div className={`hidden h-16 w-full shrink-0 justify-center border-t ${borderClass} sm:flex`}>
             <div className={`mx-4 w-full max-w-[1120px] flex-1 border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
@@ -289,21 +305,36 @@ function App() {
             </div>
           </div>
 
-          {/* タイトル下の border 内：お名前入力者のアイコン（小） */}
+          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン（リロード後も送信済みは表示される） */}
           <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
+                const AVATAR_COLORS = ["61dca3", "61b3dc", "dc61b3", "dca361", "b361dc", "8b5cf6", "f59e0b", "ec4899", "14b8a6", "6366f1"];
+                const colorForName = (name: string) => {
+                  let n = 0;
+                  for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
+                  return "#" + AVATAR_COLORS[Math.abs(n) % AVATAR_COLORS.length];
+                };
                 const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
-                const people: { key: string; name: string; color: string }[] = [];
-                if (myCursorInfo && hasName(myCursorInfo.name))
-                  people.push({ key: "me", name: myCursorInfo.name.trim(), color: myCursorInfo.color });
-                otherCursors.forEach((c) => {
-                  if (hasName(c.name)) people.push({ key: c.key, name: c.name.trim(), color: c.color });
+                const byName = new Map<string, { name: string; color: string; designation: string }>();
+                submittedNames.forEach((name) => {
+                  const n = name.trim();
+                  if (n) byName.set(n, { name: n, color: colorForName(n), designation: "送信済み" });
                 });
-                const avatarItems = people.map((p, i) => ({
+                if (myCursorInfo && hasName(myCursorInfo.name)) {
+                  const n = myCursorInfo.name.trim();
+                  byName.set(n, { name: n, color: myCursorInfo.color, designation: "参加中" });
+                }
+                otherCursors.forEach((c) => {
+                  if (hasName(c.name)) {
+                    const n = c.name.trim();
+                    byName.set(n, { name: n, color: c.color, designation: "参加中" });
+                  }
+                });
+                const avatarItems = Array.from(byName.entries()).map(([_, p], i) => ({
                   id: i,
                   name: p.name,
-                  designation: "参加中",
+                  designation: p.designation,
                   image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
                 }));
                 if (avatarItems.length === 0) return null;
@@ -313,7 +344,7 @@ function App() {
           </div>
 
           {/* アンケートカード帯：border の内側全体に背景（max-w-[1120px] の枠内） */}
-          <div className={`flex w-full flex-1 justify-center border-b ${borderClass}`}>
+          <div className={`flex w-full flex-1 justify-center border-t border-b ${borderClass}`}>
             <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
               <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
                 {/* <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}> */}
