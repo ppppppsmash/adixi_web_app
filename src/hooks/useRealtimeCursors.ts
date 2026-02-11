@@ -1,7 +1,14 @@
 /* eslint-disable react-hooks/refs */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { supabase } from "../lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+
+export type UseRealtimeCursorsReturn = {
+  otherCursors: OtherCursor[];
+  myCursorRef: RefObject<HTMLDivElement | null>;
+  myCursorInfo: MyCursorInfo;
+  setMyCursor: (x: number, y: number) => void;
+};
 
 export type CursorPresence = {
   cursor: { x: number; y: number };
@@ -60,7 +67,7 @@ function throttle<A extends unknown[]>(
 export function useRealtimeCursors(
   surveyId: string | null,
   displayName: string = "ゲスト"
-) {
+): UseRealtimeCursorsReturn {
   const [otherCursors, setOtherCursors] = useState<OtherCursor[]>([]);
   const [myCursorInfo, setMyCursorInfo] = useState<MyCursorInfo>(null);
   const myCursorRef = useRef<HTMLDivElement | null>(null);

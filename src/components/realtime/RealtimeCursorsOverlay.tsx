@@ -1,13 +1,15 @@
-import { memo } from "react";
+import { memo, type RefObject } from "react";
 import type { MyCursorInfo, OtherCursor } from "../../hooks/useRealtimeCursors";
 
 const CURSOR_TRANSITION = "left 0.1s linear, top 0.1s linear";
 
-type Props = {
+export type RealtimeCursorsOverlayProps = {
   cursors: OtherCursor[];
-  myCursorRef: React.RefObject<HTMLDivElement | null>;
-  myCursorInfo: MyCursorInfo;
+  myCursorRef: RefObject<HTMLDivElement | null>;
+  myCursorInfo: MyCursorInfo | null;
 };
+
+type Props = RealtimeCursorsOverlayProps;
 
 /** 自カーソルは ref で DOM 直接更新（再レンダーなし）、他は CSS transition のみで軽量 */
 export function RealtimeCursorsOverlay({

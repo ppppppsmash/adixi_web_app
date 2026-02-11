@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 import { LiquidGlass } from '@liquidglass/react';
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
