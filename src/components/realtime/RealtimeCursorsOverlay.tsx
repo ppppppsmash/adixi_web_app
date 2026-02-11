@@ -25,12 +25,13 @@ export function RealtimeCursorsOverlay({
       {myCursorInfo && (
         <div
           ref={myCursorRef}
-          className="absolute z-50 h-4 w-4"
+          className="cursor-neo absolute z-50 h-4 w-4"
           style={{
             left: 0,
             top: 0,
             pointerEvents: "none",
             transition: CURSOR_TRANSITION,
+            ["--cursor-color" as string]: myCursorInfo.color,
           }}
         >
           <svg
@@ -47,7 +48,7 @@ export function RealtimeCursorsOverlay({
             <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z" />
           </svg>
           <span
-            className="ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+            className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
             style={{ backgroundColor: myCursorInfo.color }}
           >
             {myCursorInfo.name}
@@ -80,12 +81,13 @@ const RemoteCursor = memo(function RemoteCursor({
 }) {
   return (
     <div
-      className="absolute z-50 h-4 w-4"
+      className="cursor-neo absolute z-50 h-4 w-4"
       style={{
         left: `${xPercent}%`,
         top: `${yPercent}%`,
         pointerEvents: "none",
         transition: CURSOR_TRANSITION,
+        ["--cursor-color" as string]: color,
       }}
     >
       <svg
@@ -102,7 +104,7 @@ const RemoteCursor = memo(function RemoteCursor({
         <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z" />
       </svg>
       <span
-        className="ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+        className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
         style={{ backgroundColor: color }}
       >
         {name}

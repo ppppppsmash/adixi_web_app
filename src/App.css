@@ -295,6 +295,35 @@ html.dark .stepper-crt::after {
   vertical-align: top;
 }
 
+/* カーソルUI：ネオ風の弱い点滅グロー（--cursor-color で色を指定） */
+@keyframes cursor-neo-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px var(--cursor-color)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 4px var(--cursor-color)) drop-shadow(0 0 8px var(--cursor-color));
+    opacity: 0.95;
+  }
+}
+@keyframes cursor-neo-label-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 4px var(--cursor-color), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 8px var(--cursor-color), 0 0 12px var(--cursor-color), 0 0 0 1px rgba(255, 255, 255, 0.25);
+  }
+}
+.cursor-neo {
+  --cursor-color: #61dca3;
+  animation: cursor-neo-pulse 2.5s ease-in-out infinite;
+}
+.cursor-neo .cursor-neo-label {
+  animation: cursor-neo-label-pulse 2.5s ease-in-out infinite;
+}
+
 /* アンケート表示中は body に survey-cursor-none を付与。Tailwind より後に読み込むためここに定義 */
 body.survey-cursor-none,
 body.survey-cursor-none *,
