@@ -16,6 +16,13 @@ export type OtherCursor = {
   name: string;
 };
 
+/** 自クライアントのカーソル表示用（オーバーレイで同じ UI を出すため） */
+export type MyCursor = {
+  cursor: { x: number; y: number };
+  color: string;
+  name: string;
+} | null;
+
 const CURSOR_COLORS = [
   "#61dca3",
   "#61b3dc",
@@ -59,6 +66,10 @@ export function useRealtimeCursors(
   displayName: string = "ゲスト"
 ) {
   const [otherCursors, setOtherCursors] = useState<OtherCursor[]>([]);
+  const [myCursor, setMyCursorState] = useState<MyCursor>(null);
+  const setMyCursorStateRef = useRef(setMyCursorState);
+  setMyCursorStateRef.current = setMyCursorState;
+
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myKeyRef = useRef<string>(crypto.randomUUID());
   const [cursorColor] = useState(() =>
@@ -76,6 +87,7 @@ export function useRealtimeCursors(
   useEffect(() => {
     if (!surveyId) {
       setOtherCursors([]);
+      setMyCursorState(null);
       return;
     }
 
@@ -88,6 +100,7 @@ export function useRealtimeCursors(
       },
     });
 
+    const prevOthersRef = { current: [] as OtherCursor[] };
     channel
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState<CursorPresence>();
@@ -103,7 +116,22 @@ export function useRealtimeCursors(
             name: first.name ?? "ゲスト",
           });
         }
-        setOtherCursors(others);
+        const prev = prevOthersRef.current;
+        const prevByKey = new Map(prev.map((o) => [o.key, o]));
+        const changed =
+          prev.length !== others.length ||
+          others.some((o) => {
+            const p = prevByKey.get(o.key);
+            return (
+              !p ||
+              Math.abs(p.cursor.x - o.cursor.x) > 0.5 ||
+              Math.abs(p.cursor.y - o.cursor.y) > 0.5
+            );
+          });
+        if (changed) {
+          prevOthersRef.current = others;
+          setOtherCursors(others);
+        }
       })
       .subscribe(async (status) => {
         if (status !== "SUBSCRIBED") return;
@@ -117,33 +145,40 @@ export function useRealtimeCursors(
       supabase.removeChannel(channel);
       channelRef.current = null;
       setOtherCursors([]);
+      setMyCursorState(null);
     };
   }, [surveyId]);
 
-  // お名前入力が変わったら即時 presence を更新
+  // お名前入力が変わったら即時 presence を更新し、自カーソル表示の名前も更新
   useEffect(() => {
     const ch = channelRef.current;
-    if (!ch) return;
     const payload: CursorPresence = {
       ...currentPayloadRef.current,
       name: nameToSend,
     };
     currentPayloadRef.current = payload;
-    ch.track(payload);
+    if (ch) ch.track(payload);
+    setMyCursorState((prev) =>
+      prev ? { ...prev, name: nameToSend } : null
+    );
   }, [nameToSend]);
 
   const setMyCursor = useRef(
     throttle((x: number, y: number) => {
       const ch = channelRef.current;
-      if (!ch) return;
       const payload: CursorPresence = {
         ...currentPayloadRef.current,
         cursor: { x, y },
       };
       currentPayloadRef.current = payload;
-      ch.track(payload);
-    }, 50)
+      if (ch) ch.track(payload);
+      setMyCursorStateRef.current?.({
+        cursor: { x, y },
+        color: payload.color ?? cursorColor,
+        name: payload.name ?? "ゲスト",
+      });
+    }, 80)
   ).current;
 
-  return { otherCursors, setMyCursor };
+  return { otherCursors, myCursor, setMyCursor };
 }

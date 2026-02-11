@@ -1,18 +1,29 @@
+import { memo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import type { OtherCursor } from "../../hooks/useRealtimeCursors";
+import type { MyCursor, OtherCursor } from "../../hooks/useRealtimeCursors";
 
 type Props = {
   cursors: OtherCursor[];
+  myCursor?: MyCursor;
 };
 
-/** following-pointer と同じ UI で他ユーザーのカーソルを表示（pointer-events: none） */
-export function RealtimeCursorsOverlay({ cursors }: Props) {
+/** following-pointer と同じ UI で自分＋他ユーザーのカーソルを表示（pointer-events: none） */
+export function RealtimeCursorsOverlay({ cursors, myCursor }: Props) {
   return (
     <div
       className="pointer-events-none fixed inset-0 z-[100]"
       aria-hidden
     >
       <AnimatePresence>
+        {myCursor && (
+          <RemoteCursor
+            key="self"
+            xPercent={myCursor.cursor.x}
+            yPercent={myCursor.cursor.y}
+            color={myCursor.color}
+            name={myCursor.name}
+          />
+        )}
         {cursors.map(({ key, cursor, color, name }) => (
           <RemoteCursor
             key={key}
@@ -27,8 +38,11 @@ export function RealtimeCursorsOverlay({ cursors }: Props) {
   );
 }
 
-/** following-pointer と同じ矢印＋ラベルスタイルのリモートカーソル */
-function RemoteCursor({
+/** 位置更新の補間時間（短いほど軽い、長いほど滑らか） */
+const CURSOR_MOVE_DURATION = 0.08;
+
+/** following-pointer と同じ矢印＋ラベル。spring 廃止・短い linear で軽量化。 */
+const RemoteCursor = memo(function RemoteCursor({
   xPercent,
   yPercent,
   color,
@@ -55,12 +69,12 @@ function RemoteCursor({
         scale: 1,
         opacity: 1,
       }}
-      exit={{ scale: 0, opacity: 0 }}
+      exit={{ scale: 0, opacity: 0, transition: { duration: 0.1 } }}
       transition={{
-        left: { type: "spring", stiffness: 500, damping: 28 },
-        top: { type: "spring", stiffness: 500, damping: 28 },
-        scale: { duration: 0.2 },
-        opacity: { duration: 0.2 },
+        left: { duration: CURSOR_MOVE_DURATION, ease: "linear" },
+        top: { duration: CURSOR_MOVE_DURATION, ease: "linear" },
+        scale: { duration: 0.15 },
+        opacity: { duration: 0.15 },
       }}
     >
       <svg
@@ -81,11 +95,11 @@ function RemoteCursor({
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.5, opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.15 }}
         className="ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
       >
         {name}
       </motion.div>
     </motion.div>
   );
-}
+});

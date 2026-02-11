@@ -294,3 +294,25 @@ html.dark .stepper-crt::after {
   padding: 0;
   vertical-align: top;
 }
+
+/* アンケート表示中は body に survey-cursor-none を付与。Tailwind より後に読み込むためここに定義 */
+body.survey-cursor-none,
+body.survey-cursor-none *,
+body.survey-cursor-none *:focus,
+body.survey-cursor-none *:active,
+body.survey-cursor-none *:focus-visible,
+body.survey-cursor-none button,
+body.survey-cursor-none input,
+body.survey-cursor-none textarea,
+body.survey-cursor-none select,
+body.survey-cursor-none [role="button"],
+body.survey-cursor-none [role="radio"],
+body.survey-cursor-none [role="checkbox"],
+body.survey-cursor-none label,
+body.survey-cursor-none a,
+body.survey-cursor-none [type="button"],
+body.survey-cursor-none [type="submit"],
+body.survey-cursor-none [type="radio"],
+body.survey-cursor-none [type="checkbox"] {
+  cursor: none !important;
+}

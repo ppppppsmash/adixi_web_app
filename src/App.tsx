@@ -158,7 +158,7 @@ function App() {
     survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
       ? (answers[survey.items[0].id] as string).trim()
       : ""
-  const { otherCursors, setMyCursor } = useRealtimeCursors(
+  const { otherCursors, myCursor, setMyCursor } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
   )
@@ -198,6 +198,14 @@ function App() {
     setAnswers((prev) => ({ ...prev, [itemId]: value }))
   }
 
+  useEffect(() => {
+    if (!loading && !error && survey) {
+      document.body.classList.add("survey-cursor-none")
+      return () => document.body.classList.remove("survey-cursor-none")
+    }
+    document.body.classList.remove("survey-cursor-none")
+  }, [loading, error, survey])
+
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
     setSubmitStatus('sending')
@@ -230,11 +238,11 @@ function App() {
   }
 
   return (
-    <React.Fragment>
+    <div className="survey-cursor-none">
       <div className="absolute top-4 right-6 z-50">
         <AnimatedThemeToggler />
       </div>
-      <RealtimeCursorsOverlay cursors={otherCursors} />
+      <RealtimeCursorsOverlay cursors={otherCursors} myCursor={myCursor} />
 
       <div className="flex h-[100svh] w-full flex-col overflow-hidden">
         <div className="min-h-0 shrink-0 flex justify-center py-8">
@@ -312,7 +320,7 @@ function App() {
         characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'}
         adixiLoopIntervalMs={10000}
       />
-    </React.Fragment>
+    </div>
   )
 }
 
