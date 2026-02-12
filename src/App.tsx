@@ -29,6 +29,9 @@ const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
 
 /** 問題内容用フォント（日本語対応・ネオ風） */
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
+/** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
+const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
+const QUESTION_MATRIX_COLOR = '#00ff41'
 
 function getSurveyId(): string | null {
   const params = new URLSearchParams(window.location.search)
@@ -53,11 +56,20 @@ function SurveyStepContent({
 
   return (
     <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-      <h2 className="step-title w-full min-w-0 text-left mb-6! ml-2!">
-        <FuzzyText fontSize="1.4rem" baseIntensity={0.15} hoverIntensity={0.4} color={isDark ? '#fff' : '#333'} enableHover>
+      <h2 className="step-title question-matrix-glow w-full min-w-0 text-left mb-6! ml-2! flex items-baseline gap-1 flex-wrap">
+        <FuzzyText
+          fontSize="1.4rem"
+          baseIntensity={0.12}
+          hoverIntensity={0.35}
+          color={QUESTION_MATRIX_COLOR}
+          fontFamily={QUESTION_MATRIX_FONT}
+          enableHover
+          strokeColor={isDark ? 'rgba(0, 255, 65, 0.3)' : 'rgba(0, 255, 65, 0.2)'}
+          strokeWidth={0.5}
+        >
           {item.question}
-          {item.isRequired && <span className="text-red-500 ml-1">*</span>}
         </FuzzyText>
+        {item.isRequired && <span className="text-red-500 ml-1">*</span>}
       </h2>
 
       {item.questionType === 'text' && (
