@@ -21,7 +21,6 @@ import {
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurveyRespondentNames, type PublicSurvey, type SurveyItem } from "./api/survey";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { useCamera } from "./hooks/useCamera";
-import { useWebRTCCameraShare } from "./hooks/useWebRTCCameraShare";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 import NoiseLoading from "./components/loading/noise-loading";
@@ -164,17 +163,11 @@ function App() {
     survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
       ? (answers[survey.items[0].id] as string).trim()
       : ""
-  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor, myPresenceKey } = useRealtimeCursors(
+  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
   )
-  const { stream: cameraStream, start: startCamera, stop: stopCamera, isOn: isCameraOn } = useCamera()
-  const { remoteStreams } = useWebRTCCameraShare(
-    survey?.id ?? null,
-    myPresenceKey,
-    otherCursors.map((c) => c.key),
-    isCameraOn ? cameraStream ?? null : null
-  )
+  const { stream: cameraStream, start: startCamera, stop: stopCamera, isOn: isCameraOn } = useCamera();
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {

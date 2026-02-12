@@ -178,7 +178,7 @@ export default function Stepper({
                 renderNextButton({
                   onClick: isLastStep ? handleComplete : handleNext,
                   isLastStep,
-                  children: isLastStep ? 'Complete' : nextButtonText
+                  children: isLastStep ? '送信' : nextButtonText
                 })
               ) : (
                 <button
@@ -187,7 +187,7 @@ export default function Stepper({
                   className="flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 py-2.5 font-medium tracking-tight text-[var(--color-button-text)] transition hover:opacity-90"
                   {...nextButtonProps}
                 >
-                  {isLastStep ? 'Complete' : nextButtonText}
+                  {isLastStep ? '送信' : nextButtonText}
                 </button>
               )}
             </div>
