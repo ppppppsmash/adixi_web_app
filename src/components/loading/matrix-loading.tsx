@@ -31,7 +31,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
       return chars[Math.floor(Math.random() * chars.length)];
     };
 
-    const getColor = (index: number, size: number, x: number) => {
+    const getColor = (index: number, size: number, _x: number) => {
       const last = index === size - 1;
       const first = index === 0;
       const second = index === 1;
@@ -72,8 +72,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
       const delta = lastTime ? time - lastTime : intervalMs;
       lastTime = time;
 
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, height);
       ctx.font = `18pt "JetBrains Mono", "M PLUS 1 Code", Consolas, Monaco, monospace`;
 
       const step = Math.min(delta / intervalMs, 3);
@@ -113,7 +112,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 block h-full w-full"
-      style={{ background: "#000" }}
+      style={{ background: "transparent" }}
       aria-hidden
     />
   );

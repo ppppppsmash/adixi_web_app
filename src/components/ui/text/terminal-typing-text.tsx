@@ -9,6 +9,8 @@ export type TerminalTypingTextProps = {
   charDelay?: number;
   /** タイピング開始までの遅延（ms） */
   startDelay?: number;
+  /** true になったらタイピング開始（ローディング透明化後など） */
+  startWhen?: boolean;
   /** タイピング完了後にカーソルを表示し続けるか */
   cursorAfterComplete?: boolean;
   /** カーソル点滅の間隔（ms） */
@@ -24,6 +26,7 @@ export function TerminalTypingText({
   text,
   charDelay = 50,
   startDelay = 0,
+  startWhen = true,
   cursorAfterComplete = true,
   cursorBlinkInterval = 530,
   className = "",
@@ -32,8 +35,12 @@ export function TerminalTypingText({
   const [visibleLength, setVisibleLength] = useState(0);
   const [cursorVisible, setCursorVisible] = useState(true);
 
-  // テキストが変わったらリセットしてタイピング開始
+  // startWhen が true になってからタイピング開始（ローディング透明化後など）
   useEffect(() => {
+    if (!startWhen) {
+      setVisibleLength(0);
+      return;
+    }
     setVisibleLength(0);
     if (text.length === 0) return;
     let intervalId: ReturnType<typeof setInterval> | null = null;
@@ -52,7 +59,7 @@ export function TerminalTypingText({
       clearTimeout(startTimer);
       if (intervalId) clearInterval(intervalId);
     };
-  }, [text, charDelay, startDelay]);
+  }, [text, charDelay, startDelay, startWhen]);
 
   // カーソル点滅
   useEffect(() => {

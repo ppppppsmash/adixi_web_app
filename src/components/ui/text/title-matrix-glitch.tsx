@@ -33,7 +33,7 @@ export function TitleMatrixGlitch({
     const GLITCH_PROB = 0.04;
     const interval = setInterval(() => {
       setDisplayed(
-        chars.map((c, i) =>
+        chars.map((c) =>
           Math.random() < GLITCH_PROB
             ? MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)]
             : c

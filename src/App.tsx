@@ -29,6 +29,9 @@ import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 /** マトリックス風緑を含むグリッチ／アクセント色 */
 const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
 
+/** LetterGlitch 用の文字セット（JSX 内に {} を書くとパーサーが誤解するため定数化） */
+const GLITCH_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'
+
 /** 問題内容用フォント（日本語対応・ネオ風） */
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
 /** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
@@ -49,12 +52,15 @@ function SurveyStepContent({
   onChange,
   isDark,
   isFirstItem,
+  startTyping = true,
 }: {
   item: SurveyItem
   value: string | string[]
   onChange: (v: string | string[]) => void
   isDark: boolean
   isFirstItem?: boolean
+  /** ローディング透明化後に true になるとタイピング開始 */
+  startTyping?: boolean
 }) {
   const options = item.options?.split(',').map((o) => o.trim()).filter(Boolean) ?? []
   const namePlaceholder = isFirstItem ? "お名前を入力" : "入力してください"
@@ -66,6 +72,7 @@ function SurveyStepContent({
           text={item.question}
           charDelay={40}
           startDelay={200}
+          startWhen={startTyping}
           cursorAfterComplete={true}
           className="text-[1.15rem] font-medium"
           style={{
@@ -167,11 +174,55 @@ function SurveyStepContent({
   )
 }
 
+/** ローディングオーバーレイ。透明化完了時に onFadeEnd を呼ぶ（タイピング開始用） */
+function LoadingOverlay(
+  props: {
+    show: boolean
+    exiting: boolean
+    durationMs: number
+    isDark: boolean
+    onFadeEnd?: () => void
+  }
+) {
+  const [fadeDone, setFadeDone] = useState(false)
+  const isVisible = props.show || !props.exiting
+  const duration = props.exiting ? (props.durationMs + 'ms') : '0ms'
+
+  useEffect(() => {
+    if (isVisible && fadeDone) setFadeDone(false)
+  }, [isVisible, fadeDone])
+
+  const trulyHidden = !isVisible && fadeDone
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center overflow-hidden bg-transparent"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transition: `opacity ${duration} ease-out`,
+        pointerEvents: isVisible ? 'auto' : 'none',
+        visibility: trulyHidden ? 'hidden' : 'visible',
+      }}
+      onTransitionEnd={(e) => {
+        if (e.propertyName === 'opacity' && !isVisible) {
+          setFadeDone(true)
+          props.onFadeEnd?.()
+        }
+      }}
+      aria-hidden
+    >
+      <MatrixLoading isDark={props.isDark} />
+    </div>
+  )
+}
+
 function App() {
   const isDark = useDarkMode()
   const [survey, setSurvey] = useState<PublicSurvey | null>(null)
   const [loading, setLoading] = useState(true)
   const [showLoading, setShowLoading] = useState(true)
+  const [loadingExiting, setLoadingExiting] = useState(false)
+  const [loadingFadeDone, setLoadingFadeDone] = useState(false)
   const loadingStartRef = useRef(0)
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
@@ -222,14 +273,21 @@ function App() {
     return () => { cancelled = true }
   }, [surveyId])
 
-  const LOADING_MIN_MS = 3000
+  const LOADING_MIN_MS = 5500
+  const LOADING_FADEOUT_MS = 2500
+  /* 取得完了後、2フレーム待って下地を描画してからフェード開始（途中で真っ黒にしないため） */
   useEffect(() => {
     if (loading) return
     const elapsed = Date.now() - loadingStartRef.current
     const remaining = Math.max(0, LOADING_MIN_MS - elapsed)
-    const t = setTimeout(() => setShowLoading(false), remaining)
+    const t = setTimeout(() => {
+      setShowLoading(false)
+      setLoadingExiting(true)
+    }, remaining)
     return () => clearTimeout(t)
   }, [loading])
+
+  /* ローディングはアンマウントしない（opacity 0 のまま残す）。外すと一瞬真っ黒になるため */
 
   useEffect(() => {
     if (!survey?.id) return
@@ -264,25 +322,8 @@ function App() {
     }
   }
 
-  if (showLoading) {
-    return (
-      <div className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden bg-black">
-        <MatrixLoading isDark={isDark} />
-        {/* <span
-          className="relative z-10 text-2xl font-bold"
-          style={{
-            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT,
-            textShadow: isDark ? "0 0 12px rgba(0, 255, 65, 0.6)" : "0 0 10px rgba(0, 140, 42, 0.5)",
-            fontFamily: QUESTION_MATRIX_FONT,
-          }}
-        >
-          Loading...
-        </span> */}
-      </div>
-    )
-  }
-
-  if (error || !survey) {
+  /* エラーは取得完了後のみ表示。取得中は下地を描画した上でオーバーレイだけ重ねる（途中で真っ黒にしない） */
+  if (!loading && (error || !survey)) {
     const message = error ?? 'アンケートを取得できませんでした。'
     return (
       <div className="flex h-[100svh] w-full items-center justify-center px-4 text-center text-[var(--color-text)]">
@@ -293,8 +334,20 @@ function App() {
 
   const borderClass = 'border-[var(--color-border)]'
 
+  /* マトリックス雨のみ表示中は下地を非表示、フェード時に下地を 0→100% で表示 */
+  const underlayVisible = !showLoading || loadingExiting
+  const underlayTransition = loadingExiting ? `${LOADING_FADEOUT_MS}ms` : '0ms'
+
   return (
-    <div className="survey-cursor-none">
+    <div data-root="app" className="relative">
+      <div
+        className="survey-cursor-none relative z-0 min-h-[100svh] w-full bg-[var(--color-bg)]"
+        style={{
+          transform: 'translateZ(0)',
+          opacity: underlayVisible ? 1 : 0,
+          transition: `opacity ${underlayTransition} ease-out`,
+        }}
+      >
       <div className="absolute top-12 right-6 z-50 flex flex-col items-end gap-3">
         <AnimatedThemeToggler />
         <button
@@ -308,8 +361,8 @@ function App() {
       </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} cameraStream={isCameraOn ? cameraStream ?? null : null} />
 
-      {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ */}
-      <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden">
+      {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ（translateZ(0)でレイヤ化しフェード時に黒くならない） */}
+      <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden" style={{ transform: 'translateZ(0)' }}>
         <div className="absolute inset-0 z-0">
           <LetterGlitch
             glitchSpeed={50}
@@ -317,7 +370,7 @@ function App() {
             outerVignette={true}
             smooth={true}
             glitchColors={GLITCH_COLORS}
-            characters={'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'}
+            characters={GLITCH_CHARACTERS}
             adixiLoopIntervalMs={10000}
           />
         </div>
@@ -334,7 +387,7 @@ function App() {
         />
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
-          {submittedNames.length > 0 && (
+          {(submittedNames.length > 0) && (
             <div className={`flex w-full shrink-0 justify-center border-t ${borderClass}`}>
               <div className={`mx-4 flex w-full max-w-[1120px] flex-wrap items-center justify-center gap-x-4 gap-y-2 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
                 
@@ -385,19 +438,20 @@ function App() {
                   id: i,
                   name: p.name,
                   designation: p.designation,
-                  image: `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name.slice(0, 2))}&background=${p.color.replace("#", "")}`,
+                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + p.color.replace('#', ''),
                   stream: null,
                 }));
-                return avatarItems.length > 0 ? <AnimatedAvatar items={avatarItems} size="sm" /> : null;
+                return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="sm" />) : null;
               })()}
             </div>
           </div>
 
-          {/* アンケートカード帯：border の内側全体に背景（max-w-[1120px] の枠内） */}
+          {/* アンケートカード帯：外枠は最初から常に描画し、中身だけ survey 到着時に差し替え（レンダー遅延で真っ黒を防ぐ） */}
           <div className={`flex w-full flex-1 justify-center border-t border-b ${borderClass}`}>
             <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
               <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
-                {/* <LiquidGlass borderRadius={50} blur={isDark ? 0.5 : 2} shadowIntensity={0.06}> */}
+                {survey ? (
+                <>
                   <div className="flex min-w-0 flex-col gap-y-10 px-6 pt-10 pb-8 w-full sm:px-14">
                     <div className="min-w-0 flex flex-col justify-start">
                       <Stepper
@@ -427,6 +481,7 @@ function App() {
                               onChange={(v) => setAnswer(item.id, v)}
                               isDark={isDark}
                               isFirstItem={index === 0}
+                              startTyping={loadingFadeDone}
                             />
                           </Step>
                         ))}
@@ -446,7 +501,8 @@ function App() {
                       )}
                     </div>
                   </div>
-                {/* </LiquidGlass> */}
+                </>
+                ) : null}
               </div>
             </div>
           </div>
@@ -456,6 +512,9 @@ function App() {
           </div>
         </div>
       </div>
+      </div>
+      {/* ローディングはアンマウントせず常に DOM に残し、フェード後は opacity 0 のまま */}
+      <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} isDark={isDark} onFadeEnd={() => setLoadingFadeDone(true)} />
     </div>
   )
 }
