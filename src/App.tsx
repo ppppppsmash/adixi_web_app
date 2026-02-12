@@ -36,8 +36,6 @@ const GLITCH_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
 /** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
 const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
-/** 画面タイトル用：問題文と同じハッカー風＋ExtraBoldで太く */
-const TITLE_DISPLAY_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
 const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
 const QUESTION_MATRIX_COLOR_LIGHT = '#008c2a'
 
@@ -396,14 +394,24 @@ function App() {
           )}
           {/* タイトル帯：マトリックス雨のように文字が不安定に変わるが全体は読める */}
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
               <TitleMatrixGlitch
                 isDark={isDark}
-                fontFamily={TITLE_DISPLAY_FONT}
-                fontSize="clamp(2.4rem, 6vw, 4.5rem)"
+                fontFamily="var(--font-title-code)"
+                fontSize="clamp(1.9rem, 4.8vw, 3.5rem)"
               >
                 ADiXi SESSION SURVEY
               </TitleMatrixGlitch>
+              <p
+                className="text-xs tracking-widest opacity-90"
+                style={{
+                  fontFamily: 'var(--font-hacker-mono)',
+                  color: isDark ? '#00ff41' : '#008c2a',
+                }}
+                aria-hidden
+              >
+                — セッション参加者向け・リアルタイムアンケート —
+              </p>
             </div>
           </div>
 
@@ -411,7 +419,8 @@ function App() {
           <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
-                const AVATAR_COLORS = ["61dca3", "61b3dc", "dc61b3", "dca361", "b361dc", "8b5cf6", "f59e0b", "ec4899", "14b8a6", "6366f1"];
+                /** ハッカー風：緑〜ティール系（ui-avatars の background 用 hex） */
+                const AVATAR_COLORS = ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"];
                 const colorForName = (name: string) => {
                   let n = 0;
                   for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
@@ -438,7 +447,7 @@ function App() {
                   id: i,
                   name: p.name,
                   designation: p.designation,
-                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + p.color.replace('#', ''),
+                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + (p.color.startsWith('#') ? p.color.slice(1) : p.color),
                   stream: null,
                 }));
                 return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="sm" />) : null;

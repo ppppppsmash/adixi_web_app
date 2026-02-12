@@ -51,12 +51,12 @@ export function TitleMatrixGlitch({
       style={{
         fontFamily,
         fontSize,
-        fontWeight: 800,
+        fontWeight: 200,
         color: green,
         display: "inline-block",
         textAlign: "center",
         letterSpacing: "0.04em",
-        WebkitTextStroke: `3px ${green}`,
+        WebkitTextStroke: `0.5px ${green}`,
         paintOrder: "stroke fill",
         filter: isDark
           ? "drop-shadow(0 0 12px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.4))"

@@ -156,6 +156,30 @@ html:not(.dark) .hacker-btn-back:hover {
   box-shadow: 0 0 8px rgba(0, 140, 42, 0.2);
 }
 
+/* アバター：ハッカー風（緑枠・グロー） */
+.avatar-hacker {
+  border: 1px solid #00ff41;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.4), 0 0 16px rgba(0, 255, 65, 0.2);
+}
+html:not(.dark) .avatar-hacker {
+  border-color: #008c2a;
+  box-shadow: 0 0 6px rgba(0, 140, 42, 0.35), 0 0 12px rgba(0, 140, 42, 0.15);
+}
+
+/* アバターのツールチップ：ターミナル風 */
+.avatar-hacker-tooltip {
+  font-family: var(--font-hacker-mono);
+  background: rgba(10, 31, 10, 0.96);
+  color: var(--color-form-input-text);
+  border: 1px solid rgba(0, 255, 65, 0.6);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), inset 0 0 0 1px rgba(0, 255, 65, 0.08);
+}
+html:not(.dark) .avatar-hacker-tooltip {
+  background: rgba(10, 47, 18, 0.96);
+  border-color: rgba(0, 140, 42, 0.6);
+  box-shadow: 0 0 10px rgba(0, 140, 42, 0.15), inset 0 0 0 1px rgba(0, 140, 42, 0.06);
+}
+
 /* ステッパー：Previous / Next ボタン（Headless UI Button）ネオ風ピカピカ */
 @keyframes stepper-btn-glow {
   0%, 100% {

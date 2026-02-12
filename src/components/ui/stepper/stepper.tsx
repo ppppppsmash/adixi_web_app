@@ -50,6 +50,7 @@ export default function Stepper({
   renderNextButton,
   ...rest
 }: StepperProps) {
+  const isDark = useDarkMode();
   const [currentStep, setCurrentStep] = useState<number>(initialStep);
   const [direction, setDirection] = useState<number>(0);
   const stepsArray = Children.toArray(children);
@@ -121,6 +122,21 @@ export default function Stepper({
                     width: `${isCompleted ? 100 : (currentStep / totalSteps) * 100}%`
                   }}
                 />
+              </div>
+              <div className="mt-1 flex justify-end">
+                <span
+                  className="text-xs tabular-nums"
+                  style={{
+                    fontFamily: "var(--font-hacker-mono)",
+                    color: isDark ? '#00ff41' : '#008c2a',
+                    textShadow: isDark
+                      ? '0 0 6px rgba(0, 255, 65, 0.5)'
+                      : '0 0 6px rgba(0, 140, 42, 0.4)',
+                  }}
+                  aria-hidden
+                >
+                  {isCompleted ? totalSteps : currentStep} / {totalSteps}
+                </span>
               </div>
             </div>
           ) : (

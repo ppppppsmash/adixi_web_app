@@ -115,12 +115,10 @@ function AvatarItem({
             }}
             exit={{ opacity: 0, y: 20, scale: 0.6 }}
             style={{ translateX, rotate, whiteSpace: "nowrap" }}
-            className={`absolute left-1/2 z-50 flex -translate-x-1/2 flex-col items-center justify-center rounded-md bg-black px-3 py-1.5 text-xs shadow-xl ${size === "sm" ? "-top-12" : "-top-16"}`}
+            className={`avatar-hacker-tooltip absolute left-1/2 z-50 flex -translate-x-1/2 flex-col items-center justify-center rounded-none px-3 py-1.5 text-xs ${size === "sm" ? "-top-12" : "-top-16"}`}
           >
-            <div className="absolute inset-x-10 -bottom-px z-30 h-px w-[20%] bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
-            <div className="absolute -bottom-px left-10 z-30 h-px w-[40%] bg-gradient-to-r from-transparent via-sky-500 to-transparent" />
-            <div className="relative z-30 text-base font-bold text-white">{item.name}</div>
-            <div className="text-xs text-white">{item.designation}</div>
+            <div className="relative z-30 text-sm font-semibold tracking-tight">{item.name}</div>
+            <div className="text-[10px] opacity-90 tabular-nums">{item.designation}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -134,7 +132,7 @@ function AvatarItem({
           height={imgSize}
           width={imgSize}
           aria-label={item.name}
-          className={`relative !m-0 rounded-full border-2 border-white object-cover object-center !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105 ${sizeClass}`}
+          className={`avatar-hacker relative !m-0 rounded-full object-cover object-center !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105 ${sizeClass}`}
         />
       ) : (
         <img
@@ -143,7 +141,7 @@ function AvatarItem({
           width={imgSize}
           src={item.image}
           alt={item.name}
-          className={`relative !m-0 rounded-full border-2 border-white object-cover object-top !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105 ${sizeClass}`}
+          className={`avatar-hacker relative !m-0 rounded-full object-cover object-top !p-0 transition duration-500 group-hover:z-30 group-hover:scale-105 ${sizeClass}`}
         />
       )}
     </div>
