@@ -24,6 +24,7 @@ import { useCamera } from "./hooks/useCamera";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 import NoiseLoading from "./components/loading/noise-loading";
+import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 
 /** マトリックス風緑を含むグリッチ／アクセント色 */
 const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
@@ -59,18 +60,20 @@ function SurveyStepContent({
   return (
     <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
       <h2 className="step-title question-matrix-glow w-full min-w-0 text-left mb-6! ml-2! flex items-baseline gap-1 flex-wrap">
-        <FuzzyText
-          fontSize="1.4rem"
-          baseIntensity={0.12}
-          hoverIntensity={0.35}
-          color={isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT}
-          fontFamily={QUESTION_MATRIX_FONT}
-          enableHover
-          strokeColor={isDark ? 'rgba(0, 255, 65, 0.3)' : 'rgba(0, 140, 42, 0.25)'}
-          strokeWidth={0.5}
-        >
-          {item.question}
-        </FuzzyText>
+        <TerminalTypingText
+          text={item.question}
+          charDelay={40}
+          startDelay={200}
+          cursorAfterComplete={true}
+          className="text-[1.4rem] font-medium"
+          style={{
+            fontFamily: QUESTION_MATRIX_FONT,
+            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT,
+            textShadow: isDark
+              ? "0 0 8px rgba(0, 255, 65, 0.4)"
+              : "0 0 6px rgba(0, 140, 42, 0.35)",
+          }}
+        />
         {item.isRequired && <span className="text-red-500 ml-1">*</span>}
       </h2>
 

@@ -223,33 +223,6 @@ html:not(.dark) .hacker-btn-back:hover {
   95% { opacity: 1; }
   97% { opacity: 0.99; }
 }
-.stepper-crt {
-  position: relative;
-  animation: stepper-crt-drift 5s ease-in-out infinite, stepper-crt-flicker 8s ease-in-out infinite;
-}
-/* ごく薄いスキャンライン（CRT の走査線っぽさ） */
-.stepper-crt::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.03) 2px,
-    rgba(0, 0, 0, 0.03) 3px
-  );
-}
-html.dark .stepper-crt::after {
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(255, 255, 255, 0.02) 2px,
-    rgba(255, 255, 255, 0.02) 3px
-  );
-}
 
 /* Headless UI フォーム共通（テーマ連動・枠をはっきり） */
 .form-input-base {

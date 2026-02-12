@@ -91,7 +91,7 @@ export default function Stepper({
       {...rest}
     >
       <div
-        className={`stepper-crt flex w-full min-w-0 flex-col ${stepCircleContainerClassName}`}
+        className={`flex w-full min-w-0 flex-col ${stepCircleContainerClassName}`}
       >
         <StepContentWrapper
           isCompleted={isCompleted}
