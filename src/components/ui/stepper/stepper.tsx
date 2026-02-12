@@ -106,7 +106,7 @@ export default function Stepper({
           {progressBarOnly ? (
             <div className={`${stepContainerClassName} w-full min-w-0 px-4 sm:px-6`}>
               <div
-                className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-stepper-connector)]"
+                className="stepper-progress-track h-2 w-full overflow-hidden rounded-none"
                 role="progressbar"
                 aria-valuenow={isCompleted ? totalSteps : currentStep}
                 aria-valuemin={1}
@@ -114,7 +114,7 @@ export default function Stepper({
                 aria-label="進捗"
               >
                 <motion.div
-                  className="h-full rounded-full stepper-connector-complete"
+                  className="hacker-progress-fill h-full rounded-none"
                   initial={false}
                   transition={{ duration: 0.4 }}
                   style={{
@@ -168,7 +168,7 @@ export default function Stepper({
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="rounded px-2 py-1 text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+                    className="hacker-btn-back rounded-none border px-4 py-2.5 font-medium tracking-tight transition"
                     {...backButtonProps}
                   >
                     {backButtonText}
@@ -184,7 +184,7 @@ export default function Stepper({
                 <button
                   type="button"
                   onClick={isLastStep ? handleComplete : handleNext}
-                  className="flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 py-2.5 font-medium tracking-tight text-[var(--color-button-text)] transition hover:opacity-90"
+                  className="hacker-btn flex items-center justify-center rounded-none px-4 py-2.5 font-medium tracking-tight transition"
                   {...nextButtonProps}
                 >
                   {isLastStep ? '送信' : nextButtonText}
@@ -338,12 +338,12 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
           }
         }}
         transition={{ duration: 0.3 }}
-        className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-none font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
       >
         {status === 'complete' ? (
           <CheckIcon className="stepper-check-icon h-4 w-4 text-[#2b4539]" />
         ) : status === 'active' ? (
-          <div className="stepper-active-dot h-3 w-3 rounded-full bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
+          <div className="stepper-active-dot h-3 w-3 rounded-none bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
         ) : (
           <FuzzyText
             fontSize="0.875rem"
@@ -371,9 +371,9 @@ function StepConnector({ isComplete }: StepConnectorProps) {
   };
 
   return (
-    <div className="relative mx-2 h-1 flex-1 overflow-hidden rounded bg-[var(--color-stepper-connector, rgba(0,0,0,0.2))] min-w-[24px]">
+    <div className="stepper-progress-track relative mx-2 h-1 flex-1 overflow-hidden rounded-none min-w-[24px]">
       <motion.div
-        className={`absolute left-0 top-0 h-full ${isComplete ? 'stepper-connector-complete' : ''}`}
+        className={`absolute left-0 top-0 h-full ${isComplete ? 'hacker-progress-fill' : ''}`}
         variants={lineVariants}
         initial={false}
         animate={isComplete ? 'complete' : 'incomplete'}

@@ -273,7 +273,7 @@ function App() {
         <button
           type="button"
           onClick={() => (isCameraOn ? stopCamera() : startCamera())}
-          className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
+          className="flex items-center gap-2 rounded-none border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
           title={isCameraOn ? "カメラOFF" : "カメラON"}
         >
           {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
@@ -392,12 +392,12 @@ function App() {
                         backButtonText="前へ"
                         nextButtonText="次へ"
                         renderBackButton={({ onClick, children }) => (
-                          <Button type="button" onClick={onClick} className="stepper-back-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                          <Button type="button" onClick={onClick} className="hacker-btn-back min-w-[100px] rounded-none px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]">
                             {children}
                           </Button>
                         )}
                         renderNextButton={({ onClick, children }) => (
-                          <Button type="button" onClick={onClick} className="stepper-next-button min-w-[100px] rounded-lg px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#61dca3]">
+                          <Button type="button" onClick={onClick} className="hacker-btn min-w-[100px] rounded-none px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]">
                             {children}
                           </Button>
                         )}

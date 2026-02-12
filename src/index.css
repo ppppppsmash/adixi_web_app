@@ -47,8 +47,8 @@ html:not(.dark) .question-matrix-glow {
   --color-accent-hover: #535bf2;
   --color-border: #c4c4c8;
   --color-border-title: #d0d0d4;
-  --color-form-border: rgba(0, 0, 0, 0.28);
-  --color-form-bg: rgba(0, 0, 0, 0.04);
+  --color-form-border: rgba(0, 140, 42, 0.5);
+  --color-form-bg: rgba(10, 47, 18, 0.06);
   --color-stepper-inactive-bg: rgba(0, 0, 0, 0.14);
   --color-stepper-connector: rgba(0, 0, 0, 0.22);
   --color-button-bg: #1a1a1a;
@@ -72,8 +72,8 @@ html.dark {
   --color-accent-hover: #818cf8;
   --color-border: #3d3d3d;
   --color-border-title: #4a4a4a;
-  --color-form-border: rgba(255, 255, 255, 0.35);
-  --color-form-bg: rgba(255, 255, 255, 0.06);
+  --color-form-border: rgba(0, 255, 65, 0.45);
+  --color-form-bg: rgba(10, 31, 10, 0.08);
   --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);
   --color-stepper-connector: rgba(255, 255, 255, 0.25);
   --color-button-bg: #2d2d2d;

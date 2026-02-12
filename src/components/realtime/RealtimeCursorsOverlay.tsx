@@ -26,7 +26,7 @@ function MyCursorVideo({ stream }: { stream: MediaStream }) {
       autoPlay
       playsInline
       muted
-      className="h-18 w-18 rounded-full border-2 border-white object-cover object-center shadow-md"
+      className="h-18 w-18 rounded-none border-2 border-white object-cover object-center shadow-md"
     />
   );
 }
@@ -59,7 +59,7 @@ export function RealtimeCursorsOverlay({
             <>
               <MyCursorVideo stream={cameraStream} />
               <span
-                className="cursor-neo-label min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+                className="cursor-neo-label min-w-max rounded-none px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
                 style={{ backgroundColor: myCursorInfo.color }}
               >
                 {myCursorInfo.name}
@@ -81,7 +81,7 @@ export function RealtimeCursorsOverlay({
                 <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z" />
               </svg>
               <span
-                className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+                className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-none px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
                 style={{ backgroundColor: myCursorInfo.color }}
               >
                 {myCursorInfo.name}
@@ -139,7 +139,7 @@ const RemoteCursor = memo(function RemoteCursor({
         <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z" />
       </svg>
       <span
-        className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
+        className="cursor-neo-label ml-4 -translate-y-1 min-w-max rounded-none px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow"
         style={{ backgroundColor: color }}
       >
         {name}

@@ -78,11 +78,11 @@ export const AnimatedThemeToggler = ({
       <Switch
         checked={isDark}
         onChange={handleChange}
-        className="group relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border border-[var(--color-border)] bg-[var(--color-stepper-inactive-bg)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#61dca3] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-elevated)] data-[checked]:border-[#61dca3] data-[checked]:bg-[#61dca3]/20"
+        className="group relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-none border border-[var(--color-border)] bg-[var(--color-stepper-inactive-bg)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#61dca3] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-elevated)] data-[checked]:border-[#61dca3] data-[checked]:bg-[#61dca3]/20"
       >
         <span className="sr-only">ダークモードを切り替え</span>
         <span
-          className="pointer-events-none flex size-6 translate-x-0.5 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-text)] shadow-sm ring-0 transition duration-200 group-data-[checked]:translate-x-[1.25rem]"
+          className="pointer-events-none flex size-6 translate-x-0.5 items-center justify-center rounded-none bg-[var(--color-bg-elevated)] text-[var(--color-text)] shadow-sm ring-0 transition duration-200 group-data-[checked]:translate-x-[1.25rem]"
           aria-hidden
         >
           {isDark ? (

@@ -23,8 +23,8 @@ export const AnimatedAvatar = ({
   }[];
   size?: "sm" | "md";
 }) => {
-  const sizeClass = size === "sm" ? "h-12 w-12" : "h-16 w-16";
-  const imgSize = size === "sm" ? 48 : 100;
+  const sizeClass = size === "sm" ? "h-10 w-10" : "h-16 w-16";
+  const imgSize = size === "sm" ? 40 : 100;
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const springConfig = { stiffness: 100, damping: 15 };
   const x = useMotionValue(0);
