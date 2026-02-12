@@ -139,7 +139,7 @@ html:not(.dark) .hacker-btn:hover {
 
 .hacker-btn-back {
   background: transparent;
-  color: var(--color-text-muted);
+  color: #00ff41;
   border: 1px solid rgba(0, 255, 65, 0.35);
 }
 .hacker-btn-back:hover {
@@ -148,6 +148,7 @@ html:not(.dark) .hacker-btn:hover {
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
 }
 html:not(.dark) .hacker-btn-back {
+  color: #008c2a;
   border-color: rgba(0, 140, 42, 0.4);
 }
 html:not(.dark) .hacker-btn-back:hover {
@@ -410,6 +411,46 @@ html:not(.dark) .form-radio-outer[data-focus] {
   margin: 0;
   padding: 0;
   vertical-align: top;
+}
+
+/* 全画面：CRT表示方式（スキャンライン＋ビネット＝ブラウン管の表示の見え方） */
+.crt-display {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 3px
+  );
+}
+html.dark .crt-display {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+}
+.crt-display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 85% 80% at 50% 50%,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  pointer-events: none;
+}
+html.dark .crt-display::after {
+  background: radial-gradient(
+    ellipse 85% 80% at 50% 50%,
+    transparent 0%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
 }
 
 /* アンケートエリア：ブラウン管風エフェクト（スキャンライン＋ビネット） */

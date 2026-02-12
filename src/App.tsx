@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
-import { Camera, CameraOff } from "lucide-react";
+import { Camera, CameraOff, ChevronLeft, ChevronRight, Send } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
 import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
@@ -471,14 +471,24 @@ function App() {
                         onFinalStepCompleted={handleSubmit}
                         backButtonText="前へ"
                         nextButtonText="次へ"
-                        renderBackButton={({ onClick, children }) => (
-                          <Button type="button" onClick={onClick} className="hacker-btn-back min-w-[100px] rounded-none px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]">
-                            {children}
+                        renderBackButton={({ onClick }) => (
+                          <Button
+                            type="button"
+                            onClick={onClick}
+                            aria-label="前へ"
+                            className="hacker-btn-back inline-flex size-9 min-w-0 items-center justify-center rounded-none p-0 transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]"
+                          >
+                            <ChevronLeft className="size-5" aria-hidden />
                           </Button>
                         )}
-                        renderNextButton={({ onClick, children }) => (
-                          <Button type="button" onClick={onClick} className="hacker-btn min-w-[100px] rounded-none px-4 py-2.5 font-medium tracking-tight transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]">
-                            {children}
+                        renderNextButton={({ onClick, isLastStep }) => (
+                          <Button
+                            type="button"
+                            onClick={onClick}
+                            aria-label={isLastStep ? "送信" : "次へ"}
+                            className="hacker-btn inline-flex size-9 min-w-0 items-center justify-center rounded-none p-0 transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]"
+                          >
+                            {isLastStep ? <Send className="size-5" aria-hidden /> : <ChevronRight className="size-5" aria-hidden />}
                           </Button>
                         )}
                       >
@@ -520,6 +530,8 @@ function App() {
             <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
         </div>
+        {/* CRT表示方式：スキャンライン＋端の減光（ブラウン管の表示の見え方） */}
+        <div className="crt-display pointer-events-none absolute inset-0 z-[100]" aria-hidden />
       </div>
       </div>
       {/* ローディングはアンマウントせず常に DOM に残し、フェード後は opacity 0 のまま */}
