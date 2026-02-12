@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
 import { Camera, CameraOff } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
-import FuzzyText from "./components/ui/text/fuzzy-text";
+import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
 import {
   Button,
@@ -23,7 +23,7 @@ import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { useCamera } from "./hooks/useCamera";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
-import NoiseLoading from "./components/loading/noise-loading";
+import { MatrixLoading } from "./components/loading/matrix-loading";
 import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 
 /** マトリックス風緑を含むグリッチ／アクセント色 */
@@ -33,6 +33,8 @@ const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
 /** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
 const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
+/** 画面タイトル用：問題文と同じハッカー風＋ExtraBoldで太く */
+const TITLE_DISPLAY_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
 const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
 const QUESTION_MATRIX_COLOR_LIGHT = '#008c2a'
 
@@ -59,13 +61,13 @@ function SurveyStepContent({
 
   return (
     <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-      <h2 className="step-title question-matrix-glow w-full min-w-0 text-left mb-6! ml-2! flex items-baseline gap-1 flex-wrap">
+      <h2 className="step-title question-matrix-glow w-full min-w-0 text-left mb-2! flex items-baseline gap-1 flex-wrap">
         <TerminalTypingText
           text={item.question}
           charDelay={40}
           startDelay={200}
           cursorAfterComplete={true}
-          className="text-[1.4rem] font-medium"
+          className="text-[1.15rem] font-medium"
           style={{
             fontFamily: QUESTION_MATRIX_FONT,
             color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT,
@@ -78,7 +80,7 @@ function SurveyStepContent({
       </h2>
 
       {item.questionType === 'text' && (
-        <Field className="form-field-group w-full min-w-0 px-5">
+        <Field className="form-field-group w-full min-w-0">
           <Input
             type="text"
             value={(value as string) ?? ''}
@@ -90,7 +92,7 @@ function SurveyStepContent({
       )}
 
       {item.questionType === 'textarea' && (
-        <Field className="form-field-group w-full min-w-0 px-5">
+        <Field className="form-field-group w-full min-w-0">
           <Textarea
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value)}
@@ -102,7 +104,7 @@ function SurveyStepContent({
       )}
 
       {item.questionType === 'radio' && (
-        <Fieldset className="w-full min-w-0 px-5">
+        <Fieldset className="w-full min-w-0">
           <Legend className="sr-only">{item.question}</Legend>
           <RadioGroup
             value={options.find((o) => o === value) ?? ''}
@@ -122,7 +124,7 @@ function SurveyStepContent({
       )}
 
       {item.questionType === 'checkbox' && (
-        <div className="flex w-full min-w-0 flex-col gap-4 px-5">
+        <div className="flex w-full min-w-0 flex-col gap-4">
           {options.map((opt) => {
             const list = (value as string[]) ?? []
             const checked = list.includes(opt)
@@ -148,7 +150,7 @@ function SurveyStepContent({
       )}
 
       {item.questionType === 'select' && (
-        <Field className="form-field-group w-full min-w-0 px-5">
+        <Field className="form-field-group w-full min-w-0">
           <select
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value)}
@@ -169,6 +171,8 @@ function App() {
   const isDark = useDarkMode()
   const [survey, setSurvey] = useState<PublicSurvey | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showLoading, setShowLoading] = useState(true)
+  const loadingStartRef = useRef(0)
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
@@ -197,6 +201,7 @@ function App() {
   }, [setMyCursor])
 
   useEffect(() => {
+    loadingStartRef.current = Date.now()
     let cancelled = false
     const fetchSurvey = surveyId ? getPublicSurvey(surveyId) : getLatestPublicSurvey()
     fetchSurvey
@@ -217,6 +222,15 @@ function App() {
     return () => { cancelled = true }
   }, [surveyId])
 
+  const LOADING_MIN_MS = 3000
+  useEffect(() => {
+    if (loading) return
+    const elapsed = Date.now() - loadingStartRef.current
+    const remaining = Math.max(0, LOADING_MIN_MS - elapsed)
+    const t = setTimeout(() => setShowLoading(false), remaining)
+    return () => clearTimeout(t)
+  }, [loading])
+
   useEffect(() => {
     if (!survey?.id) return
     getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => setSubmittedNames([]))
@@ -227,12 +241,12 @@ function App() {
   }
 
   useEffect(() => {
-    if (!loading && !error && survey) {
+    if (!showLoading && !error && survey) {
       document.body.classList.add("survey-cursor-none")
       return () => document.body.classList.remove("survey-cursor-none")
     }
     document.body.classList.remove("survey-cursor-none")
-  }, [loading, error, survey])
+  }, [showLoading, error, survey])
 
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
@@ -250,10 +264,20 @@ function App() {
     }
   }
 
-  if (loading) {
+  if (showLoading) {
     return (
-      <div className="flex h-[100svh] w-full items-center justify-center text-[var(--color-text)]">
-        <span className="text-2xl font-bold text-[#2b4539]">Loading...</span><NoiseLoading />
+      <div className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden bg-black">
+        <MatrixLoading isDark={isDark} />
+        {/* <span
+          className="relative z-10 text-2xl font-bold"
+          style={{
+            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT,
+            textShadow: isDark ? "0 0 12px rgba(0, 255, 65, 0.6)" : "0 0 10px rgba(0, 140, 42, 0.5)",
+            fontFamily: QUESTION_MATRIX_FONT,
+          }}
+        >
+          Loading...
+        </span> */}
       </div>
     )
   }
@@ -317,26 +341,16 @@ function App() {
               </div>
             </div>
           )}
-          {/* タイトル帯：border のみ */}
+          {/* タイトル帯：マトリックス雨のように文字が不安定に変わるが全体は読める */}
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
-              <FuzzyText
-                baseIntensity={0.2}
-                hoverIntensity={0.5}
-                fontSize="clamp(2rem, 5vw, 4rem)"
-                enableHover
-                color={isDark ? '#00ff41' : '#008c2a'}
-                gradient={
-                  isDark
-                    ? ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3']
-                    : ['#0a2f12', '#008c2a', '#0d6b42', '#61dca3']
-                }
-                gradientSpeed={0.4}
-                strokeColor={isDark ? 'rgba(0, 255, 65, 0.35)' : 'rgba(0, 140, 42, 0.25)'}
-                strokeWidth={1}
+              <TitleMatrixGlitch
+                isDark={isDark}
+                fontFamily={TITLE_DISPLAY_FONT}
+                fontSize="clamp(2.4rem, 6vw, 4.5rem)"
               >
                 ADiXi SESSION SURVEY
-              </FuzzyText>
+              </TitleMatrixGlitch>
             </div>
           </div>
 

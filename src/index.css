@@ -1,7 +1,7 @@
 /* 問題内容用フォント（日本語対応・ネオ風） */
 @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
 /* 問題文：マトリックス／ハッカー風（モノスペース・緑） */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=M+PLUS+1+Code:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=M+PLUS+1+Code:wght@400;600;700;800&display=swap');
 
 /* ステップ内のすべてのテキストにフォントを継承（Tailwind の外で指定して確実に反映） */
 .step-content-font,
@@ -33,6 +33,9 @@ html:not(.dark) .question-matrix-glow {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --font-hacker-neo: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+  --font-hacker-mono: 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace;
+  --color-placeholder: rgba(0, 140, 42, 0.35);
+  --color-form-input-text: #008c2a;
 
   /* Light mode (default) - 背景やや暗め・透明度上げて LetterGlitch がよく透ける */
   color-scheme: light;
@@ -78,6 +81,8 @@ html.dark {
   --color-stepper-connector: rgba(255, 255, 255, 0.25);
   --color-button-bg: #2d2d2d;
   --color-button-text: rgba(255, 255, 255, 0.87);
+  --color-placeholder: rgba(0, 255, 65, 0.32);
+  --color-form-input-text: #00ff41;
   --glitch-bg: #0a0a0c;
   --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
   --glitch-center-vignette: rgba(0, 0, 0, 0.8);
