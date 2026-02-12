@@ -20,6 +20,9 @@
 .question-matrix-glow {
   filter: drop-shadow(0 0 6px rgba(0, 255, 65, 0.5)) drop-shadow(0 0 12px rgba(0, 255, 65, 0.25));
 }
+html:not(.dark) .question-matrix-glow {
+  filter: drop-shadow(0 0 6px rgba(0, 140, 42, 0.4)) drop-shadow(0 0 12px rgba(0, 140, 42, 0.2));
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

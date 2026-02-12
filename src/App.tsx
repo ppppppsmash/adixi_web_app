@@ -25,13 +25,15 @@ import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOve
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 import NoiseLoading from "./components/loading/noise-loading";
 
-const GLITCH_COLORS = ['#2b4539', '#61dca3', '#61b3dc']
+/** マトリックス風緑を含むグリッチ／アクセント色 */
+const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
 
 /** 問題内容用フォント（日本語対応・ネオ風） */
 const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
 /** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
 const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
-const QUESTION_MATRIX_COLOR = '#00ff41'
+const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
+const QUESTION_MATRIX_COLOR_LIGHT = '#008c2a'
 
 function getSurveyId(): string | null {
   const params = new URLSearchParams(window.location.search)
@@ -61,10 +63,10 @@ function SurveyStepContent({
           fontSize="1.4rem"
           baseIntensity={0.12}
           hoverIntensity={0.35}
-          color={QUESTION_MATRIX_COLOR}
+          color={isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT}
           fontFamily={QUESTION_MATRIX_FONT}
           enableHover
-          strokeColor={isDark ? 'rgba(0, 255, 65, 0.3)' : 'rgba(0, 255, 65, 0.2)'}
+          strokeColor={isDark ? 'rgba(0, 255, 65, 0.3)' : 'rgba(0, 140, 42, 0.25)'}
           strokeWidth={0.5}
         >
           {item.question}
@@ -293,6 +295,16 @@ function App() {
           />
         </div>
         <div className="absolute inset-0 z-[1] bg-[var(--color-bg-center)]" aria-hidden />
+        {/* マトリックス風：中央にごく薄い緑のビネット（ライト時はやや暗い緑） */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background: isDark
+              ? 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 255, 65, 0.07) 0%, transparent 55%)'
+              : 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 140, 42, 0.06) 0%, transparent 55%)',
+          }}
+          aria-hidden
+        />
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
           {submittedNames.length > 0 && (
@@ -310,14 +322,14 @@ function App() {
                 hoverIntensity={0.5}
                 fontSize="clamp(2rem, 5vw, 4rem)"
                 enableHover
-                color={isDark ? '#61dca3' : '#FFF'}
+                color={isDark ? '#00ff41' : '#008c2a'}
                 gradient={
                   isDark
-                    ? ['#2b4539', '#61dca3', '#61b3dc']
-                    : ['#0d6b42', '#61dca3', '#b8f0d8', '#fff']
+                    ? ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3']
+                    : ['#0a2f12', '#008c2a', '#0d6b42', '#61dca3']
                 }
                 gradientSpeed={0.4}
-                strokeColor={isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)'}
+                strokeColor={isDark ? 'rgba(0, 255, 65, 0.35)' : 'rgba(0, 140, 42, 0.25)'}
                 strokeWidth={1}
               >
                 ADiXi SESSION SURVEY
