@@ -539,27 +539,6 @@ function App() {
           transition: `opacity ${underlayTransition} ease-out`,
         }}
       >
-      <div className="hacker-toolbar absolute top-12 right-6 z-50 flex flex-col items-end gap-3">
-        <AnimatedThemeToggler />
-        <button
-          type="button"
-          onClick={() => (isCameraOn ? stopCamera() : startCamera())}
-          className="hacker-toolbar-btn"
-          title={isCameraOn ? "カメラOFF" : "カメラON"}
-          aria-label={isCameraOn ? "カメラOFF" : "カメラON"}
-        >
-          {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowCrtOff(true)}
-          className="hacker-toolbar-btn"
-          title="モニターOFF"
-          aria-label="モニターOFF"
-        >
-          <Tv className="h-4 w-4" />
-        </button>
-      </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} cameraStream={isCameraOn ? cameraStream ?? null : null} />
 
       {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ（translateZ(0)でレイヤ化しフェード時に黒くならない） */}
@@ -568,7 +547,7 @@ function App() {
           <LetterGlitch
             glitchSpeed={50}
             centerVignette={theme === 'dark' || theme === 'lcdgreen'}
-            outerVignette={true}
+            outerVignette={false}
             smooth={true}
             glitchColors={getGlitchColors(theme)}
             characters={GLITCH_CHARACTERS}
@@ -593,7 +572,7 @@ function App() {
           )}
           {/* タイトル帯：マトリックス雨のように文字が不安定に変わるが全体は読める */}
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 border-x pt-20 pb-16 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
               <TitleMatrixGlitch
                 theme={theme}
                 fontFamily="var(--font-title-code)"
@@ -602,7 +581,7 @@ function App() {
                 ADiXi SESSION SURVEY
               </TitleMatrixGlitch>
               <p
-                className="text-xs tracking-widest opacity-90"
+                className="text-sm tracking-widest opacity-90"
                 style={{
                   fontFamily: 'var(--font-hacker-mono)',
                   color: getAccentColor(theme),
@@ -749,6 +728,41 @@ function App() {
         {/* CRT表示方式：スキャンライン＋端の減光（ブラウン管の表示の見え方） */}
         <div className="crt-display pointer-events-none absolute inset-0 z-[100]" aria-hidden />
       </div>
+      </div>
+      {/* モニター枠（ビゼル）：最前面・全画面に固定。transform の外で確実に表示 */}
+      <div
+        className="fixed inset-0 z-[300] pointer-events-none flex items-stretch justify-stretch"
+        style={{ left: 0, top: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
+        aria-hidden
+      >
+        <img
+          src="/images/bezel.png"
+          alt=""
+          className="block w-full h-full min-w-0 min-h-0"
+          style={{ width: '100%', height: '100%', objectFit: 'fill' }}
+        />
+      </div>
+      {/* ツールバー：枠内に収めて操作可能に */}
+      <div className="hacker-toolbar fixed z-[350] flex flex-col items-end gap-3" style={{ top: '140px', right: '140px' }}>
+        <AnimatedThemeToggler />
+        <button
+          type="button"
+          onClick={() => (isCameraOn ? stopCamera() : startCamera())}
+          className="hacker-toolbar-btn"
+          title={isCameraOn ? "カメラOFF" : "カメラON"}
+          aria-label={isCameraOn ? "カメラOFF" : "カメラON"}
+        >
+          {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowCrtOff(true)}
+          className="hacker-toolbar-btn"
+          title="モニターOFF"
+          aria-label="モニターOFF"
+        >
+          <Tv className="h-4 w-4" aria-hidden />
+        </button>
       </div>
       {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}
       {!showCrtOn && (
