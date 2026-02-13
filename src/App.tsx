@@ -25,6 +25,8 @@ import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOve
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 import { MatrixLoading } from "./components/loading/matrix-loading";
 import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
+import { CommentPanel } from "./components/comments/CommentPanel";
+import { CrtEffectOverlay } from "./components/crt/CrtEffectOverlay";
 
 /** マトリックス風緑を含むグリッチ／アクセント色 */
 const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
@@ -223,10 +225,16 @@ function App() {
   const [loadingFadeDone, setLoadingFadeDone] = useState(false)
   const loadingStartRef = useRef(0)
   const [error, setError] = useState<string | null>(null)
+  /** 最初の CRT ON エフェクト（1回だけ） */
+  const [showCrtOn, setShowCrtOn] = useState(true)
+  /** 最後の CRT OFF エフェクト（送信完了時など） */
+  const [showCrtOff, setShowCrtOff] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submittedNames, setSubmittedNames] = useState<string[]>([])
+  /** コメントはDBに保存せず、画面の左エリアにのみ表示 */
+  const [localComments, setLocalComments] = useState<{ id: string; author_name: string; body: string; created_at: string }[]>([])
 
   const surveyId = getSurveyId()
   const cursorDisplayName =
@@ -296,6 +304,19 @@ function App() {
     setAnswers((prev) => ({ ...prev, [itemId]: value }))
   }
 
+  const addLocalComment = (body: string) => {
+    const name = (cursorDisplayName?.trim() || "匿名").slice(0, 100)
+    setLocalComments((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        author_name: name,
+        body: body.slice(0, 2000),
+        created_at: new Date().toISOString(),
+      },
+    ])
+  }
+
   useEffect(() => {
     if (!showLoading && !error && survey) {
       document.body.classList.add("survey-cursor-none")
@@ -312,6 +333,7 @@ function App() {
     try {
       await submitSurveyResponse(survey.id, answers, respondentName)
       setSubmitStatus('success')
+      setShowCrtOff(true)
       getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => {})
     } catch (e) {
       setSubmitStatus('error')
@@ -338,6 +360,10 @@ function App() {
 
   return (
     <div data-root="app" className="relative">
+      {/* 最初: CRT ON エフェクト（約4秒で消える） */}
+      <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
+      {/* 最後: 送信完了時に CRT OFF エフェクト（約0.55秒） */}
+      <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => setShowCrtOff(false)} />
       <div
         className="survey-cursor-none relative z-0 min-h-[100svh] w-full bg-[var(--color-bg)]"
         style={{
@@ -526,6 +552,17 @@ function App() {
             </div>
           </div>
 
+          {/* コメント欄（左エリア内・DBには保存しない） */}
+          <div className={`flex w-full justify-center border-b ${borderClass}`}>
+            <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <CommentPanel
+                comments={localComments}
+                onAddComment={addLocalComment}
+                authorName={cursorDisplayName}
+              />
+            </div>
+          </div>
+
           <div className={`flex h-16 w-full flex-grow justify-center border-b ${borderClass}`}>
             <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
@@ -534,8 +571,10 @@ function App() {
         <div className="crt-display pointer-events-none absolute inset-0 z-[100]" aria-hidden />
       </div>
       </div>
-      {/* ローディングはアンマウントせず常に DOM に残し、フェード後は opacity 0 のまま */}
-      <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} isDark={isDark} onFadeEnd={() => setLoadingFadeDone(true)} />
+      {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}
+      {!showCrtOn && (
+        <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} isDark={isDark} onFadeEnd={() => setLoadingFadeDone(true)} />
+      )}
     </div>
   )
 }
