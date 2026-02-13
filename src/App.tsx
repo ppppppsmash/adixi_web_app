@@ -17,6 +17,7 @@ import {
   Legend,
 } from '@headlessui/react'
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurveyRespondentNames, type PublicSurvey, type SurveyItem } from "./api/survey";
+import { supabase } from "./lib/supabase";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { useCamera } from "./hooks/useCamera";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
@@ -320,6 +321,29 @@ function App() {
     getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => setSubmittedNames([]))
   }, [survey?.id])
 
+  /* 他ユーザーの送信を Realtime で検知し、送信者アバター一覧を即時更新 */
+  useEffect(() => {
+    if (!survey?.id) return
+    const channel = supabase
+      .channel(`survey_responses:${survey.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "survey_responses",
+          filter: `survey_id=eq.${survey.id}`,
+        },
+        () => {
+          getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => {})
+        }
+      )
+      .subscribe()
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [survey?.id])
+
   /* アンケート取得後、最初の項目（名前）をモニターON前に入力した initialName で初期化 */
   useEffect(() => {
     if (!survey?.items?.length || initialName.trim() === '') return
@@ -600,7 +624,7 @@ function App() {
                         )}
                       >
                         {/* 名前は初期画面で入力済みのため、アンケート画面では1問目を表示しない（送信時は answers に含まれる） */}
-                        {survey.items.slice(1).map((item, index) => (
+                        {survey.items.slice(1).map((item) => (
                           <Step key={item.id}>
                             <SurveyStepContent
                               item={item}
