@@ -43,7 +43,8 @@ export function TitleMatrixGlitch({
     return () => clearInterval(interval);
   }, [chars]);
 
-  const green = isDark ? "#00ff41" : "#008c2a";
+  const color = isDark ? "#00ff41" : "#ff0040";
+  const stroke = isDark ? "#00ff41" : "#dd0038";
 
   return (
     <span
@@ -52,15 +53,15 @@ export function TitleMatrixGlitch({
         fontFamily,
         fontSize,
         fontWeight: 200,
-        color: green,
+        color,
         display: "inline-block",
         textAlign: "center",
         letterSpacing: "0.04em",
-        WebkitTextStroke: `0.5px ${green}`,
+        WebkitTextStroke: `0.5px ${stroke}`,
         paintOrder: "stroke fill",
         filter: isDark
           ? "drop-shadow(0 0 12px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.4))"
-          : "drop-shadow(0 0 12px rgba(0, 140, 42, 0.7)) drop-shadow(0 0 24px rgba(0, 140, 42, 0.35))",
+          : "drop-shadow(0 0 12px rgba(255, 0, 64, 0.7)) drop-shadow(0 0 24px rgba(255, 0, 64, 0.35))",
       }}
     >
       {displayed.map((c, i) => (

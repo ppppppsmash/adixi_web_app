@@ -17,7 +17,9 @@ export function CrtEffectOverlay({
   onEnd: () => void;
 }) {
   const onEndRef = useRef(onEnd);
-  onEndRef.current = onEnd;
+  useEffect(() => {
+    onEndRef.current = onEnd;
+  }, [onEnd]);
 
   useEffect(() => {
     if (!show) return;

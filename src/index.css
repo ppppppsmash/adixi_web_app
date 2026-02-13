@@ -22,8 +22,8 @@
 .question-matrix-glow {
   filter: drop-shadow(0 0 6px rgba(0, 255, 65, 0.5)) drop-shadow(0 0 12px rgba(0, 255, 65, 0.25));
 }
-html:not(.dark) .question-matrix-glow {
-  filter: drop-shadow(0 0 6px rgba(0, 140, 42, 0.4)) drop-shadow(0 0 12px rgba(0, 140, 42, 0.2));
+html.virtual-boy .question-matrix-glow {
+  filter: drop-shadow(0 0 6px rgba(255, 0, 64, 0.5)) drop-shadow(0 0 12px rgba(255, 0, 64, 0.25));
 }
 
 :root {
@@ -36,34 +36,30 @@ html:not(.dark) .question-matrix-glow {
   -moz-osx-font-smoothing: grayscale;
   --font-hacker-neo: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
   --font-hacker-mono: 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace;
-  /** タイトル専用：コードエディタ風（Cascadia Code） */
   --font-title-code: 'Cascadia Code', 'JetBrains Mono', Consolas, Monaco, monospace;
-  --color-placeholder: rgba(0, 140, 42, 0.35);
-  --color-form-input-text: #008c2a;
-
-  /* Light mode (default) - 背景やや暗め・透明度上げて LetterGlitch がよく透ける */
-  color-scheme: light;
-  --color-bg: #fff;
-  --color-bg-center: rgba(200, 200, 212, 0.52);
-  --color-bg-elevated: #f5f5f8;
-  /* アンケート border 内：目立たせつつ LetterGlitch が透ける */
-  --color-bg-survey: rgba(218, 218, 228, 0.62);
-  --color-text: #1d1d1f;
-  --color-text-muted: #6e6e73;
-  --color-accent: #008c2a;
-  --color-accent-hover: #006b20;
-  --color-border: #c4c4c8;
-  --color-border-title: #d0d0d4;
-  --color-form-border: rgba(0, 140, 42, 0.5);
-  --color-form-bg: rgba(10, 47, 18, 0.06);
-  --color-stepper-inactive-bg: rgba(0, 0, 0, 0.14);
-  --color-stepper-connector: rgba(0, 0, 0, 0.22);
-  --color-button-bg: #1a1a1a;
-  --color-button-text: #ffffff;
-  /* ダークモード同様にエフェクトがはっきり見えるよう、やや暗めの背景＋強めのビネット */
-  --glitch-bg: #c8cad0;
-  --glitch-outer-vignette: rgba(0, 0, 0, 0.78);
-  --glitch-center-vignette: rgba(0, 0, 0, 0.28);
+  --color-placeholder: rgba(0, 255, 65, 0.32);
+  --color-form-input-text: #00ff41;
+  /* デフォルト＝ダーク（緑）と同じ */
+  color-scheme: dark;
+  --color-bg: #100F0F;
+  --color-bg-center: rgba(28, 28, 30, 0.58);
+  --color-bg-elevated: #161515;
+  --color-bg-survey: rgba(22, 21, 21, 0.82);
+  --color-text: rgba(255, 255, 255, 0.87);
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-accent: #00ff41;
+  --color-accent-hover: #22ff55;
+  --color-border: #3d3d3d;
+  --color-border-title: #4a4a4a;
+  --color-form-border: rgba(0, 255, 65, 0.45);
+  --color-form-bg: rgba(10, 31, 10, 0.08);
+  --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);
+  --color-stepper-connector: rgba(255, 255, 255, 0.25);
+  --color-button-bg: #2d2d2d;
+  --color-button-text: rgba(255, 255, 255, 0.87);
+  --glitch-bg: #0a0a0c;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
 }
 
 html.dark {
@@ -89,6 +85,32 @@ html.dark {
   --color-form-input-text: #00ff41;
   --glitch-bg: #0a0a0c;
   --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
+}
+
+/* Virtual Boy 風：暗い背景＋赤アクセント（ライトモード廃止後の代替テーマ） */
+html.virtual-boy {
+  color-scheme: dark;
+  --color-bg: #0f0808;
+  --color-bg-center: rgba(28, 18, 18, 0.6);
+  --color-bg-elevated: #160c0c;
+  --color-bg-survey: rgba(22, 12, 12, 0.88);
+  --color-text: rgba(255, 220, 220, 0.9);
+  --color-text-muted: rgba(255, 180, 180, 0.6);
+  --color-accent: #ff0040;
+  --color-accent-hover: #ff2055;
+  --color-border: #4a2a2a;
+  --color-border-title: #552a2a;
+  --color-form-border: rgba(255, 0, 64, 0.5);
+  --color-form-bg: rgba(40, 8, 12, 0.12);
+  --color-stepper-inactive-bg: rgba(255, 255, 255, 0.12);
+  --color-stepper-connector: rgba(255, 255, 255, 0.2);
+  --color-button-bg: #2d1a1a;
+  --color-button-text: rgba(255, 255, 255, 0.9);
+  --color-placeholder: rgba(255, 0, 64, 0.35);
+  --color-form-input-text: #ff0040;
+  --glitch-bg: #0a0505;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.85);
   --glitch-center-vignette: rgba(0, 0, 0, 0.8);
 }
 
@@ -140,9 +162,9 @@ button:focus-visible {
   outline-offset: 2px;
   box-shadow: 0 0 0 1px var(--color-accent), 0 0 12px rgba(0, 255, 65, 0.25);
 }
-html:not(.dark) button:focus,
-html:not(.dark) button:focus-visible {
-  box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(0, 140, 42, 0.2);
+html.virtual-boy button:focus,
+html.virtual-boy button:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(255, 0, 64, 0.3);
 }
 
 /* ========== CRT screen effect (CodePen lbebber/XJRdrV 参考) ========== */
@@ -494,8 +516,12 @@ html:not(.dark) button:focus-visible {
   box-shadow: 0 0 12px rgba(0, 255, 65, 0.25), inset 0 0 12px rgba(0, 255, 65, 0.04);
   color: var(--color-accent);
 }
-html:not(.dark) .hacker-toolbar-btn:hover {
-  box-shadow: 0 0 10px rgba(0, 140, 42, 0.2), inset 0 0 10px rgba(0, 140, 42, 0.03);
+/* Virtual Boy：ツールバーは var(--color-accent) で赤になる。ホバー時のみ赤グロー */
+html.virtual-boy .hacker-toolbar-btn:hover {
+  box-shadow: 0 0 12px rgba(255, 0, 64, 0.35), inset 0 0 12px rgba(255, 0, 64, 0.06);
+}
+html.virtual-boy .hacker-toolbar-btn:focus-visible {
+  outline-color: #ff0040;
 }
 .hacker-toolbar-btn:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -549,13 +575,13 @@ html.dark .crt-scanlines-static {
   animation: crt-scanline-sweep 4s linear infinite;
   pointer-events: none;
 }
-html:not(.dark) .crt-scanlines-beam {
+html.virtual-boy .crt-scanlines-beam {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 140, 42, 0.04) 30%,
-    rgba(0, 140, 42, 0.1) 50%,
-    rgba(0, 140, 42, 0.04) 70%,
+    rgba(255, 0, 64, 0.04) 30%,
+    rgba(255, 0, 64, 0.1) 50%,
+    rgba(255, 0, 64, 0.04) 70%,
     transparent 100%
   );
 }

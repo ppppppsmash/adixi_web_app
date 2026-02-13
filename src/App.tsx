@@ -39,7 +39,7 @@ const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto
 /** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
 const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
 const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
-const QUESTION_MATRIX_COLOR_LIGHT = '#008c2a'
+const QUESTION_MATRIX_COLOR_VIRTUALBOY = '#ff0040'
 
 function getSurveyId(): string | null {
   const params = new URLSearchParams(window.location.search)
@@ -77,10 +77,10 @@ function SurveyStepContent({
           className="text-[1.15rem] font-medium"
           style={{
             fontFamily: QUESTION_MATRIX_FONT,
-            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_LIGHT,
+            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_VIRTUALBOY,
             textShadow: isDark
               ? "0 0 8px rgba(0, 255, 65, 0.4)"
-              : "0 0 6px rgba(0, 140, 42, 0.35)",
+              : "0 0 8px rgba(255, 0, 64, 0.4)",
           }}
         />
         {item.isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -344,6 +344,30 @@ function App() {
     }
   }, [survey?.id])
 
+  /* 送信者一覧のポーリング（Realtime 未設定時も他ユーザー送信・退場を数秒で反映） */
+  const SUBMITTED_NAMES_POLL_MS = 4000
+  useEffect(() => {
+    if (!survey?.id || !tvUnlocked || showCrtOff) return
+    const poll = () => {
+      getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => {})
+    }
+    const id = setInterval(poll, SUBMITTED_NAMES_POLL_MS)
+    poll()
+    return () => clearInterval(id)
+  }, [survey?.id, tvUnlocked, showCrtOff])
+
+  /* タブが再度表示されたときに送信者一覧を再取得 */
+  useEffect(() => {
+    if (!survey?.id) return
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => {})
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    return () => document.removeEventListener("visibilitychange", onVisibility)
+  }, [survey?.id])
+
   /* アンケート取得後、最初の項目（名前）をモニターON前に入力した initialName で初期化 */
   useEffect(() => {
     if (!survey?.items?.length || initialName.trim() === '') return
@@ -510,7 +534,7 @@ function App() {
           style={{
             background: isDark
               ? 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 255, 65, 0.07) 0%, transparent 55%)'
-              : 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 140, 42, 0.06) 0%, transparent 55%)',
+              : 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(255, 0, 64, 0.08) 0%, transparent 55%)',
           }}
           aria-hidden
         />
@@ -537,7 +561,7 @@ function App() {
                 className="text-xs tracking-widest opacity-90"
                 style={{
                   fontFamily: 'var(--font-hacker-mono)',
-                  color: isDark ? '#00ff41' : '#008c2a',
+                  color: isDark ? '#00ff41' : '#ff0040',
                 }}
                 aria-hidden
               >
@@ -550,14 +574,17 @@ function App() {
           <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
-                /** ハッカー風：緑〜ティール系（ui-avatars の background 用 hex） */
-                const AVATAR_COLORS = ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"];
+                /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
+                const AVATAR_COLORS_GREEN = ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"];
+                const AVATAR_COLORS_RED = ["ff0040", "dd0038", "ff2055", "cc0033", "ff4068", "b3002e", "ff6080", "99002a", "e6003a", "8c0026"];
+                const avatarPalette = isDark ? AVATAR_COLORS_GREEN : AVATAR_COLORS_RED;
                 const colorForName = (name: string) => {
                   let n = 0;
                   for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
-                  return "#" + AVATAR_COLORS[Math.abs(n) % AVATAR_COLORS.length];
+                  return "#" + avatarPalette[Math.abs(n) % avatarPalette.length];
                 };
                 const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
+                const submittedSet = new Set(submittedNames.map((name) => name.trim()).filter(Boolean));
                 const byName = new Map<string, { name: string; color: string; designation: string }>();
                 submittedNames.forEach((name) => {
                   const n = name.trim();
@@ -565,12 +592,16 @@ function App() {
                 });
                 if (myCursorInfo && hasName(myCursorInfo.name)) {
                   const n = myCursorInfo.name.trim();
-                  byName.set(n, { name: n, color: myCursorInfo.color, designation: "参加中" });
+                  if (!submittedSet.has(n)) {
+                    byName.set(n, { name: n, color: myCursorInfo.color, designation: "参加中" });
+                  }
                 }
                 otherCursors.forEach((c) => {
                   if (hasName(c.name)) {
                     const n = c.name.trim();
-                    byName.set(n, { name: n, color: c.color, designation: "参加中" });
+                    if (!submittedSet.has(n)) {
+                      byName.set(n, { name: n, color: c.color, designation: "参加中" });
+                    }
                   }
                 });
                 const forAvatarList = Array.from(byName.entries());
@@ -607,7 +638,7 @@ function App() {
                             type="button"
                             onClick={onClick}
                             aria-label="前へ"
-                            className="hacker-btn-back relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#00ff41]"
+                            className="hacker-btn-back relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)]"
                           >
                             <ChevronLeft className="size-5 shrink-0" aria-hidden />
                           </button>
@@ -617,7 +648,7 @@ function App() {
                             type="button"
                             onClick={onClick}
                             aria-label={isLastStep ? "送信" : "次へ"}
-                            className="hacker-btn relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#00ff41]"
+                            className="hacker-btn relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)]"
                           >
                             {isLastStep ? <Send className="size-5 shrink-0" aria-hidden /> : <ChevronRight className="size-5 shrink-0" aria-hidden />}
                           </button>

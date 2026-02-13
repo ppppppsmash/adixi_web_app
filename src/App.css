@@ -95,9 +95,9 @@
   background: rgba(10, 31, 10, 0.85);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-html:not(.dark) .stepper-progress-track {
-  background: rgba(10, 47, 18, 0.75);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+html.virtual-boy .stepper-progress-track {
+  background: rgba(30, 8, 12, 0.85);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .hacker-progress-fill {
@@ -109,9 +109,9 @@ html.dark .hacker-progress-fill {
   background: linear-gradient(90deg, #0a2f12 0%, #00ff41 50%, #00ff41 100%);
   box-shadow: 0 0 12px rgba(0, 255, 65, 0.7), 0 0 24px rgba(0, 255, 65, 0.35);
 }
-html:not(.dark) .hacker-progress-fill {
-  background: linear-gradient(90deg, #0a2f12 0%, #008c2a 50%, #008c2a 100%);
-  box-shadow: 0 0 8px rgba(0, 140, 42, 0.5), 0 0 16px rgba(0, 140, 42, 0.25);
+html.virtual-boy .hacker-progress-fill {
+  background: linear-gradient(90deg, #2f0a12 0%, #ff0040 50%, #ff0040 100%);
+  box-shadow: 0 0 8px rgba(255, 0, 64, 0.5), 0 0 16px rgba(255, 0, 64, 0.25);
 }
 
 .hacker-btn {
@@ -125,16 +125,16 @@ html:not(.dark) .hacker-progress-fill {
   box-shadow: 0 0 18px rgba(0, 255, 65, 0.5), 0 0 32px rgba(0, 255, 65, 0.2), inset 0 1px 0 rgba(0, 255, 65, 0.15);
   color: #00ff41;
 }
-html:not(.dark) .hacker-btn {
-  background: rgba(10, 47, 18, 0.85);
-  color: #008c2a;
-  border-color: rgba(0, 140, 42, 0.7);
-  box-shadow: 0 0 10px rgba(0, 140, 42, 0.15), inset 0 1px 0 rgba(0, 140, 42, 0.08);
+html.virtual-boy .hacker-btn {
+  background: rgba(40, 8, 12, 0.9);
+  color: #ff0040;
+  border-color: rgba(255, 0, 64, 0.6);
+  box-shadow: 0 0 12px rgba(255, 0, 64, 0.2), inset 0 1px 0 rgba(255, 0, 64, 0.1);
 }
-html:not(.dark) .hacker-btn:hover {
-  border-color: #008c2a;
-  box-shadow: 0 0 14px rgba(0, 140, 42, 0.4), 0 0 24px rgba(0, 140, 42, 0.15);
-  color: #008c2a;
+html.virtual-boy .hacker-btn:hover {
+  border-color: #ff0040;
+  box-shadow: 0 0 18px rgba(255, 0, 64, 0.5), 0 0 32px rgba(255, 0, 64, 0.2);
+  color: #ff0040;
 }
 
 .hacker-btn-back {
@@ -147,14 +147,14 @@ html:not(.dark) .hacker-btn:hover {
   border-color: rgba(0, 255, 65, 0.6);
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
 }
-html:not(.dark) .hacker-btn-back {
-  color: #008c2a;
-  border-color: rgba(0, 140, 42, 0.4);
+html.virtual-boy .hacker-btn-back {
+  color: #ff0040;
+  border-color: rgba(255, 0, 64, 0.4);
 }
-html:not(.dark) .hacker-btn-back:hover {
-  color: #008c2a;
-  border-color: rgba(0, 140, 42, 0.7);
-  box-shadow: 0 0 8px rgba(0, 140, 42, 0.2);
+html.virtual-boy .hacker-btn-back:hover {
+  color: #ff0040;
+  border-color: rgba(255, 0, 64, 0.7);
+  box-shadow: 0 0 8px rgba(255, 0, 64, 0.3);
 }
 
 /* アバター：ハッカー風（緑枠・グロー） */
@@ -162,9 +162,9 @@ html:not(.dark) .hacker-btn-back:hover {
   border: 1px solid #00ff41;
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.4), 0 0 16px rgba(0, 255, 65, 0.2);
 }
-html:not(.dark) .avatar-hacker {
-  border-color: #008c2a;
-  box-shadow: 0 0 6px rgba(0, 140, 42, 0.35), 0 0 12px rgba(0, 140, 42, 0.15);
+html.virtual-boy .avatar-hacker {
+  border-color: #ff0040;
+  box-shadow: 0 0 6px rgba(255, 0, 64, 0.4), 0 0 12px rgba(255, 0, 64, 0.2);
 }
 
 /* アバターのツールチップ：ターミナル風 */
@@ -175,10 +175,10 @@ html:not(.dark) .avatar-hacker {
   border: 1px solid rgba(0, 255, 65, 0.6);
   box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), inset 0 0 0 1px rgba(0, 255, 65, 0.08);
 }
-html:not(.dark) .avatar-hacker-tooltip {
-  background: rgba(10, 47, 18, 0.96);
-  border-color: rgba(0, 140, 42, 0.6);
-  box-shadow: 0 0 10px rgba(0, 140, 42, 0.15), inset 0 0 0 1px rgba(0, 140, 42, 0.06);
+html.virtual-boy .avatar-hacker-tooltip {
+  background: rgba(30, 8, 12, 0.96);
+  border-color: rgba(255, 0, 64, 0.6);
+  box-shadow: 0 0 10px rgba(255, 0, 64, 0.2), inset 0 0 0 1px rgba(255, 0, 64, 0.08);
 }
 
 /* ステッパー：Previous / Next ボタン（Headless UI Button）ネオ風ピカピカ */
@@ -266,8 +266,8 @@ select.form-input-base {
   background-size: 1.1rem;
   padding-right: 2.25rem;
 }
-html:not(.dark) select.form-input-base {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23008c2a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+html.virtual-boy select.form-input-base {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff0040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 select.form-input-base option {
   background: var(--color-bg-elevated);
@@ -296,16 +296,16 @@ select.form-input-base option {
   background-color: var(--color-form-bg);
   box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.2), 0 0 12px rgba(0, 255, 65, 0.15);
 }
-html:not(.dark) .form-input-base[data-focus],
-html:not(.dark) .form-input-base:focus {
-  border-color: #008c2a;
-  box-shadow: 0 0 0 3px rgba(0, 140, 42, 0.18), 0 0 10px rgba(0, 140, 42, 0.1);
+html.virtual-boy .form-input-base[data-focus],
+html.virtual-boy .form-input-base:focus {
+  border-color: #ff0040;
+  box-shadow: 0 0 0 3px rgba(255, 0, 64, 0.25), 0 0 12px rgba(255, 0, 64, 0.15);
 }
 .form-input-base[data-hover]:not([data-focus]) {
   border-color: rgba(0, 255, 65, 0.55);
 }
-html:not(.dark) .form-input-base[data-hover]:not([data-focus]) {
-  border-color: rgba(0, 140, 42, 0.6);
+html.virtual-boy .form-input-base[data-hover]:not([data-focus]) {
+  border-color: rgba(255, 0, 64, 0.55);
 }
 .form-input-base[data-disabled] {
   opacity: 0.6;
@@ -338,16 +338,16 @@ html:not(.dark) .form-input-base[data-hover]:not([data-focus]) {
   background-color: #00ff41;
   border-color: #00ff41;
 }
-html:not(.dark) .form-checkbox-box[data-checked] {
-  background-color: #008c2a;
-  border-color: #008c2a;
+html.virtual-boy .form-checkbox-box[data-checked] {
+  background-color: #ff0040;
+  border-color: #ff0040;
 }
 .form-checkbox-box[data-focus] {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.4);
 }
-html:not(.dark) .form-checkbox-box[data-focus] {
-  box-shadow: 0 0 0 2px rgba(0, 140, 42, 0.35);
+html.virtual-boy .form-checkbox-box[data-focus] {
+  box-shadow: 0 0 0 2px rgba(255, 0, 64, 0.4);
 }
 /* ネイティブ checkbox 用のチェック時：全塗りつぶし（枠も同色でソリッド） */
 .form-checkbox-box-checked {
@@ -355,30 +355,30 @@ html:not(.dark) .form-checkbox-box[data-focus] {
   border-color: #00ff41 !important;
   border-width: 2px;
 }
-html:not(.dark) .form-checkbox-box-checked {
-  background-color: #008c2a !important;
-  border-color: #008c2a !important;
+html.virtual-boy .form-checkbox-box-checked {
+  background-color: #ff0040 !important;
+  border-color: #ff0040 !important;
 }
 .form-checkbox-check-icon {
   color: #0a0a0a;
 }
-html:not(.dark) .form-checkbox-check-icon {
+html.virtual-boy .form-checkbox-check-icon {
   color: #fff;
 }
-/* チェックボックス・ラジオの選択肢ラベル：ハッカー風緑 */
+/* チェックボックス・ラジオの選択肢ラベル：ダーク=緑、Virtual Boy=赤 */
 .form-label-option {
   color: #00ff41;
   font-family: var(--font-hacker-mono) !important;
 }
-html:not(.dark) .form-label-option {
-  color: #008c2a;
+html.virtual-boy .form-label-option {
+  color: #ff0040;
 }
 .form-radio-dot {
   @apply invisible size-2 rounded-none transition;
   background-color: #00ff41;
 }
-html:not(.dark) .form-radio-dot {
-  background-color: #008c2a;
+html.virtual-boy .form-radio-dot {
+  background-color: #ff0040;
 }
 .form-radio-outer {
   @apply flex size-5 shrink-0 items-center justify-center rounded-none border-2 transition;
@@ -389,16 +389,16 @@ html:not(.dark) .form-radio-dot {
   border-color: #00ff41;
   background-color: rgba(0, 255, 65, 0.15);
 }
-html:not(.dark) .form-radio-outer[data-checked] {
-  border-color: #008c2a;
-  background-color: rgba(0, 140, 42, 0.12);
+html.virtual-boy .form-radio-outer[data-checked] {
+  border-color: #ff0040;
+  background-color: rgba(255, 0, 64, 0.15);
 }
 .form-radio-outer[data-focus] {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.4);
 }
-html:not(.dark) .form-radio-outer[data-focus] {
-  box-shadow: 0 0 0 2px rgba(0, 140, 42, 0.35);
+html.virtual-boy .form-radio-outer[data-focus] {
+  box-shadow: 0 0 0 2px rgba(255, 0, 64, 0.4);
 }
 .form-legend {
   color: var(--color-text);
@@ -498,12 +498,31 @@ html.dark .crt-display::before {
   );
   pointer-events: none;
 }
-html.dark .crt-display::after {
+html.dark .crt-display::after,
+html.virtual-boy .crt-display::after {
   background: radial-gradient(
     ellipse 85% 80% at 50% 50%,
     transparent 0%,
     transparent 45%,
     rgba(0, 0, 0, 0.55) 100%
+  );
+}
+html.virtual-boy .crt-display {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 1px,
+    rgba(0, 0, 0, 0.2) 1px,
+    rgba(0, 0, 0, 0.2) 2px
+  );
+}
+html.virtual-boy .crt-display::before {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 4px,
+    rgba(0, 0, 0, 0.12) 4px,
+    rgba(0, 0, 0, 0.12) 5px
   );
 }
 
@@ -525,7 +544,8 @@ html.dark .crt-display::after {
   );
   z-index: 1;
 }
-html.dark .survey-area-crt::before {
+html.dark .survey-area-crt::before,
+html.virtual-boy .survey-area-crt::before {
   background: radial-gradient(
     ellipse 85% 85% at 50% 50%,
     transparent 0%,
@@ -547,7 +567,8 @@ html.dark .survey-area-crt::before {
   );
   z-index: 2;
 }
-html.dark .survey-area-crt::after {
+html.dark .survey-area-crt::after,
+html.virtual-boy .survey-area-crt::after {
   background: repeating-linear-gradient(
     0deg,
     transparent 0px,

@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Gamepad2 } from "lucide-react"
 import { flushSync } from "react-dom"
 
 import { cn } from "../../../lib/utils"
@@ -15,7 +15,7 @@ export const AnimatedThemeToggler = ({
   className,
   duration = 400,
 }: AnimatedThemeTogglerProps) => {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(true)
   const containerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -42,7 +42,8 @@ export const AnimatedThemeToggler = ({
       flushSync(() => {
         setIsDark(nextDark)
         document.documentElement.classList.toggle("dark", nextDark)
-        localStorage.setItem("theme", nextDark ? "dark" : "light")
+        document.documentElement.classList.toggle("virtual-boy", !nextDark)
+        localStorage.setItem("theme", nextDark ? "dark" : "virtualboy")
       })
     }).ready
 
@@ -75,11 +76,11 @@ export const AnimatedThemeToggler = ({
       type="button"
       onClick={handleClick}
       className={cn("hacker-toolbar-btn", className)}
-      title={isDark ? "ライトモードへ" : "ダークモードへ"}
-      aria-label={isDark ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+      title={isDark ? "Virtual Boy モードへ" : "ダーク（緑）モードへ"}
+      aria-label={isDark ? "Virtual Boy モードに切り替え" : "ダークモードに切り替え"}
     >
       {isDark ? (
-        <Sun className="h-4 w-4" aria-hidden />
+        <Gamepad2 className="h-4 w-4" aria-hidden />
       ) : (
         <Moon className="h-4 w-4" aria-hidden />
       )}

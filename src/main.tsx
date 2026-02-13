@@ -4,15 +4,14 @@ import './index.css'
 import './App.css'
 import App from './App.tsx'
 
-// 描画前に保存済みテーマを適用（フラッシュ防止）
+// 描画前に保存済みテーマを適用。dark = 緑、virtualboy = Virtual Boy 赤（ライトモード廃止）
 const saved = localStorage.getItem('theme')
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-const useDark =
-  saved === 'dark' || (saved !== 'light' && prefersDark)
-if (useDark) {
-  document.documentElement.classList.add('dark')
-} else {
+if (saved === 'virtualboy') {
   document.documentElement.classList.remove('dark')
+  document.documentElement.classList.add('virtual-boy')
+} else {
+  document.documentElement.classList.remove('virtual-boy')
+  document.documentElement.classList.add('dark')
 }
 
 createRoot(document.getElementById('root')!).render(

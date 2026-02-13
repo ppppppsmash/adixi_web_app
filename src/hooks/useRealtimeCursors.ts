@@ -144,37 +144,42 @@ export function useRealtimeCursors(
     });
 
     const prevOthersRef = { current: [] as OtherCursor[] };
+    const applyPresenceState = () => {
+      const state = channel.presenceState<CursorPresence>();
+      const others: OtherCursor[] = [];
+      for (const [key, presences] of Object.entries(state)) {
+        if (key === myKey) continue;
+        const first = Array.isArray(presences) ? presences[0] : presences;
+        if (!first?.cursor) continue;
+        others.push({
+          key,
+          cursor: first.cursor,
+          color: first.color ?? "#61dca3",
+          name: first.name ?? "ゲスト",
+        });
+      }
+      const prev = prevOthersRef.current;
+      const prevByKey = new Map(prev.map((o) => [o.key, o]));
+      const changed =
+        prev.length !== others.length ||
+        others.some((o) => {
+          const p = prevByKey.get(o.key);
+          return (
+            !p ||
+            Math.abs(p.cursor.x - o.cursor.x) > 1.5 ||
+            Math.abs(p.cursor.y - o.cursor.y) > 1.5
+          );
+        });
+      if (changed) {
+        prevOthersRef.current = others;
+        setOtherCursors(others);
+      }
+    };
     channel
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<CursorPresence>();
-        const others: OtherCursor[] = [];
-        for (const [key, presences] of Object.entries(state)) {
-          if (key === myKey) continue;
-          const first = Array.isArray(presences) ? presences[0] : presences;
-          if (!first?.cursor) continue;
-          others.push({
-            key,
-            cursor: first.cursor,
-            color: first.color ?? "#61dca3",
-            name: first.name ?? "ゲスト",
-          });
-        }
-        const prev = prevOthersRef.current;
-        const prevByKey = new Map(prev.map((o) => [o.key, o]));
-        const changed =
-          prev.length !== others.length ||
-          others.some((o) => {
-            const p = prevByKey.get(o.key);
-            return (
-              !p ||
-              Math.abs(p.cursor.x - o.cursor.x) > 1.5 ||
-              Math.abs(p.cursor.y - o.cursor.y) > 1.5
-            );
-          });
-        if (changed) {
-          prevOthersRef.current = others;
-          setOtherCursors(others);
-        }
+      .on("presence", { event: "sync" }, applyPresenceState)
+      .on("presence", { event: "leave" }, () => {
+        /* 誰かが退場したら一覧を即時更新 */
+        applyPresenceState();
       })
       .subscribe(async (status) => {
         if (status !== "SUBSCRIBED") return;
