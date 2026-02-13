@@ -448,6 +448,65 @@ html:not(.dark) .hacker-toolbar-btn:hover {
   flex-shrink: 0;
 }
 
+/* CRT スキャンラインオーバーレイ（固定で最前面に表示） */
+.crt-scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+}
+.crt-scanlines-static {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+}
+html.dark .crt-scanlines-static {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.28) 2px,
+    rgba(0, 0, 0, 0.28) 3px
+  );
+}
+/* 動的スキャンライン：上から下へ流れる走査線 */
+.crt-scanlines-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 255, 65, 0.03) 30%,
+    rgba(0, 255, 65, 0.08) 50%,
+    rgba(0, 255, 65, 0.03) 70%,
+    transparent 100%
+  );
+  animation: crt-scanline-sweep 4s linear infinite;
+  pointer-events: none;
+}
+html:not(.dark) .crt-scanlines-beam {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 140, 42, 0.04) 30%,
+    rgba(0, 140, 42, 0.1) 50%,
+    rgba(0, 140, 42, 0.04) 70%,
+    transparent 100%
+  );
+}
+@keyframes crt-scanline-sweep {
+  0% { top: -5%; }
+  100% { top: 105%; }
+}
+
 /* エフェクトのみのオーバーレイ（アプリはそのまま表示・操作可能、上にエフェクトを重ねるだけ） */
 .crt-effect-overlay {
   position: fixed;

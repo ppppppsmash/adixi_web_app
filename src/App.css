@@ -413,23 +413,49 @@ html:not(.dark) .form-radio-outer[data-focus] {
   vertical-align: top;
 }
 
-/* 全画面：CRT表示方式（スキャンライン＋ビネット＝ブラウン管の表示の見え方） */
+/* 全画面：CRTスキャンライン＋ビネット（ブラウン管の表示の見え方） */
 .crt-display {
-  background: repeating-linear-gradient(
+  /* 水平スキャンライン：1px ごとの細い横線（インターレース風） */
+  background-image: repeating-linear-gradient(
     0deg,
     transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.15) 2px,
-    rgba(0, 0, 0, 0.15) 3px
+    transparent 1px,
+    rgba(0, 0, 0, 0.12) 1px,
+    rgba(0, 0, 0, 0.12) 2px
   );
+  background-size: 100% 2px;
+}
+.crt-display::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 2本おきにやや濃いラインでインターレース感 */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 4px,
+    rgba(0, 0, 0, 0.08) 4px,
+    rgba(0, 0, 0, 0.08) 5px
+  );
+  background-size: 100% 4px;
 }
 html.dark .crt-display {
-  background: repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
     0deg,
     transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.22) 2px,
-    rgba(0, 0, 0, 0.22) 3px
+    transparent 1px,
+    rgba(0, 0, 0, 0.2) 1px,
+    rgba(0, 0, 0, 0.2) 2px
+  );
+}
+html.dark .crt-display::before {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 4px,
+    rgba(0, 0, 0, 0.12) 4px,
+    rgba(0, 0, 0, 0.12) 5px
   );
 }
 .crt-display::after {

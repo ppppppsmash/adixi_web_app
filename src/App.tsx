@@ -27,6 +27,7 @@ import { MatrixLoading } from "./components/loading/matrix-loading";
 import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 import { CommentPanel } from "./components/comments/CommentPanel";
 import { CrtEffectOverlay } from "./components/crt/CrtEffectOverlay";
+import { CrtScanlines } from "./components/crt/CrtScanlines";
 
 /** マトリックス風緑を含むグリッチ／アクセント色 */
 const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
@@ -394,6 +395,7 @@ function App() {
       {/* 最後: モニターOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
       <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} />
       {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#111]" aria-hidden />}
+      {!showCrtOff && <CrtScanlines dynamic />}
       {!showCrtOff && (
       <>
       <div
@@ -594,8 +596,8 @@ function App() {
             </div>
           </div>
 
-          {/* コメント欄（左エリア内・DBには保存しない） */}
-          <div className={`flex w-full justify-center border-b ${borderClass}`}>
+          {/* コメント欄（非表示） */}
+          <div className={`hidden flex w-full justify-center border-b ${borderClass}`}>
             <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`}>
               <CommentPanel
                 comments={localComments}
