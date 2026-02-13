@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
-import { Camera, CameraOff, ChevronLeft, ChevronRight, Send } from "lucide-react";
+import { Camera, CameraOff, ChevronLeft, ChevronRight, Send, Tv } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useDarkMode } from "./lib/useDarkMode";
 import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
@@ -225,8 +225,10 @@ function App() {
   const [loadingFadeDone, setLoadingFadeDone] = useState(false)
   const loadingStartRef = useRef(0)
   const [error, setError] = useState<string | null>(null)
-  /** 最初の CRT ON エフェクト（1回だけ） */
-  const [showCrtOn, setShowCrtOn] = useState(true)
+  /** テレビONボタンを押すまで画面を出さない */
+  const [tvUnlocked, setTvUnlocked] = useState(false)
+  /** 最初の CRT ON エフェクト（テレビONクリック後に1回） */
+  const [showCrtOn, setShowCrtOn] = useState(false)
   /** 最後の CRT OFF エフェクト（送信完了時など） */
   const [showCrtOff, setShowCrtOff] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
@@ -257,7 +259,9 @@ function App() {
     return () => window.removeEventListener("mousemove", onMove)
   }, [setMyCursor])
 
+  /* テレビONされてからだけフェッチ */
   useEffect(() => {
+    if (!tvUnlocked) return
     loadingStartRef.current = Date.now()
     let cancelled = false
     const fetchSurvey = surveyId ? getPublicSurvey(surveyId) : getLatestPublicSurvey()
@@ -277,13 +281,13 @@ function App() {
         if (!cancelled) setLoading(false)
       })
     return () => { cancelled = true }
-  }, [surveyId])
+  }, [surveyId, tvUnlocked])
 
   const LOADING_MIN_MS = 5500
   const LOADING_FADEOUT_MS = 2500
-  /* 取得完了後、2フレーム待って下地を描画してからフェード開始（途中で真っ黒にしないため） */
+  /* 取得完了後、最低表示時間経過でフェード開始 */
   useEffect(() => {
-    if (loading) return
+    if (!tvUnlocked || loading) return
     const elapsed = Date.now() - loadingStartRef.current
     const remaining = Math.max(0, LOADING_MIN_MS - elapsed)
     const t = setTimeout(() => {
@@ -291,7 +295,7 @@ function App() {
       setLoadingExiting(true)
     }, remaining)
     return () => clearTimeout(t)
-  }, [loading])
+  }, [tvUnlocked, loading])
 
   /* ローディングはアンマウントしない（opacity 0 のまま残す）。外すと一瞬真っ黒になるため */
 
@@ -317,13 +321,14 @@ function App() {
     ])
   }
 
+  /* アンケート表示中のみカーソル非表示（初期・テレビOFF時はデフォルトカーソル） */
   useEffect(() => {
-    if (!showLoading && !error && survey) {
+    if (tvUnlocked && !showCrtOff && !showLoading && !error && survey) {
       document.body.classList.add("survey-cursor-none")
       return () => document.body.classList.remove("survey-cursor-none")
     }
     document.body.classList.remove("survey-cursor-none")
-  }, [showLoading, error, survey])
+  }, [tvUnlocked, showCrtOff, showLoading, error, survey])
 
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
@@ -340,6 +345,30 @@ function App() {
       setSubmitError(e instanceof Error ? e.message : String(e))
       console.error(e)
     }
+  }
+
+  /* テレビONされるまで画面の真ん中にボタンのみ表示（マウスはデフォルト表示） */
+  if (!tvUnlocked) {
+    return (
+      <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-4 bg-[#111] text-white cursor-default" style={{ cursor: 'default' }}>
+        <p className="text-sm text-gray-400">ADiXi SESSION SURVEY</p>
+        <button
+          type="button"
+          onClick={() => {
+            setTvUnlocked(true)
+            setShowCrtOn(true)
+            loadingStartRef.current = Date.now()
+            setShowLoading(true)
+            setLoadingExiting(false)
+            setLoadingFadeDone(false)
+          }}
+          className="crt-open-btn ready"
+          aria-label="テレビON"
+        >
+          テレビON
+        </button>
+      </div>
+    )
   }
 
   /* エラーは取得完了後のみ表示。取得中は下地を描画した上でオーバーレイだけ重ねる（途中で真っ黒にしない） */
@@ -362,8 +391,11 @@ function App() {
     <div data-root="app" className="relative">
       {/* 最初: CRT ON エフェクト（約4秒で消える） */}
       <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
-      {/* 最後: 送信完了時に CRT OFF エフェクト（約0.55秒） */}
-      <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => setShowCrtOff(false)} />
+      {/* 最後: テレビOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
+      <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} />
+      {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#111]" aria-hidden />}
+      {!showCrtOff && (
+      <>
       <div
         className="survey-cursor-none relative z-0 min-h-[100svh] w-full bg-[var(--color-bg)]"
         style={{
@@ -381,6 +413,14 @@ function App() {
           title={isCameraOn ? "カメラOFF" : "カメラON"}
         >
           {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowCrtOff(true)}
+          className="flex items-center gap-2 rounded-none border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
+          title="テレビOFF"
+        >
+          <Tv className="h-4 w-4" />
         </button>
       </div>
       <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} cameraStream={isCameraOn ? cameraStream ?? null : null} />
@@ -574,6 +614,8 @@ function App() {
       {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}
       {!showCrtOn && (
         <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} isDark={isDark} onFadeEnd={() => setLoadingFadeDone(true)} />
+      )}
+      </>
       )}
     </div>
   )

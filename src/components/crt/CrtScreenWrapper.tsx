@@ -95,7 +95,7 @@ export function CrtScreenWrapper({ children, onOpenChange }: CrtScreenWrapperPro
     <div className={containerClass}>
       <div className="crt-screen">
         <div className="crt-overlay-label" aria-hidden>
-          AV-1
+          COOL-ADiXi-CH
         </div>
         {children}
       </div>
