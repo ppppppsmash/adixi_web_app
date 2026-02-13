@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Button } from "@headlessui/react";
 import { Send } from "lucide-react";
-import { useDarkMode } from "../../lib/useDarkMode";
+import { useTheme } from "../../lib/useDarkMode";
 
 export type LocalComment = {
   id: string;
@@ -35,14 +35,13 @@ export function CommentPanel({
   onAddComment: (body: string) => void;
   authorName: string;
 }) {
-  const isDark = useDarkMode();
+  const theme = useTheme();
   const listRef = useRef<HTMLDivElement | null>(null);
+  const matrixColor = theme === "dark" ? "#00ff41" : theme === "virtualboy" ? "#ff0040" : theme === "lcdgreen" ? "#9bbc0f" : "#ada59a";
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [comments]);
-
-  const matrixColor = isDark ? "#00ff41" : "#ff0040";
 
   return (
     <div

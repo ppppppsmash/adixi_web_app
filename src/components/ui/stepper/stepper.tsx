@@ -3,7 +3,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Variants } from 'motion/react';
 import FuzzyText from '../text/fuzzy-text';
-import { useDarkMode } from '../../../lib/useDarkMode';
+import { useTheme } from '../../../lib/useDarkMode';
 
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -310,7 +310,9 @@ interface StepIndicatorProps {
 }
 
 function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators = false }: StepIndicatorProps) {
-  const isDark = useDarkMode();
+  const theme = useTheme();
+  /** 全テーマとも暗い背景のため、ラベルは常に明るい色 */
+  const stepLabelColor = theme === 'virtualboy' ? 'rgba(255,220,220,0.9)' : theme === 'lcdgreen' ? 'rgba(155,188,15,0.95)' : theme === 'gameboypocket' ? 'rgba(222,222,222,0.95)' : 'rgba(255,255,255,0.9)';
   const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
 
   const handleClick = () => {
@@ -359,7 +361,7 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
             fontSize="0.875rem"
             baseIntensity={0.12}
             hoverIntensity={0.35}
-            color={isDark ? 'rgba(255,255,255,0.9)' : '#1d1d1f'}
+            color={stepLabelColor}
             enableHover
           >
             {step}

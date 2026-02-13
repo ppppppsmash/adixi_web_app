@@ -4,14 +4,18 @@ import './index.css'
 import './App.css'
 import App from './App.tsx'
 
-// 描画前に保存済みテーマを適用。dark = 緑、virtualboy = Virtual Boy 赤（ライトモード廃止）
-const saved = localStorage.getItem('theme')
+// 描画前に保存済みテーマを適用（dark / virtualboy / lcdgreen / gameboypocket）
+const saved = localStorage.getItem('theme') as 'dark' | 'virtualboy' | 'lcdgreen' | 'gameboypocket' | null
+const root = document.documentElement
+root.classList.remove('dark', 'virtual-boy', 'lcd-green', 'game-boy-pocket')
 if (saved === 'virtualboy') {
-  document.documentElement.classList.remove('dark')
-  document.documentElement.classList.add('virtual-boy')
+  root.classList.add('virtual-boy')
+} else if (saved === 'lcdgreen') {
+  root.classList.add('lcd-green')
+} else if (saved === 'gameboypocket') {
+  root.classList.add('game-boy-pocket')
 } else {
-  document.documentElement.classList.remove('virtual-boy')
-  document.documentElement.classList.add('dark')
+  root.classList.add('dark')
 }
 
 createRoot(document.getElementById('root')!).render(

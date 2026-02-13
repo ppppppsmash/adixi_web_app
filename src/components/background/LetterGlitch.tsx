@@ -34,6 +34,8 @@ const LetterGlitch = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
+  const glitchColorsRef = useRef(glitchColors);
+  glitchColorsRef.current = glitchColors;
   const letters = useRef<
     {
       char: string;
@@ -63,7 +65,8 @@ const LetterGlitch = ({
   };
 
   const getRandomColor = () => {
-    return glitchColors[Math.floor(Math.random() * glitchColors.length)];
+    const colors = glitchColorsRef.current;
+    return colors[Math.floor(Math.random() * colors.length)];
   };
 
   const hexToRgb = (hex: string) => {
@@ -293,6 +296,17 @@ const LetterGlitch = ({
 
     animationRef.current = requestAnimationFrame(animate);
   };
+
+  /** テーマ変更時：全文字の色を即座に新しいパレットで塗り直す */
+  useEffect(() => {
+    glitchColorsRef.current = glitchColors;
+    if (letters.current.length === 0) return;
+    letters.current.forEach((l) => {
+      l.color = getRandomColor();
+      l.targetColor = getRandomColor();
+      l.colorProgress = 1;
+    });
+  }, [glitchColors]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -3,7 +3,7 @@ import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
 import { Camera, CameraOff, ChevronLeft, ChevronRight, Send, Tv } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
-import { useDarkMode } from "./lib/useDarkMode";
+import { useTheme, type ThemeId } from "./lib/useDarkMode";
 import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
 import {
@@ -32,6 +32,17 @@ import { CrtScanlines } from "./components/crt/CrtScanlines";
 const GLITCH_COLORS = ['#0a1f0a', '#0d2818', '#00ff41', '#008c2a', '#2b4539', '#1a4d2a', '#61dca3']
 /** 背景グリッチ：Virtual Boy テーマ用（赤系のみ） */
 const GLITCH_COLORS_VIRTUALBOY = ['#1f0a0a', '#2a0d18', '#ff0040', '#b30033', '#4d1a2a', '#2a0d0d', '#ff4060']
+/** 背景グリッチ：液晶緑テーマ用 */
+const GLITCH_COLORS_LCDGREEN = ['#0a1a0a', '#0d2810', '#9bbc0f', '#8bac0f', '#306230', '#1a3d1a', '#7fa82e']
+/** 背景グリッチ：Game Boy Pocket テーマ用（あの画面のグレー） */
+const GLITCH_COLORS_GAMEBOYPOCKET = ['#1a1a18', '#2d2d28', '#5c574f', '#8b7355', '#ada59a', '#3d3d35', '#dedede']
+
+function getGlitchColors(theme: ThemeId): string[] {
+  if (theme === 'virtualboy') return GLITCH_COLORS_VIRTUALBOY
+  if (theme === 'lcdgreen') return GLITCH_COLORS_LCDGREEN
+  if (theme === 'gameboypocket') return GLITCH_COLORS_GAMEBOYPOCKET
+  return GLITCH_COLORS
+}
 
 /** LetterGlitch 用の文字セット（JSX 内に {} を書くとパーサーが誤解するため定数化） */
 const GLITCH_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'
@@ -42,6 +53,22 @@ const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto
 const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
 const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
 const QUESTION_MATRIX_COLOR_VIRTUALBOY = '#ff0040'
+const QUESTION_MATRIX_COLOR_LCDGREEN = '#9bbc0f'
+const QUESTION_MATRIX_COLOR_GAMEBOYPOCKET = '#ada59a'
+
+function getQuestionMatrixColor(theme: ThemeId): string {
+  if (theme === 'virtualboy') return QUESTION_MATRIX_COLOR_VIRTUALBOY
+  if (theme === 'lcdgreen') return QUESTION_MATRIX_COLOR_LCDGREEN
+  if (theme === 'gameboypocket') return QUESTION_MATRIX_COLOR_GAMEBOYPOCKET
+  return QUESTION_MATRIX_COLOR_DARK
+}
+
+function getQuestionMatrixGlow(theme: ThemeId): string {
+  if (theme === 'virtualboy') return '0 0 8px rgba(255, 0, 64, 0.4)'
+  if (theme === 'lcdgreen') return '0 0 8px rgba(155, 188, 15, 0.4)'
+  if (theme === 'gameboypocket') return '0 0 8px rgba(173, 165, 154, 0.4)'
+  return '0 0 8px rgba(0, 255, 65, 0.4)'
+}
 
 function getSurveyId(): string | null {
   const params = new URLSearchParams(window.location.search)
@@ -52,14 +79,14 @@ function SurveyStepContent({
   item,
   value,
   onChange,
-  isDark,
+  theme,
   isFirstItem,
   startTyping = true,
 }: {
   item: SurveyItem
   value: string | string[]
   onChange: (v: string | string[]) => void
-  isDark: boolean
+  theme: ThemeId
   isFirstItem?: boolean
   /** ローディング透明化後に true になるとタイピング開始 */
   startTyping?: boolean
@@ -79,10 +106,8 @@ function SurveyStepContent({
           className="text-[1.15rem] font-medium"
           style={{
             fontFamily: QUESTION_MATRIX_FONT,
-            color: isDark ? QUESTION_MATRIX_COLOR_DARK : QUESTION_MATRIX_COLOR_VIRTUALBOY,
-            textShadow: isDark
-              ? "0 0 8px rgba(0, 255, 65, 0.4)"
-              : "0 0 8px rgba(255, 0, 64, 0.4)",
+            color: getQuestionMatrixColor(theme),
+            textShadow: getQuestionMatrixGlow(theme),
           }}
         />
         {item.isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -197,7 +222,7 @@ function LoadingOverlay(
     show: boolean
     exiting: boolean
     durationMs: number
-    isDark: boolean
+    theme: ThemeId
     onFadeEnd?: () => void
   }
 ) {
@@ -228,13 +253,34 @@ function LoadingOverlay(
       }}
       aria-hidden
     >
-      <MatrixLoading isDark={props.isDark} />
+      <MatrixLoading theme={props.theme} />
     </div>
   )
 }
 
+const AVATAR_PALETTES: Record<ThemeId, string[]> = {
+  dark: ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"],
+  virtualboy: ["ff0040", "dd0038", "ff2055", "cc0033", "ff4068", "b3002e", "ff6080", "99002a", "e6003a", "8c0026"],
+  lcdgreen: ["9bbc0f", "8bac0f", "7fa82e", "6b8e23", "5a7c1e", "4a6b18", "3d5a14", "306230", "2a5012", "1a3810"],
+  gameboypocket: ["ada59a", "8b7355", "5c574f", "c4beb2", "dedede", "6b655c", "9e9e9e", "3d3d35", "b0b0b0", "4a4a4a"],
+}
+
+function getAccentColor(theme: ThemeId): string {
+  if (theme === 'virtualboy') return '#ff0040'
+  if (theme === 'lcdgreen') return '#9bbc0f'
+  if (theme === 'gameboypocket') return '#ada59a'
+  return '#00ff41'
+}
+
+function getVignetteGradient(theme: ThemeId): string {
+  if (theme === 'virtualboy') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(255, 0, 64, 0.08) 0%, transparent 55%)'
+  if (theme === 'lcdgreen') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(155, 188, 15, 0.08) 0%, transparent 55%)'
+  if (theme === 'gameboypocket') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(173, 165, 154, 0.08) 0%, transparent 55%)'
+  return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 255, 65, 0.07) 0%, transparent 55%)'
+}
+
 function App() {
-  const isDark = useDarkMode()
+  const theme = useTheme()
   const [survey, setSurvey] = useState<PublicSurvey | null>(null)
   const [loading, setLoading] = useState(true)
   const [showLoading, setShowLoading] = useState(true)
@@ -521,10 +567,10 @@ function App() {
         <div className="absolute inset-0 z-0">
           <LetterGlitch
             glitchSpeed={50}
-            centerVignette={isDark}
+            centerVignette={theme === 'dark' || theme === 'lcdgreen'}
             outerVignette={true}
             smooth={true}
-            glitchColors={isDark ? GLITCH_COLORS : GLITCH_COLORS_VIRTUALBOY}
+            glitchColors={getGlitchColors(theme)}
             characters={GLITCH_CHARACTERS}
             adixiLoopIntervalMs={10000}
           />
@@ -533,11 +579,7 @@ function App() {
         {/* マトリックス風：中央にごく薄い緑のビネット（ライト時はやや暗い緑） */}
         <div
           className="pointer-events-none absolute inset-0 z-[1]"
-          style={{
-            background: isDark
-              ? 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 255, 65, 0.07) 0%, transparent 55%)'
-              : 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(255, 0, 64, 0.08) 0%, transparent 55%)',
-          }}
+          style={{ background: getVignetteGradient(theme) }}
           aria-hidden
         />
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
@@ -553,7 +595,7 @@ function App() {
           <div className={`flex w-full justify-center border-y ${borderClass}`}>
             <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 border-x py-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
               <TitleMatrixGlitch
-                isDark={isDark}
+                theme={theme}
                 fontFamily="var(--font-title-code)"
                 fontSize="clamp(1.9rem, 4.8vw, 3.5rem)"
               >
@@ -563,7 +605,7 @@ function App() {
                 className="text-xs tracking-widest opacity-90"
                 style={{
                   fontFamily: 'var(--font-hacker-mono)',
-                  color: isDark ? '#00ff41' : '#ff0040',
+                  color: getAccentColor(theme),
                 }}
                 aria-hidden
               >
@@ -577,9 +619,7 @@ function App() {
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
                 /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
-                const AVATAR_COLORS_GREEN = ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"];
-                const AVATAR_COLORS_RED = ["ff0040", "dd0038", "ff2055", "cc0033", "ff4068", "b3002e", "ff6080", "99002a", "e6003a", "8c0026"];
-                const avatarPalette = isDark ? AVATAR_COLORS_GREEN : AVATAR_COLORS_RED;
+                const avatarPalette = AVATAR_PALETTES[theme];
                 const colorForName = (name: string) => {
                   let n = 0;
                   for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
@@ -663,7 +703,7 @@ function App() {
                               item={item}
                               value={answers[item.id]}
                               onChange={(v) => setAnswer(item.id, v)}
-                              isDark={isDark}
+                              theme={theme}
                               isFirstItem={false}
                               startTyping={loadingFadeDone}
                             />
@@ -712,7 +752,7 @@ function App() {
       </div>
       {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}
       {!showCrtOn && (
-        <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} isDark={isDark} onFadeEnd={() => setLoadingFadeDone(true)} />
+        <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} theme={theme} onFadeEnd={() => setLoadingFadeDone(true)} />
       )}
       </>
       )}

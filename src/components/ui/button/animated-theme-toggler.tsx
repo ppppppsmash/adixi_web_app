@@ -1,10 +1,24 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import { Moon, Gamepad2 } from "lucide-react"
+import { useCallback, useRef } from "react"
 import { flushSync } from "react-dom"
 
 import { cn } from "../../../lib/utils"
+import { useTheme, getNextTheme, THEME_ORDER, type ThemeId } from "../../../lib/useDarkMode"
+
+const THEME_CLASS: Record<ThemeId, string> = {
+  dark: "dark",
+  virtualboy: "virtual-boy",
+  lcdgreen: "lcd-green",
+  gameboypocket: "game-boy-pocket",
+}
+
+const THEME_LABEL: Record<ThemeId, string> = {
+  dark: "ダーク（緑）",
+  virtualboy: "Virtual Boy",
+  lcdgreen: "液晶緑",
+  gameboypocket: "Game Boy Pocket",
+}
 
 interface AnimatedThemeTogglerProps {
   className?: string
@@ -15,35 +29,20 @@ export const AnimatedThemeToggler = ({
   className,
   duration = 400,
 }: AnimatedThemeTogglerProps) => {
-  const [isDark, setIsDark] = useState(true)
+  const theme = useTheme()
+  const nextTheme = getNextTheme(theme)
   const containerRef = useRef<HTMLButtonElement>(null)
 
-  useEffect(() => {
-    const updateTheme = () => {
-      setIsDark(document.documentElement.classList.contains("dark"))
-    }
-
-    updateTheme()
-
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
-
-    return () => observer.disconnect()
-  }, [])
-
   const handleClick = useCallback(async () => {
-    const nextDark = !isDark
     if (!containerRef.current) return
+    const next = nextTheme
+    const root = document.documentElement
 
     await document.startViewTransition(() => {
       flushSync(() => {
-        setIsDark(nextDark)
-        document.documentElement.classList.toggle("dark", nextDark)
-        document.documentElement.classList.toggle("virtual-boy", !nextDark)
-        localStorage.setItem("theme", nextDark ? "dark" : "virtualboy")
+        root.classList.remove("dark", "virtual-boy", "lcd-green", "game-boy-pocket")
+        root.classList.add(THEME_CLASS[next])
+        localStorage.setItem("theme", next)
       })
     }).ready
 
@@ -68,22 +67,22 @@ export const AnimatedThemeToggler = ({
         pseudoElement: "::view-transition-new(root)",
       }
     )
-  }, [isDark, duration])
+  }, [nextTheme, duration])
+
+  const nextLabel = THEME_LABEL[nextTheme]
+  const themeIndex = THEME_ORDER.indexOf(theme)
+  const themeNumber = themeIndex >= 0 ? themeIndex + 1 : 1
 
   return (
     <button
       ref={containerRef}
       type="button"
       onClick={handleClick}
-      className={cn("hacker-toolbar-btn", className)}
-      title={isDark ? "Virtual Boy モードへ" : "ダーク（緑）モードへ"}
-      aria-label={isDark ? "Virtual Boy モードに切り替え" : "ダークモードに切り替え"}
+      className={cn("hacker-toolbar-btn font-mono tabular-nums min-w-[2rem]", className)}
+      title={`現在: ${THEME_LABEL[theme]}（次: ${nextLabel}）`}
+      aria-label={`テーマを ${nextLabel} に切り替え（現在 ${themeNumber} / ${THEME_ORDER.length}）`}
     >
-      {isDark ? (
-        <Gamepad2 className="h-4 w-4" aria-hidden />
-      ) : (
-        <Moon className="h-4 w-4" aria-hidden />
-      )}
+      <span aria-hidden>{themeNumber}</span>
     </button>
   )
 }

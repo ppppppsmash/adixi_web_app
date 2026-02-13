@@ -1,12 +1,20 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import type { ThemeId } from "../../lib/useDarkMode";
+
+const THEME_MATRIX = {
+  dark: { bright: "#00ff41", dim: "rgba(0, 255, 65, 0.15)", mid: "rgba(0, 255, 65, 0.5)", r2: "rgba(0, 255, 65, 0.25)", r3: "rgba(0, 255, 65, 0.4)" },
+  virtualboy: { bright: "#ff0040", dim: "rgba(255, 0, 64, 0.2)", mid: "rgba(255, 0, 64, 0.5)", r2: "rgba(255, 0, 64, 0.3)", r3: "rgba(255, 0, 64, 0.45)" },
+  lcdgreen: { bright: "#9bbc0f", dim: "rgba(155, 188, 15, 0.15)", mid: "rgba(155, 188, 15, 0.5)", r2: "rgba(155, 188, 15, 0.25)", r3: "rgba(155, 188, 15, 0.4)" },
+  gameboypocket: { bright: "#ada59a", dim: "rgba(173, 165, 154, 0.15)", mid: "rgba(173, 165, 154, 0.5)", r2: "rgba(173, 165, 154, 0.25)", r3: "rgba(173, 165, 154, 0.4)" },
+} as const;
 
 /**
  * ローディング用マトリックス雨エフェクト（ManzDev/twitch-matrix-canvas を参考に実装）
  * https://github.com/ManzDev/twitch-matrix-canvas/
  */
-export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
+export function MatrixLoading({ theme = "dark" }: { theme?: ThemeId }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -22,9 +30,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
     let height = canvas.height;
     const columns: { y: number; letters: string[]; speed: number }[] = [];
 
-    const bright = isDark ? "#00ff41" : "#ff0040";
-    const dim = isDark ? "rgba(0, 255, 65, 0.15)" : "rgba(255, 0, 64, 0.2)";
-    const mid = isDark ? "rgba(0, 255, 65, 0.5)" : "rgba(255, 0, 64, 0.5)";
+    const { bright, dim, mid, r2, r3 } = THEME_MATRIX[theme];
 
     const generateCharacter = () => {
       const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテト";
@@ -38,8 +44,8 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
       const third = index === 2;
       if (last) return bright;
       if (first) return dim;
-      if (second) return isDark ? "rgba(0, 255, 65, 0.25)" : "rgba(255, 0, 64, 0.3)";
-      if (third) return isDark ? "rgba(0, 255, 65, 0.4)" : "rgba(255, 0, 64, 0.45)";
+      if (second) return r2;
+      if (third) return r3;
       return mid;
     };
 
@@ -81,7 +87,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
         data.letters.forEach((letter, index, array) => {
           const isHead = index === array.length - 1;
           ctx.fillStyle = getColor(index, array.length, x);
-          ctx.shadowColor = isDark ? "#00ff41" : "#ff0040";
+          ctx.shadowColor = bright;
           ctx.shadowBlur = isHead ? 12 : 6;
           const char = isHead ? generateCharacter() : Math.random() < 0.04 ? generateCharacter() : letter;
           ctx.fillText(char, x * (TEXT_HEIGHT / LAYERS), 50 + data.y + index * TEXT_HEIGHT);
@@ -106,7 +112,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(rafId);
     };
-  }, [isDark]);
+  }, [theme]);
 
   return (
     <canvas

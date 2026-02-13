@@ -1,9 +1,33 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import type { ThemeId } from "../../../lib/useDarkMode";
 
 const MATRIX_CHARS =
   "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const THEME_COLORS: Record<ThemeId, { color: string; stroke: string; filter: string }> = {
+  dark: {
+    color: "#00ff41",
+    stroke: "#00ff41",
+    filter: "drop-shadow(0 0 12px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.4))",
+  },
+  virtualboy: {
+    color: "#ff0040",
+    stroke: "#dd0038",
+    filter: "drop-shadow(0 0 12px rgba(255, 0, 64, 0.7)) drop-shadow(0 0 24px rgba(255, 0, 64, 0.35))",
+  },
+  lcdgreen: {
+    color: "#9bbc0f",
+    stroke: "#8bac0f",
+    filter: "drop-shadow(0 0 12px rgba(155, 188, 15, 0.8)) drop-shadow(0 0 24px rgba(155, 188, 15, 0.4))",
+  },
+  gameboypocket: {
+    color: "#ada59a",
+    stroke: "#8b7355",
+    filter: "drop-shadow(0 0 12px rgba(173, 165, 154, 0.8)) drop-shadow(0 0 24px rgba(173, 165, 154, 0.4))",
+  },
+};
 
 /**
  * タイトルを表示しつつ、マトリックス雨のように一部の文字が不安定にランダムで切り替わる。
@@ -11,19 +35,20 @@ const MATRIX_CHARS =
  */
 export function TitleMatrixGlitch({
   children: title,
-  isDark,
+  theme,
   fontFamily,
   fontSize,
   className = "",
 }: {
   children: string;
-  isDark: boolean;
+  theme: ThemeId;
   fontFamily: string;
   fontSize: string;
   className?: string;
 }) {
   const chars = useMemo(() => title.split(""), [title]);
   const [displayed, setDisplayed] = useState<string[]>(() => [...chars]);
+  const { color, stroke, filter } = THEME_COLORS[theme];
 
   useEffect(() => {
     setDisplayed([...chars]);
@@ -43,9 +68,6 @@ export function TitleMatrixGlitch({
     return () => clearInterval(interval);
   }, [chars]);
 
-  const color = isDark ? "#00ff41" : "#ff0040";
-  const stroke = isDark ? "#00ff41" : "#dd0038";
-
   return (
     <span
       className={className}
@@ -59,9 +81,7 @@ export function TitleMatrixGlitch({
         letterSpacing: "0.04em",
         WebkitTextStroke: `0.5px ${stroke}`,
         paintOrder: "stroke fill",
-        filter: isDark
-          ? "drop-shadow(0 0 12px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.4))"
-          : "drop-shadow(0 0 12px rgba(255, 0, 64, 0.7)) drop-shadow(0 0 24px rgba(255, 0, 64, 0.35))",
+        filter,
       }}
     >
       {displayed.map((c, i) => (

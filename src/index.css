@@ -25,6 +25,12 @@
 html.virtual-boy .question-matrix-glow {
   filter: drop-shadow(0 0 6px rgba(255, 0, 64, 0.5)) drop-shadow(0 0 12px rgba(255, 0, 64, 0.25));
 }
+html.lcd-green .question-matrix-glow {
+  filter: drop-shadow(0 0 6px rgba(139, 172, 15, 0.5)) drop-shadow(0 0 12px rgba(155, 188, 15, 0.25));
+}
+html.game-boy-pocket .question-matrix-glow {
+  filter: drop-shadow(0 0 6px rgba(173, 165, 154, 0.5)) drop-shadow(0 0 12px rgba(173, 165, 154, 0.25));
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -114,6 +120,58 @@ html.virtual-boy {
   --glitch-center-vignette: rgba(0, 0, 0, 0.8);
 }
 
+/* 液晶緑：暗い緑背景＋液晶グリーンアクセント */
+html.lcd-green {
+  color-scheme: dark;
+  --color-bg: #0f380f;
+  --color-bg-center: rgba(48, 98, 48, 0.5);
+  --color-bg-elevated: #163016;
+  --color-bg-survey: rgba(15, 56, 15, 0.92);
+  --color-text: rgba(155, 188, 15, 0.95);
+  --color-text-muted: rgba(139, 172, 15, 0.65);
+  --color-accent: #9bbc0f;
+  --color-accent-hover: #a8c91a;
+  --color-border: #306230;
+  --color-border-title: #3d7a3d;
+  --color-form-border: rgba(155, 188, 15, 0.5);
+  --color-form-bg: rgba(15, 56, 15, 0.4);
+  --color-stepper-inactive-bg: rgba(155, 188, 15, 0.15);
+  --color-stepper-connector: rgba(155, 188, 15, 0.25);
+  --color-button-bg: #1a4a1a;
+  --color-button-text: rgba(155, 188, 15, 0.95);
+  --color-placeholder: rgba(155, 188, 15, 0.35);
+  --color-form-input-text: #9bbc0f;
+  --glitch-bg: #0a2a0a;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.82);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.75);
+}
+
+/* Game Boy Pocket 風：あの画面のグレー色（モノクロ液晶） */
+html.game-boy-pocket {
+  color-scheme: dark;
+  --color-bg: #2d2d28;
+  --color-bg-center: rgba(60, 58, 52, 0.6);
+  --color-bg-elevated: #353530;
+  --color-bg-survey: rgba(45, 45, 40, 0.92);
+  --color-text: rgba(222, 222, 222, 0.95);
+  --color-text-muted: rgba(173, 165, 154, 0.7);
+  --color-accent: #ada59a;
+  --color-accent-hover: #c4beb2;
+  --color-border: #5c574f;
+  --color-border-title: #6b655c;
+  --color-form-border: rgba(173, 165, 154, 0.5);
+  --color-form-bg: rgba(45, 45, 40, 0.5);
+  --color-stepper-inactive-bg: rgba(173, 165, 154, 0.12);
+  --color-stepper-connector: rgba(173, 165, 154, 0.25);
+  --color-button-bg: #3d3d35;
+  --color-button-text: rgba(222, 222, 222, 0.95);
+  --color-placeholder: rgba(173, 165, 154, 0.4);
+  --color-form-input-text: #ada59a;
+  --glitch-bg: #1a1a18;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.72);
+}
+
 :root {
   color: var(--color-text);
   background-color: var(--color-bg);
@@ -165,6 +223,14 @@ button:focus-visible {
 html.virtual-boy button:focus,
 html.virtual-boy button:focus-visible {
   box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(255, 0, 64, 0.3);
+}
+html.lcd-green button:focus,
+html.lcd-green button:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(155, 188, 15, 0.3);
+}
+html.game-boy-pocket button:focus,
+html.game-boy-pocket button:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(173, 165, 154, 0.3);
 }
 
 /* ========== CRT screen effect (CodePen lbebber/XJRdrV 参考) ========== */
@@ -515,6 +581,106 @@ html.virtual-boy .tv-on-name-input:focus {
   border-color: #ff0040;
   box-shadow: 0 0 14px rgba(255, 0, 64, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
 }
+/* 液晶緑：最初の画面を液晶グリーンに */
+html.lcd-green .tv-on-screen .tv-on-label {
+  color: rgba(155, 188, 15, 0.5);
+}
+html.lcd-green .tv-on-btn {
+  color: #9bbc0f;
+  border-color: #9bbc0f;
+  box-shadow: 0 0 12px rgba(155, 188, 15, 0.2), inset 0 0 20px rgba(155, 188, 15, 0.03);
+}
+html.lcd-green .tv-on-btn:hover {
+  box-shadow: 0 0 20px rgba(155, 188, 15, 0.4), 0 0 40px rgba(155, 188, 15, 0.15), inset 0 0 24px rgba(155, 188, 15, 0.06);
+  text-shadow: 0 0 8px rgba(155, 188, 15, 0.6);
+  background: rgba(155, 188, 15, 0.06);
+}
+html.lcd-green .tv-on-btn::before {
+  background: #9bbc0f;
+  border-color: #9bbc0f;
+  box-shadow: 0 0 8px #9bbc0f;
+}
+html.lcd-green .tv-on-btn:hover::before {
+  box-shadow: 0 0 12px #9bbc0f, 0 0 4px #9bbc0f;
+}
+@keyframes tv-on-dot-blink-lcd {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #9bbc0f; }
+  50% { opacity: 0.25; box-shadow: 0 0 4px #9bbc0f; }
+}
+html.lcd-green .tv-on-btn-ready:not(:disabled)::before {
+  animation: tv-on-dot-blink-lcd 1.2s ease-in-out infinite;
+}
+html.lcd-green .tv-on-btn:disabled {
+  color: rgba(155, 188, 15, 0.35);
+  border-color: rgba(155, 188, 15, 0.35);
+  box-shadow: 0 0 8px rgba(155, 188, 15, 0.08);
+}
+html.lcd-green .tv-on-btn:disabled::before {
+  background: rgba(155, 188, 15, 0.35);
+  border-color: rgba(155, 188, 15, 0.35);
+}
+html.lcd-green .tv-on-name-input {
+  color: #9bbc0f;
+  border-color: rgba(155, 188, 15, 0.5);
+  box-shadow: 0 0 10px rgba(155, 188, 15, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+html.lcd-green .tv-on-name-input::placeholder {
+  color: rgba(155, 188, 15, 0.4);
+}
+html.lcd-green .tv-on-name-input:focus {
+  border-color: #9bbc0f;
+  box-shadow: 0 0 14px rgba(155, 188, 15, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+/* Game Boy Pocket：あの画面のグレーで */
+html.game-boy-pocket .tv-on-screen .tv-on-label {
+  color: rgba(173, 165, 154, 0.5);
+}
+html.game-boy-pocket .tv-on-btn {
+  color: #ada59a;
+  border-color: #ada59a;
+  box-shadow: 0 0 12px rgba(173, 165, 154, 0.2), inset 0 0 20px rgba(173, 165, 154, 0.03);
+}
+html.game-boy-pocket .tv-on-btn:hover {
+  box-shadow: 0 0 20px rgba(173, 165, 154, 0.4), 0 0 40px rgba(173, 165, 154, 0.15), inset 0 0 24px rgba(173, 165, 154, 0.06);
+  text-shadow: 0 0 8px rgba(173, 165, 154, 0.6);
+  background: rgba(173, 165, 154, 0.06);
+}
+html.game-boy-pocket .tv-on-btn::before {
+  background: #ada59a;
+  border-color: #ada59a;
+  box-shadow: 0 0 8px #ada59a;
+}
+html.game-boy-pocket .tv-on-btn:hover::before {
+  box-shadow: 0 0 12px #ada59a, 0 0 4px #ada59a;
+}
+@keyframes tv-on-dot-blink-gbp {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #ada59a; }
+  50% { opacity: 0.25; box-shadow: 0 0 4px #ada59a; }
+}
+html.game-boy-pocket .tv-on-btn-ready:not(:disabled)::before {
+  animation: tv-on-dot-blink-gbp 1.2s ease-in-out infinite;
+}
+html.game-boy-pocket .tv-on-btn:disabled {
+  color: rgba(173, 165, 154, 0.35);
+  border-color: rgba(173, 165, 154, 0.35);
+  box-shadow: 0 0 8px rgba(173, 165, 154, 0.08);
+}
+html.game-boy-pocket .tv-on-btn:disabled::before {
+  background: rgba(173, 165, 154, 0.35);
+  border-color: rgba(173, 165, 154, 0.35);
+}
+html.game-boy-pocket .tv-on-name-input {
+  color: #ada59a;
+  border-color: rgba(173, 165, 154, 0.5);
+  box-shadow: 0 0 10px rgba(173, 165, 154, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+html.game-boy-pocket .tv-on-name-input::placeholder {
+  color: rgba(173, 165, 154, 0.4);
+}
+html.game-boy-pocket .tv-on-name-input:focus {
+  border-color: #ada59a;
+  box-shadow: 0 0 14px rgba(173, 165, 154, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
 
 /* モニターON前の名前入力：幅はボタンと一致（.tv-on-form でストレッチ） */
 .tv-on-name-input {
@@ -573,6 +739,18 @@ html.virtual-boy .hacker-toolbar-btn:hover {
 }
 html.virtual-boy .hacker-toolbar-btn:focus-visible {
   outline-color: #ff0040;
+}
+html.lcd-green .hacker-toolbar-btn:hover {
+  box-shadow: 0 0 12px rgba(155, 188, 15, 0.35), inset 0 0 12px rgba(155, 188, 15, 0.06);
+}
+html.lcd-green .hacker-toolbar-btn:focus-visible {
+  outline-color: #9bbc0f;
+}
+html.game-boy-pocket .hacker-toolbar-btn:hover {
+  box-shadow: 0 0 12px rgba(173, 165, 154, 0.35), inset 0 0 12px rgba(173, 165, 154, 0.06);
+}
+html.game-boy-pocket .hacker-toolbar-btn:focus-visible {
+  outline-color: #ada59a;
 }
 .hacker-toolbar-btn:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -636,6 +814,26 @@ html.virtual-boy .crt-scanlines-beam {
     transparent 100%
   );
 }
+html.lcd-green .crt-scanlines-beam {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(155, 188, 15, 0.04) 30%,
+    rgba(155, 188, 15, 0.1) 50%,
+    rgba(155, 188, 15, 0.04) 70%,
+    transparent 100%
+  );
+}
+html.game-boy-pocket .crt-scanlines-beam {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(173, 165, 154, 0.04) 30%,
+    rgba(173, 165, 154, 0.1) 50%,
+    rgba(173, 165, 154, 0.04) 70%,
+    transparent 100%
+  );
+}
 @keyframes crt-scanline-sweep {
   0% { top: -5%; }
   100% { top: 105%; }
@@ -684,6 +882,12 @@ html.virtual-boy .crt-scanlines-beam {
 }
 html.virtual-boy .crt-effect-overlay-label {
   color: #ff0040;
+}
+html.lcd-green .crt-effect-overlay-label {
+  color: #9bbc0f;
+}
+html.game-boy-pocket .crt-effect-overlay-label {
+  color: #ada59a;
 }
 /* チャンネル名の上にCRTスキャンライン（横線）を重ねる */
 .crt-effect-overlay-label-scanlines {
