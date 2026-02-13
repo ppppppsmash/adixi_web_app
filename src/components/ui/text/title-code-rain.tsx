@@ -88,8 +88,8 @@ export function TitleCodeRain({
     }
     const offsets = canvasState._matrixOffsets;
 
-    const green = isDark ? "#00ff41" : "#008c2a";
-    const dim = isDark ? "rgba(0, 255, 65, 0.35)" : "rgba(0, 140, 42, 0.4)";
+    const accent = isDark ? "#00ff41" : "#ff0040";
+    const dim = isDark ? "rgba(0, 255, 65, 0.35)" : "rgba(255, 0, 64, 0.4)";
 
     ctx.clearRect(0, 0, w, h);
     ctx.font = rainFont;
@@ -104,7 +104,7 @@ export function TitleCodeRain({
         if (y < -charHeight || y > h + charHeight) continue;
         const ch = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
         const isHead = i === 0;
-        ctx.fillStyle = isHead ? green : dim;
+        ctx.fillStyle = isHead ? accent : dim;
         ctx.globalAlpha = isHead ? 1 : 0.65 - (i / 45) * 0.5;
         ctx.fillText(ch, x, y);
       }
@@ -122,14 +122,14 @@ export function TitleCodeRain({
     ctx.globalCompositeOperation = "source-over";
     ctx.textAlign = "start";
 
-    ctx.strokeStyle = green;
+    ctx.strokeStyle = accent;
     ctx.lineWidth = Math.max(2, 2.5 * dpr);
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     ctx.strokeText(title, centerX, centerY);
 
     if (fillAlpha > 0.01) {
-      ctx.fillStyle = green;
+      ctx.fillStyle = accent;
       ctx.globalAlpha = fillAlpha;
       ctx.fillText(title, centerX, centerY);
       ctx.globalAlpha = 1;

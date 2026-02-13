@@ -465,6 +465,57 @@ html.virtual-boy button:focus-visible {
   text-shadow: none;
 }
 
+/* Virtual Boy：最初の画面を赤に */
+html.virtual-boy .tv-on-screen .tv-on-label {
+  color: rgba(255, 0, 64, 0.5);
+}
+html.virtual-boy .tv-on-btn {
+  color: #ff0040;
+  border-color: #ff0040;
+  box-shadow: 0 0 12px rgba(255, 0, 64, 0.2), inset 0 0 20px rgba(255, 0, 64, 0.03);
+}
+html.virtual-boy .tv-on-btn:hover {
+  box-shadow: 0 0 20px rgba(255, 0, 64, 0.4), 0 0 40px rgba(255, 0, 64, 0.15), inset 0 0 24px rgba(255, 0, 64, 0.06);
+  text-shadow: 0 0 8px rgba(255, 0, 64, 0.6);
+  background: rgba(255, 0, 64, 0.06);
+}
+html.virtual-boy .tv-on-btn::before {
+  background: #ff0040;
+  border-color: #ff0040;
+  box-shadow: 0 0 8px #ff0040;
+}
+html.virtual-boy .tv-on-btn:hover::before {
+  box-shadow: 0 0 12px #ff0040, 0 0 4px #ff0040;
+}
+@keyframes tv-on-dot-blink-vb {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #ff0040; }
+  50% { opacity: 0.25; box-shadow: 0 0 4px #ff0040; }
+}
+html.virtual-boy .tv-on-btn-ready:not(:disabled)::before {
+  animation: tv-on-dot-blink-vb 1.2s ease-in-out infinite;
+}
+html.virtual-boy .tv-on-btn:disabled {
+  color: rgba(255, 0, 64, 0.35);
+  border-color: rgba(255, 0, 64, 0.35);
+  box-shadow: 0 0 8px rgba(255, 0, 64, 0.08);
+}
+html.virtual-boy .tv-on-btn:disabled::before {
+  background: rgba(255, 0, 64, 0.35);
+  border-color: rgba(255, 0, 64, 0.35);
+}
+html.virtual-boy .tv-on-name-input {
+  color: #ff0040;
+  border-color: rgba(255, 0, 64, 0.5);
+  box-shadow: 0 0 10px rgba(255, 0, 64, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+html.virtual-boy .tv-on-name-input::placeholder {
+  color: rgba(255, 0, 64, 0.4);
+}
+html.virtual-boy .tv-on-name-input:focus {
+  border-color: #ff0040;
+  box-shadow: 0 0 14px rgba(255, 0, 64, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
 /* モニターON前の名前入力：幅はボタンと一致（.tv-on-form でストレッチ） */
 .tv-on-name-input {
   width: 100%;
@@ -630,6 +681,9 @@ html.virtual-boy .crt-scanlines-beam {
   pointer-events: none;
   font-family: var(--font-hacker-mono);
   animation: crt-overlay-on 5s linear forwards;
+}
+html.virtual-boy .crt-effect-overlay-label {
+  color: #ff0040;
 }
 /* チャンネル名の上にCRTスキャンライン（横線）を重ねる */
 .crt-effect-overlay-label-scanlines {

@@ -42,7 +42,7 @@ export function CommentPanel({
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [comments]);
 
-  const matrixColor = isDark ? "#00ff41" : "#008c2a";
+  const matrixColor = isDark ? "#00ff41" : "#ff0040";
 
   return (
     <div
@@ -126,7 +126,7 @@ function CommentInput({
           disabled={!input.trim()}
           className="inline-flex size-9 shrink-0 items-center justify-center rounded-none border transition disabled:opacity-40"
           style={{
-            borderColor: matrixColor === "#00ff41" ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 140, 42, 0.7)",
+            borderColor: matrixColor === "#00ff41" ? "rgba(0, 255, 65, 0.6)" : "rgba(255, 0, 64, 0.6)",
             color: matrixColor,
             fontFamily: "var(--font-hacker-mono)",
           }}

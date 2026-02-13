@@ -22,9 +22,9 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
     let height = canvas.height;
     const columns: { y: number; letters: string[]; speed: number }[] = [];
 
-    const greenBright = isDark ? "#00ff41" : "#008c2a";
-    const greenDim = isDark ? "rgba(0, 255, 65, 0.15)" : "rgba(0, 140, 42, 0.2)";
-    const greenMid = isDark ? "rgba(0, 255, 65, 0.5)" : "rgba(0, 140, 42, 0.5)";
+    const bright = isDark ? "#00ff41" : "#ff0040";
+    const dim = isDark ? "rgba(0, 255, 65, 0.15)" : "rgba(255, 0, 64, 0.2)";
+    const mid = isDark ? "rgba(0, 255, 65, 0.5)" : "rgba(255, 0, 64, 0.5)";
 
     const generateCharacter = () => {
       const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテト";
@@ -36,11 +36,11 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
       const first = index === 0;
       const second = index === 1;
       const third = index === 2;
-      if (last) return greenBright;
-      if (first) return greenDim;
-      if (second) return isDark ? "rgba(0, 255, 65, 0.25)" : "rgba(0, 140, 42, 0.3)";
-      if (third) return isDark ? "rgba(0, 255, 65, 0.4)" : "rgba(0, 140, 42, 0.45)";
-      return greenMid;
+      if (last) return bright;
+      if (first) return dim;
+      if (second) return isDark ? "rgba(0, 255, 65, 0.25)" : "rgba(255, 0, 64, 0.3)";
+      if (third) return isDark ? "rgba(0, 255, 65, 0.4)" : "rgba(255, 0, 64, 0.45)";
+      return mid;
     };
 
     const init = () => {
@@ -81,7 +81,7 @@ export function MatrixLoading({ isDark = true }: { isDark?: boolean }) {
         data.letters.forEach((letter, index, array) => {
           const isHead = index === array.length - 1;
           ctx.fillStyle = getColor(index, array.length, x);
-          ctx.shadowColor = isDark ? "#00ff41" : "#008c2a";
+          ctx.shadowColor = isDark ? "#00ff41" : "#ff0040";
           ctx.shadowBlur = isHead ? 12 : 6;
           const char = isHead ? generateCharacter() : Math.random() < 0.04 ? generateCharacter() : letter;
           ctx.fillText(char, x * (TEXT_HEIGHT / LAYERS), 50 + data.y + index * TEXT_HEIGHT);

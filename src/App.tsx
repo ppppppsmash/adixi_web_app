@@ -28,8 +28,10 @@ import { CommentPanel } from "./components/comments/CommentPanel";
 import { CrtEffectOverlay } from "./components/crt/CrtEffectOverlay";
 import { CrtScanlines } from "./components/crt/CrtScanlines";
 
-/** マトリックス風緑を含むグリッチ／アクセント色 */
-const GLITCH_COLORS = ['#0a1f0a', '#00ff41', '#2b4539', '#61dca3', '#61b3dc']
+/** 背景グリッチ：緑テーマ用 */
+const GLITCH_COLORS = ['#0a1f0a', '#0d2818', '#00ff41', '#008c2a', '#2b4539', '#1a4d2a', '#61dca3']
+/** 背景グリッチ：Virtual Boy テーマ用（赤系のみ） */
+const GLITCH_COLORS_VIRTUALBOY = ['#1f0a0a', '#2a0d18', '#ff0040', '#b30033', '#4d1a2a', '#2a0d0d', '#ff4060']
 
 /** LetterGlitch 用の文字セット（JSX 内に {} を書くとパーサーが誤解するため定数化） */
 const GLITCH_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'
@@ -522,7 +524,7 @@ function App() {
             centerVignette={isDark}
             outerVignette={true}
             smooth={true}
-            glitchColors={GLITCH_COLORS}
+            glitchColors={isDark ? GLITCH_COLORS : GLITCH_COLORS_VIRTUALBOY}
             characters={GLITCH_CHARACTERS}
             adixiLoopIntervalMs={10000}
           />
