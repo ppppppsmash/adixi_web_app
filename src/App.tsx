@@ -241,6 +241,8 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   /** モニターONボタンを押すまで画面を出さない */
   const [tvUnlocked, setTvUnlocked] = useState(false)
+  /** モニターON前に入力する名前（ここで入力しないとボタンが活性化しない） */
+  const [initialName, setInitialName] = useState('')
   /** 最初の CRT ON エフェクト（モニターONクリック後に1回） */
   const [showCrtOn, setShowCrtOn] = useState(false)
   /** 最後の CRT OFF エフェクト（送信完了時など） */
@@ -253,10 +255,10 @@ function App() {
   const [localComments, setLocalComments] = useState<{ id: string; author_name: string; body: string; created_at: string }[]>([])
 
   const surveyId = getSurveyId()
-  const cursorDisplayName =
-    survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
-      ? (answers[survey.items[0].id] as string).trim()
-      : ""
+  const firstItemAnswer = survey?.items?.[0] && typeof answers[survey.items[0].id] === "string"
+    ? (answers[survey.items[0].id] as string).trim()
+    : ""
+  const cursorDisplayName = firstItemAnswer || initialName.trim() || ""
   const { otherCursors, myCursorRef, myCursorInfo, setMyCursor } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
@@ -318,6 +320,13 @@ function App() {
     getSurveyRespondentNames(survey.id).then(setSubmittedNames).catch(() => setSubmittedNames([]))
   }, [survey?.id])
 
+  /* アンケート取得後、最初の項目（名前）をモニターON前に入力した initialName で初期化 */
+  useEffect(() => {
+    if (!survey?.items?.length || initialName.trim() === '') return
+    const firstId = survey.items[0].id
+    setAnswers((prev) => ({ ...prev, [firstId]: initialName.trim() }))
+  }, [survey?.id, survey?.items?.[0]?.id, initialName])
+
   const setAnswer = (itemId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [itemId]: value }))
   }
@@ -361,26 +370,41 @@ function App() {
     }
   }
 
-  /* モニターONされるまで画面の真ん中にボタンのみ表示（マウスはデフォルト表示） */
+  /* モニターONされるまで画面の真ん中に名前入力＋ボタン（名前未入力時はボタン非活性） */
   if (!tvUnlocked) {
+    const nameValid = initialName.trim() !== ''
     return (
       <div className="tv-on-screen fixed inset-0 z-[200] flex flex-col items-center justify-center gap-6 text-white cursor-default" style={{ cursor: 'default' }}>
         <p className="tv-on-label">ADiXi SESSION SURVEY</p>
-        <button
-          type="button"
-          onClick={() => {
-            setTvUnlocked(true)
-            setShowCrtOn(true)
-            loadingStartRef.current = Date.now()
-            setShowLoading(true)
-            setLoadingExiting(false)
-            setLoadingFadeDone(false)
-          }}
-          className="tv-on-btn"
-          aria-label="モニターON"
-        >
-          モニターON
-        </button>
+        <div className="tv-on-form flex flex-col items-stretch gap-3">
+          <label htmlFor="tv-on-name" className="sr-only">Username</label>
+          <input
+            id="tv-on-name"
+            type="text"
+            value={initialName}
+            onChange={(e) => setInitialName(e.target.value)}
+            placeholder="Username"
+            className="tv-on-name-input"
+            autoComplete="username"
+            aria-label="Usernameを入力するとモニターONが有効になります"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setTvUnlocked(true)
+              setShowCrtOn(true)
+              loadingStartRef.current = Date.now()
+              setShowLoading(true)
+              setLoadingExiting(false)
+              setLoadingFadeDone(false)
+            }}
+            disabled={!nameValid}
+            className={`tv-on-btn ${nameValid ? 'tv-on-btn-ready' : ''}`}
+            aria-label="モニターON"
+          >
+            モニターON
+          </button>
+        </div>
       </div>
     )
   }
@@ -575,14 +599,15 @@ function App() {
                           </button>
                         )}
                       >
-                        {survey.items.map((item, index) => (
+                        {/* 名前は初期画面で入力済みのため、アンケート画面では1問目を表示しない（送信時は answers に含まれる） */}
+                        {survey.items.slice(1).map((item, index) => (
                           <Step key={item.id}>
                             <SurveyStepContent
                               item={item}
                               value={answers[item.id]}
                               onChange={(v) => setAnswer(item.id, v)}
                               isDark={isDark}
-                              isFirstItem={index === 0}
+                              isFirstItem={false}
                               startTyping={loadingFadeDone}
                             />
                           </Step>

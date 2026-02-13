@@ -372,6 +372,11 @@ html:not(.dark) button:focus-visible {
   font-size: 0.75rem;
   letter-spacing: 0.35em;
 }
+.tv-on-form {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 .tv-on-btn {
   display: inline-flex;
   align-items: center;
@@ -409,6 +414,58 @@ html:not(.dark) button:focus-visible {
 }
 .tv-on-btn:hover::before {
   box-shadow: 0 0 12px #00ff41, 0 0 4px #00ff41;
+}
+/* 名前入力後：モニターONボタン左の点を点滅 */
+@keyframes tv-on-dot-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #00ff41; }
+  50% { opacity: 0.25; box-shadow: 0 0 4px #00ff41; }
+}
+.tv-on-btn-ready:not(:disabled)::before {
+  animation: tv-on-dot-blink 1.2s ease-in-out infinite;
+}
+.tv-on-btn-ready:hover::before {
+  animation: tv-on-dot-blink 1.2s ease-in-out infinite;
+}
+.tv-on-btn:disabled {
+  cursor: not-allowed;
+  color: rgba(0, 255, 65, 0.35);
+  border-color: rgba(0, 255, 65, 0.35);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08);
+}
+.tv-on-btn:disabled::before {
+  background: rgba(0, 255, 65, 0.35);
+  border-color: rgba(0, 255, 65, 0.35);
+  box-shadow: none;
+}
+.tv-on-btn:disabled:hover {
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08);
+  background: transparent;
+  text-shadow: none;
+}
+
+/* モニターON前の名前入力：幅はボタンと一致（.tv-on-form でストレッチ） */
+.tv-on-name-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-family: var(--font-hacker-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: #00ff41;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.5);
+  padding: 12px 24px;
+  border-radius: 0;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.tv-on-name-input::placeholder {
+  color: rgba(0, 255, 65, 0.4);
+}
+.tv-on-name-input:focus {
+  outline: none;
+  border-color: #00ff41;
+  box-shadow: 0 0 14px rgba(0, 255, 65, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
 /* 右上アイコン群：ハッカー風 */
@@ -531,15 +588,35 @@ html:not(.dark) .crt-scanlines-beam {
   animation-name: crt-turn-off;
 }
 
-.crt-effect-overlay-label {
+.crt-effect-overlay-label-wrap {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 2;
+  pointer-events: none;
+  display: inline-block;
+}
+.crt-effect-overlay-label {
+  position: relative;
   font-size: 60px;
   color: #00ff41;
   visibility: hidden;
   pointer-events: none;
-  z-index: 2;
   font-family: var(--font-hacker-mono);
+  animation: crt-overlay-on 5s linear forwards;
+}
+/* チャンネル名の上にCRTスキャンライン（横線）を重ねる */
+.crt-effect-overlay-label-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+  pointer-events: none;
+  visibility: hidden;
   animation: crt-overlay-on 5s linear forwards;
 }

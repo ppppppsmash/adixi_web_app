@@ -45,8 +45,11 @@ export function CrtEffectOverlay({
         }}
       />
       {isOn && (
-        <div className="crt-effect-overlay-label" aria-hidden>
-          ADiXi-CH
+        <div className="crt-effect-overlay-label-wrap">
+          <div className="crt-effect-overlay-label" aria-hidden>
+            COOL-ADiXi-CH
+          </div>
+          <div className="crt-effect-overlay-label-scanlines" aria-hidden />
         </div>
       )}
     </div>
