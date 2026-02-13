@@ -325,6 +325,10 @@ html:not(.dark) .form-input-base[data-hover]:not([data-focus]) {
 .form-field-group {
   @apply flex min-w-0 max-w-full flex-col gap-1;
 }
+.form-checkbox-row {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
 .form-checkbox-box {
   @apply flex size-5 shrink-0 items-center justify-center rounded-none border-2 transition;
   border-color: var(--color-form-border);
@@ -344,6 +348,30 @@ html:not(.dark) .form-checkbox-box[data-checked] {
 }
 html:not(.dark) .form-checkbox-box[data-focus] {
   box-shadow: 0 0 0 2px rgba(0, 140, 42, 0.35);
+}
+/* ネイティブ checkbox 用のチェック時：全塗りつぶし（枠も同色でソリッド） */
+.form-checkbox-box-checked {
+  background-color: #00ff41 !important;
+  border-color: #00ff41 !important;
+  border-width: 2px;
+}
+html:not(.dark) .form-checkbox-box-checked {
+  background-color: #008c2a !important;
+  border-color: #008c2a !important;
+}
+.form-checkbox-check-icon {
+  color: #0a0a0a;
+}
+html:not(.dark) .form-checkbox-check-icon {
+  color: #fff;
+}
+/* チェックボックス・ラジオの選択肢ラベル：ハッカー風緑 */
+.form-label-option {
+  color: #00ff41;
+  font-family: var(--font-hacker-mono) !important;
+}
+html:not(.dark) .form-label-option {
+  color: #008c2a;
 }
 .form-radio-dot {
   @apply invisible size-2 rounded-none transition;

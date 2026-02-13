@@ -91,7 +91,7 @@ export function CommentPanel({
 
 function CommentInput({
   onAddComment,
-  authorName,
+  authorName: _authorName,
   matrixColor,
 }: {
   onAddComment: (body: string) => void;

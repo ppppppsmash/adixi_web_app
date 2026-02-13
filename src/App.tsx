@@ -7,10 +7,8 @@ import { useDarkMode } from "./lib/useDarkMode";
 import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
 import {
-  Button,
   Input,
   Textarea,
-  Checkbox,
   RadioGroup,
   Radio,
   Field,
@@ -124,7 +122,7 @@ function SurveyStepContent({
                 <Radio value={opt} className="form-radio-outer group">
                   <span className="form-radio-dot group-data-[checked]:visible" />
                 </Radio>
-                <Label className="form-label mb-0 cursor-pointer">{opt}</Label>
+                <Label className="form-label form-label-option mb-0 cursor-pointer">{opt}</Label>
               </Field>
             ))}
           </RadioGroup>
@@ -136,22 +134,37 @@ function SurveyStepContent({
           {options.map((opt) => {
             const list = (value as string[]) ?? []
             const checked = list.includes(opt)
+            const toggle = () => {
+              if (checked) onChange(list.filter((x) => x !== opt))
+              else onChange([...list, opt])
+            }
             return (
-              <Field key={opt} className="flex items-center gap-3">
-                <Checkbox
+              <label
+                key={opt}
+                className="form-checkbox-row flex cursor-pointer select-none items-center gap-3"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toggle()
+                }}
+              >
+                <input
+                  type="checkbox"
                   checked={checked}
-                  onChange={(v) => {
-                    if (v) onChange([...list, opt])
-                    else onChange(list.filter((x) => x !== opt))
-                  }}
-                  className="form-checkbox-box group"
-                >
-                  <svg className="size-3 stroke-[var(--color-button-text)] opacity-0 group-data-[checked]:opacity-100 transition" viewBox="0 0 14 14" fill="none">
-                    <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Checkbox>
-                <Label className="form-label mb-0 cursor-pointer">{opt}</Label>
-              </Field>
+                  onChange={() => toggle()}
+                  className="form-checkbox-input sr-only"
+                  aria-label={opt}
+                  tabIndex={0}
+                />
+                <span className={`form-checkbox-box flex size-5 shrink-0 items-center justify-center rounded-none border-2 transition-[background-color,border-color] duration-75 ${checked ? 'form-checkbox-box-checked' : ''}`}>
+                  {checked && (
+                    <svg className="form-checkbox-check-icon size-3 shrink-0" viewBox="0 0 14 14" fill="none" aria-hidden>
+                      <path d="M3 8L6 11L11 3.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="form-label form-label-option mb-0">{opt}</span>
+              </label>
             )
           })}
         </div>
@@ -480,7 +493,7 @@ function App() {
                 }}
                 aria-hidden
               >
-                — セッション参加者向け・リアルタイムアンケート —
+                — スペシャリスト勉強会参加者向け・リアルタイムアンケート —
               </p>
             </div>
           </div>
@@ -542,24 +555,24 @@ function App() {
                         backButtonText="前へ"
                         nextButtonText="次へ"
                         renderBackButton={({ onClick }) => (
-                          <Button
+                          <button
                             type="button"
                             onClick={onClick}
                             aria-label="前へ"
-                            className="hacker-btn-back inline-flex size-9 min-w-0 items-center justify-center rounded-none p-0 transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]"
+                            className="hacker-btn-back relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#00ff41]"
                           >
-                            <ChevronLeft className="size-5" aria-hidden />
-                          </Button>
+                            <ChevronLeft className="size-5 shrink-0" aria-hidden />
+                          </button>
                         )}
                         renderNextButton={({ onClick, isLastStep }) => (
-                          <Button
+                          <button
                             type="button"
                             onClick={onClick}
                             aria-label={isLastStep ? "送信" : "次へ"}
-                            className="hacker-btn inline-flex size-9 min-w-0 items-center justify-center rounded-none p-0 transition data-[hover]:opacity-90 data-[active]:scale-[0.98] data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#00ff41]"
+                            className="hacker-btn relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#00ff41]"
                           >
-                            {isLastStep ? <Send className="size-5" aria-hidden /> : <ChevronRight className="size-5" aria-hidden />}
-                          </Button>
+                            {isLastStep ? <Send className="size-5 shrink-0" aria-hidden /> : <ChevronRight className="size-5 shrink-0" aria-hidden />}
+                          </button>
                         )}
                       >
                         {survey.items.map((item, index) => (
