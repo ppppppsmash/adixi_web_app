@@ -50,8 +50,8 @@ html:not(.dark) .question-matrix-glow {
   --color-bg-survey: rgba(218, 218, 228, 0.62);
   --color-text: #1d1d1f;
   --color-text-muted: #6e6e73;
-  --color-accent: #646cff;
-  --color-accent-hover: #535bf2;
+  --color-accent: #008c2a;
+  --color-accent-hover: #006b20;
   --color-border: #c4c4c8;
   --color-border-title: #d0d0d4;
   --color-form-border: rgba(0, 140, 42, 0.5);
@@ -75,8 +75,8 @@ html.dark {
   --color-bg-survey: rgba(22, 21, 21, 0.82);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
-  --color-accent: #646cff;
-  --color-accent-hover: #818cf8;
+  --color-accent: #00ff41;
+  --color-accent-hover: #22ff55;
   --color-border: #3d3d3d;
   --color-border-title: #4a4a4a;
   --color-form-border: rgba(0, 255, 65, 0.45);
@@ -136,7 +136,13 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 12px rgba(0, 255, 65, 0.25);
+}
+html:not(.dark) button:focus,
+html:not(.dark) button:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 10px rgba(0, 140, 42, 0.2);
 }
 
 /* ========== CRT screen effect (CodePen lbebber/XJRdrV 参考) ========== */
@@ -354,6 +360,92 @@ button:focus-visible {
 }
 .crt-open-btn.ready::before {
   background: #22ff55;
+}
+
+/* 最初のモニターONボタン：ハッカー風 */
+.tv-on-screen {
+  background: #0a0a0c;
+  font-family: var(--font-hacker-mono);
+}
+.tv-on-screen .tv-on-label {
+  color: rgba(0, 255, 65, 0.5);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+}
+.tv-on-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-family: var(--font-hacker-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #00ff41;
+  background: transparent;
+  border: 1px solid #00ff41;
+  padding: 14px 24px;
+  border-radius: 0;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), inset 0 0 20px rgba(0, 255, 65, 0.03);
+  transition: box-shadow 0.2s, text-shadow 0.2s, background 0.2s;
+}
+.tv-on-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.4), 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 24px rgba(0, 255, 65, 0.06);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+  background: rgba(0, 255, 65, 0.06);
+}
+.tv-on-btn:active {
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3), inset 0 0 16px rgba(0, 255, 65, 0.04);
+}
+.tv-on-btn::before {
+  content: " ";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #00ff41;
+  border: 1px solid #00ff41;
+  box-shadow: 0 0 8px #00ff41;
+  flex-shrink: 0;
+}
+.tv-on-btn:hover::before {
+  box-shadow: 0 0 12px #00ff41, 0 0 4px #00ff41;
+}
+
+/* 右上アイコン群：ハッカー風 */
+.hacker-toolbar {
+  font-family: var(--font-hacker-mono);
+}
+.hacker-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-hacker-mono);
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  background: var(--color-form-bg);
+  border: 1px solid var(--color-form-border);
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0;
+  transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+.hacker-toolbar-btn:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.25), inset 0 0 12px rgba(0, 255, 65, 0.04);
+  color: var(--color-accent);
+}
+html:not(.dark) .hacker-toolbar-btn:hover {
+  box-shadow: 0 0 10px rgba(0, 140, 42, 0.2), inset 0 0 10px rgba(0, 140, 42, 0.03);
+}
+.hacker-toolbar-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.hacker-toolbar-btn svg {
+  flex-shrink: 0;
 }
 
 /* エフェクトのみのオーバーレイ（アプリはそのまま表示・操作可能、上にエフェクトを重ねるだけ） */

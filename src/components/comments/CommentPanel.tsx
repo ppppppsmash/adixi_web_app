@@ -115,7 +115,7 @@ function CommentInput({
           onChange={(e) => setInput(e.target.value)}
           placeholder="コメントを入力..."
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-none border bg-[var(--color-bg)] px-2.5 py-1.5 text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2"
+          className="min-w-0 flex-1 rounded-none border bg-[var(--color-bg)] px-2.5 py-1.5 text-sm text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-[var(--color-accent)]"
           style={{
             borderColor: "var(--color-form-border)",
             fontFamily: "var(--font-hacker-neo)",

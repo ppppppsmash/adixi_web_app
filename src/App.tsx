@@ -225,9 +225,9 @@ function App() {
   const [loadingFadeDone, setLoadingFadeDone] = useState(false)
   const loadingStartRef = useRef(0)
   const [error, setError] = useState<string | null>(null)
-  /** テレビONボタンを押すまで画面を出さない */
+  /** モニターONボタンを押すまで画面を出さない */
   const [tvUnlocked, setTvUnlocked] = useState(false)
-  /** 最初の CRT ON エフェクト（テレビONクリック後に1回） */
+  /** 最初の CRT ON エフェクト（モニターONクリック後に1回） */
   const [showCrtOn, setShowCrtOn] = useState(false)
   /** 最後の CRT OFF エフェクト（送信完了時など） */
   const [showCrtOff, setShowCrtOff] = useState(false)
@@ -259,7 +259,7 @@ function App() {
     return () => window.removeEventListener("mousemove", onMove)
   }, [setMyCursor])
 
-  /* テレビONされてからだけフェッチ */
+  /* モニターONされてからだけフェッチ */
   useEffect(() => {
     if (!tvUnlocked) return
     loadingStartRef.current = Date.now()
@@ -321,7 +321,7 @@ function App() {
     ])
   }
 
-  /* アンケート表示中のみカーソル非表示（初期・テレビOFF時はデフォルトカーソル） */
+  /* アンケート表示中のみカーソル非表示（初期・モニターOFF時はデフォルトカーソル） */
   useEffect(() => {
     if (tvUnlocked && !showCrtOff && !showLoading && !error && survey) {
       document.body.classList.add("survey-cursor-none")
@@ -347,11 +347,11 @@ function App() {
     }
   }
 
-  /* テレビONされるまで画面の真ん中にボタンのみ表示（マウスはデフォルト表示） */
+  /* モニターONされるまで画面の真ん中にボタンのみ表示（マウスはデフォルト表示） */
   if (!tvUnlocked) {
     return (
-      <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-4 bg-[#111] text-white cursor-default" style={{ cursor: 'default' }}>
-        <p className="text-sm text-gray-400">ADiXi SESSION SURVEY</p>
+      <div className="tv-on-screen fixed inset-0 z-[200] flex flex-col items-center justify-center gap-6 text-white cursor-default" style={{ cursor: 'default' }}>
+        <p className="tv-on-label">ADiXi SESSION SURVEY</p>
         <button
           type="button"
           onClick={() => {
@@ -362,10 +362,10 @@ function App() {
             setLoadingExiting(false)
             setLoadingFadeDone(false)
           }}
-          className="crt-open-btn ready"
-          aria-label="テレビON"
+          className="tv-on-btn"
+          aria-label="モニターON"
         >
-          テレビON
+          モニターON
         </button>
       </div>
     )
@@ -391,7 +391,7 @@ function App() {
     <div data-root="app" className="relative">
       {/* 最初: CRT ON エフェクト（約4秒で消える） */}
       <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
-      {/* 最後: テレビOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
+      {/* 最後: モニターOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
       <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} />
       {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#111]" aria-hidden />}
       {!showCrtOff && (
@@ -404,21 +404,23 @@ function App() {
           transition: `opacity ${underlayTransition} ease-out`,
         }}
       >
-      <div className="absolute top-12 right-6 z-50 flex flex-col items-end gap-3">
+      <div className="hacker-toolbar absolute top-12 right-6 z-50 flex flex-col items-end gap-3">
         <AnimatedThemeToggler />
         <button
           type="button"
           onClick={() => (isCameraOn ? stopCamera() : startCamera())}
-          className="flex items-center gap-2 rounded-none border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
+          className="hacker-toolbar-btn"
           title={isCameraOn ? "カメラOFF" : "カメラON"}
+          aria-label={isCameraOn ? "カメラOFF" : "カメラON"}
         >
           {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
         </button>
         <button
           type="button"
           onClick={() => setShowCrtOff(true)}
-          className="flex items-center gap-2 rounded-none border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-2 text-xs text-[var(--color-text)] transition hover:opacity-90"
-          title="テレビOFF"
+          className="hacker-toolbar-btn"
+          title="モニターOFF"
+          aria-label="モニターOFF"
         >
           <Tv className="h-4 w-4" />
         </button>

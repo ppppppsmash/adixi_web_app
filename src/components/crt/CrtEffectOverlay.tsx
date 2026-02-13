@@ -46,7 +46,7 @@ export function CrtEffectOverlay({
       />
       {isOn && (
         <div className="crt-effect-overlay-label" aria-hidden>
-          AV-1
+          ADiXi-CH
         </div>
       )}
     </div>
