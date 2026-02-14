@@ -559,7 +559,7 @@ function App() {
       {/* CRT点灯時の素材感：brightness(1.2) saturate(1.3) でテレビから表示している明るさに */}
       <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden" style={{ transform: 'translateZ(0)' }}>
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
+          className="crt-screen-wobble absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
           style={{ filter: 'brightness(1.2) saturate(1.3)' }}
         >
         <div className="absolute inset-0 z-0">
