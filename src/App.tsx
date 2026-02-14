@@ -295,6 +295,9 @@ function App() {
   const [initialName, setInitialName] = useState('')
   /** 最初の CRT ON エフェクト（モニターONクリック後に1回） */
   const [showCrtOn, setShowCrtOn] = useState(false)
+  /** CRT点灯後、コンテンツを上から下へリビールするエフェクト */
+  const [crtRevealActive, setCrtRevealActive] = useState(false)
+  const prevShowCrtOnRef = useRef(showCrtOn)
   /** 最後の CRT OFF エフェクト（送信完了時など） */
   const [showCrtOff, setShowCrtOff] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
@@ -369,6 +372,16 @@ function App() {
     }, remaining)
     return () => clearTimeout(t)
   }, [tvUnlocked, loading])
+
+  /* CRT ON エフェクト終了時、コンテンツを上から下へリビール */
+  useEffect(() => {
+    if (prevShowCrtOnRef.current && !showCrtOn) {
+      setCrtRevealActive(true)
+      const t = setTimeout(() => setCrtRevealActive(false), 1800)
+      return () => clearTimeout(t)
+    }
+    prevShowCrtOnRef.current = showCrtOn
+  }, [showCrtOn])
 
   /* ローディングはアンマウントしない（opacity 0 のまま残す）。外すと一瞬真っ黒になるため */
 
@@ -559,7 +572,7 @@ function App() {
       {/* CRT点灯時の素材感：brightness(1.2) saturate(1.3) でテレビから表示している明るさに */}
       <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden" style={{ transform: 'translateZ(0)' }}>
         <div
-          className="crt-screen-wobble absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
+          className={`crt-screen-wobble crt-content-reveal absolute inset-0 flex flex-col items-center justify-center overflow-hidden ${crtRevealActive ? 'crt-reveal-active' : ''}`}
           style={{ filter: 'brightness(1.2) saturate(1.3)' }}
         >
         <div className="absolute inset-0 z-0">

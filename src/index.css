@@ -351,6 +351,18 @@ html.game-boy-pocket button:focus-visible {
   }
 }
 
+/* CRT点灯後：コンテンツが上から下へリビール（走査線が描くように現れる） */
+.crt-content-reveal {
+  clip-path: inset(0 0 0 0);
+}
+.crt-content-reveal.crt-reveal-active {
+  animation: crt-reveal-top-to-bottom 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes crt-reveal-top-to-bottom {
+  0% { clip-path: inset(0 0 100% 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
 /* CRT container: frame + scanlines + flicker overlay */
 .crt-container {
   --crt-screen-bg: #121010;
@@ -793,45 +805,52 @@ html.game-boy-pocket .hacker-toolbar-btn:focus-visible {
   flex-shrink: 0;
 }
 
-/* CRT スキャンラインオーバーレイ（固定で最前面に表示） */
+/* CRT スキャンラインオーバーレイ（固定で表示。ビームが斜めに見えるよう overflow: visible） */
 .crt-scanlines-overlay {
   position: fixed;
   inset: 0;
   z-index: 90;
-  overflow: hidden;
+  overflow: visible;
+  pointer-events: none;
 }
-/* 静的スキャンライン：画像 (scanlines.png) をコンポーネントで指定、ここではレイアウトのみ */
+/* 静的スキャンライン：画像 (scanlines.png) をコンポーネントで指定 */
 .crt-scanlines-static {
   position: absolute;
   inset: 0;
+  z-index: 1;
   background-repeat: repeat;
   background-size: auto;
   background-position: 0 0;
 }
-/* 動的スキャンライン：上から下へ流れる走査線 */
+/* 動的スキャンライン：斜めの走査線が上から下へ流れる（実機CRTのラスター走査） */
 .crt-scanlines-beam {
   position: absolute;
   left: 0;
   right: 0;
-  height: 4%;
+  width: 120%;
+  margin-left: -10%;
+  height: 10%;
+  z-index: 2;
+  transform: skewX(-15deg);
+  transform-origin: center center;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 255, 65, 0.03) 30%,
-    rgba(0, 255, 65, 0.08) 50%,
-    rgba(0, 255, 65, 0.03) 70%,
+    rgba(0, 255, 65, 0.1) 30%,
+    rgba(0, 255, 65, 0.28) 50%,
+    rgba(0, 255, 65, 0.1) 70%,
     transparent 100%
   );
-  animation: crt-scanline-sweep 4s linear infinite;
+  animation: crt-scanline-sweep 2.8s linear infinite, crt-beam-flicker 0.1s ease-in-out infinite;
   pointer-events: none;
 }
 html.virtual-boy .crt-scanlines-beam {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(255, 0, 64, 0.04) 30%,
-    rgba(255, 0, 64, 0.1) 50%,
-    rgba(255, 0, 64, 0.04) 70%,
+    rgba(255, 0, 64, 0.12) 30%,
+    rgba(255, 0, 64, 0.32) 50%,
+    rgba(255, 0, 64, 0.12) 70%,
     transparent 100%
   );
 }
@@ -839,9 +858,9 @@ html.lcd-green .crt-scanlines-beam {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(155, 188, 15, 0.04) 30%,
-    rgba(155, 188, 15, 0.1) 50%,
-    rgba(155, 188, 15, 0.04) 70%,
+    rgba(155, 188, 15, 0.12) 30%,
+    rgba(155, 188, 15, 0.32) 50%,
+    rgba(155, 188, 15, 0.12) 70%,
     transparent 100%
   );
 }
@@ -849,15 +868,27 @@ html.game-boy-pocket .crt-scanlines-beam {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(173, 165, 154, 0.04) 30%,
-    rgba(173, 165, 154, 0.1) 50%,
-    rgba(173, 165, 154, 0.04) 70%,
+    rgba(173, 165, 154, 0.1) 30%,
+    rgba(173, 165, 154, 0.25) 50%,
+    rgba(173, 165, 154, 0.1) 70%,
     transparent 100%
   );
 }
 @keyframes crt-scanline-sweep {
   0% { top: -5%; }
   100% { top: 105%; }
+}
+/* 走査線ビームのちらつき・不安定さ（斜めを維持しつつ揺らぎ） */
+@keyframes crt-beam-flicker {
+  0%, 100% { opacity: 1; transform: skewX(-15deg) translateX(0); }
+  25% { opacity: 0.8; transform: skewX(-15deg) translateX(0.5px); }
+  50% { opacity: 1; transform: skewX(-15deg) translateX(-0.4px); }
+  75% { opacity: 0.9; transform: skewX(-15deg) translateX(0.3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crt-scanlines-beam {
+    animation: crt-scanline-sweep 4s linear infinite;
+  }
 }
 
 /* エフェクトのみのオーバーレイ（アプリはそのまま表示・操作可能、上にエフェクトを重ねるだけ） */
