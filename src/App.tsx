@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
-import { Camera, CameraOff, ChevronLeft, ChevronRight, Send, Tv } from "lucide-react";
+import { Camera, CameraOff, ChevronLeft, ChevronRight, Power, Send } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useTheme, type ThemeId } from "./lib/useDarkMode";
 import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
@@ -20,6 +20,7 @@ import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurvey
 import { supabase } from "./lib/supabase";
 import { useRealtimeCursors } from "./hooks/useRealtimeCursors";
 import { useCamera } from "./hooks/useCamera";
+import { useWebRTCCameraShare } from "./hooks/useWebRTCCameraShare";
 import { RealtimeCursorsOverlay } from "./components/realtime/RealtimeCursorsOverlay";
 import { AnimatedAvatar } from "./components/ui/avatar/animated-avatar";
 import { MatrixLoading } from "./components/loading/matrix-loading";
@@ -308,11 +309,18 @@ function App() {
     ? (answers[survey.items[0].id] as string).trim()
     : ""
   const cursorDisplayName = firstItemAnswer || initialName.trim() || ""
-  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor } = useRealtimeCursors(
+  const { otherCursors, myCursorRef, myCursorInfo, setMyCursor, myPresenceKey } = useRealtimeCursors(
     survey?.id ?? null,
     cursorDisplayName
   )
   const { stream: cameraStream, start: startCamera, stop: stopCamera, isOn: isCameraOn } = useCamera();
+  const otherPresenceKeys = otherCursors.map((c) => c.key);
+  const { remoteStreams } = useWebRTCCameraShare(
+    survey?.id ?? null,
+    myPresenceKey,
+    otherPresenceKeys,
+    isCameraOn ? cameraStream ?? null : null
+  );
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -348,8 +356,8 @@ function App() {
     return () => { cancelled = true }
   }, [surveyId, tvUnlocked])
 
-  const LOADING_MIN_MS = 5500
-  const LOADING_FADEOUT_MS = 2500
+  const LOADING_MIN_MS = 9000
+  const LOADING_FADEOUT_MS = 3500
   /* 取得完了後、最低表示時間経過でフェード開始 */
   useEffect(() => {
     if (!tvUnlocked || loading) return
@@ -515,7 +523,7 @@ function App() {
     )
   }
 
-  const borderClass = 'border-[var(--color-border)]'
+  const borderClass = ''
 
   /* マトリックス雨のみ表示中は下地を非表示、フェード時に下地を 0→100% で表示 */
   const underlayVisible = !showLoading || loadingExiting
@@ -539,10 +547,21 @@ function App() {
           transition: `opacity ${underlayTransition} ease-out`,
         }}
       >
-      <RealtimeCursorsOverlay cursors={otherCursors} myCursorRef={myCursorRef} myCursorInfo={myCursorInfo} cameraStream={isCameraOn ? cameraStream ?? null : null} />
+      <RealtimeCursorsOverlay
+          cursors={otherCursors}
+          myCursorRef={myCursorRef}
+          myCursorInfo={myCursorInfo}
+          cameraStream={isCameraOn ? cameraStream ?? null : null}
+          remoteStreams={remoteStreams}
+        />
 
       {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ（translateZ(0)でレイヤ化しフェード時に黒くならない） */}
+      {/* CRT点灯時の素材感：brightness(1.2) saturate(1.3) でテレビから表示している明るさに */}
       <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden" style={{ transform: 'translateZ(0)' }}>
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
+          style={{ filter: 'brightness(1.2) saturate(1.3)' }}
+        >
         <div className="absolute inset-0 z-0">
           <LetterGlitch
             glitchSpeed={50}
@@ -564,15 +583,15 @@ function App() {
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
           {(submittedNames.length > 0) && (
-            <div className={`flex w-full shrink-0 justify-center border-t ${borderClass}`}>
-              <div className={`mx-4 flex w-full max-w-[1120px] flex-wrap items-center justify-center gap-x-4 gap-y-2 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`flex w-full shrink-0 justify-center ${borderClass}`}>
+              <div className={`mx-4 flex w-full max-w-[1120px] flex-wrap items-center justify-center gap-x-4 gap-y-2 py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
                 
               </div>
             </div>
           )}
           {/* タイトル帯：マトリックス雨のように文字が不安定に変わるが全体は読める */}
-          <div className={`flex w-full justify-center border-y ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 border-x pt-20 pb-16 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+          <div className={`flex w-full justify-center ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 pt-20 pb-16 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
               <TitleMatrixGlitch
                 theme={theme}
                 fontFamily="var(--font-title-code)"
@@ -593,9 +612,9 @@ function App() {
             </div>
           </div>
 
-          {/* タイトル下の border 内：送信済み＋現在入力中の名前のアイコン（カメラON/OFFに関係なく常にアイコンのみ表示） */}
-          <div className={`flex w-full flex-1 justify-center border-t ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 border-x py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+          {/* タイトル下：送信済み＋現在入力中の名前のアイコン（カメラON/OFFに関係なく常にアイコンのみ表示） */}
+          <div className={`flex w-full flex-1 justify-center ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
                 /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
                 const avatarPalette = AVATAR_PALETTES[theme];
@@ -639,8 +658,8 @@ function App() {
           </div>
 
           {/* アンケートカード帯：外枠は最初から常に描画し、中身だけ survey 到着時に差し替え（レンダー遅延で真っ黒を防ぐ） */}
-          <div className={`flex w-full flex-1 justify-center border-t border-b ${borderClass}`}>
-            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center border-x bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
+          <div className={`flex w-full flex-1 justify-center ${borderClass}`}>
+            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
               <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
                 {survey ? (
                 <>
@@ -711,8 +730,8 @@ function App() {
           </div>
 
           {/* コメント欄（非表示） */}
-          <div className={`hidden flex w-full justify-center border-b ${borderClass}`}>
-            <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`}>
+          <div className={`hidden flex w-full justify-center ${borderClass}`}>
+            <div className={`mx-4 w-full max-w-[1120px] sm:mx-8 lg:mx-16 ${borderClass}`}>
               <CommentPanel
                 comments={localComments}
                 onAddComment={addLocalComment}
@@ -721,9 +740,10 @@ function App() {
             </div>
           </div>
 
-          <div className={`flex h-16 w-full flex-grow justify-center border-b ${borderClass}`}>
-            <div className={`mx-4 w-full max-w-[1120px] border-x sm:mx-8 lg:mx-16 ${borderClass}`} />
+          <div className={`flex h-16 w-full flex-grow justify-center ${borderClass}`}>
+            <div className={`mx-4 w-full max-w-[1120px] sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
+        </div>
         </div>
         {/* CRT表示方式：スキャンライン＋端の減光（ブラウン管の表示の見え方） */}
         <div className="crt-display pointer-events-none absolute inset-0 z-[100]" aria-hidden />
@@ -731,10 +751,15 @@ function App() {
       </div>
       {/* モニター枠（ビゼル）：最前面・全画面に固定。transform の外で確実に表示 */}
       <div
-        className="fixed inset-0 z-[300] pointer-events-none flex items-stretch justify-stretch"
+        className="bezel-frame fixed inset-0 z-[300] pointer-events-none flex items-stretch justify-stretch"
         style={{ left: 0, top: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
         aria-hidden
       >
+        {/* スクリーン奥行き・光の表現：モニターから表示している感じを強調 */}
+        <div
+          className="bezel-screen-well"
+          aria-hidden
+        />
         <img
           src="/images/bezel.png"
           alt=""
@@ -761,7 +786,7 @@ function App() {
           title="モニターOFF"
           aria-label="モニターOFF"
         >
-          <Tv className="h-4 w-4" aria-hidden />
+          <Power className="h-4 w-4" aria-hidden />
         </button>
       </div>
       {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}

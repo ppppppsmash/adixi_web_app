@@ -593,13 +593,13 @@ html.game-boy-pocket .form-radio-outer[data-focus] {
 
 /* 全画面：CRTスキャンライン＋ビネット（ブラウン管の表示の見え方） */
 .crt-display {
-  /* 水平スキャンライン：1px ごとの細い横線（インターレース風） */
+  /* 水平スキャンライン：軽めにして明るさを維持 */
   background-image: repeating-linear-gradient(
     0deg,
     transparent 0px,
     transparent 1px,
-    rgba(0, 0, 0, 0.12) 1px,
-    rgba(0, 0, 0, 0.12) 2px
+    rgba(0, 0, 0, 0.06) 1px,
+    rgba(0, 0, 0, 0.06) 2px
   );
   background-size: 100% 2px;
 }
@@ -608,13 +608,13 @@ html.game-boy-pocket .form-radio-outer[data-focus] {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* 2本おきにやや濃いラインでインターレース感 */
+  /* 2本おきにやや濃いラインでインターレース感（軽め） */
   background-image: repeating-linear-gradient(
     0deg,
     transparent 0px,
     transparent 4px,
-    rgba(0, 0, 0, 0.08) 4px,
-    rgba(0, 0, 0, 0.08) 5px
+    rgba(0, 0, 0, 0.04) 4px,
+    rgba(0, 0, 0, 0.04) 5px
   );
   background-size: 100% 4px;
 }
@@ -623,8 +623,8 @@ html.dark .crt-display {
     0deg,
     transparent 0px,
     transparent 1px,
-    rgba(0, 0, 0, 0.2) 1px,
-    rgba(0, 0, 0, 0.2) 2px
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
   );
 }
 html.dark .crt-display::before {
@@ -632,19 +632,20 @@ html.dark .crt-display::before {
     0deg,
     transparent 0px,
     transparent 4px,
-    rgba(0, 0, 0, 0.12) 4px,
-    rgba(0, 0, 0, 0.12) 5px
+    rgba(0, 0, 0, 0.06) 4px,
+    rgba(0, 0, 0, 0.06) 5px
   );
 }
 .crt-display::after {
   content: "";
   position: absolute;
   inset: 0;
+  /* ビネットを軽くしてCRT点灯時の明るさを維持 */
   background: radial-gradient(
     ellipse 85% 80% at 50% 50%,
     transparent 0%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.4) 100%
+    transparent 55%,
+    rgba(0, 0, 0, 0.2) 100%
   );
   pointer-events: none;
 }
@@ -655,8 +656,8 @@ html.game-boy-pocket .crt-display::after {
   background: radial-gradient(
     ellipse 85% 80% at 50% 50%,
     transparent 0%,
-    transparent 45%,
-    rgba(0, 0, 0, 0.55) 100%
+    transparent 50%,
+    rgba(0, 0, 0, 0.3) 100%
   );
 }
 html.virtual-boy .crt-display {
@@ -664,8 +665,8 @@ html.virtual-boy .crt-display {
     0deg,
     transparent 0px,
     transparent 1px,
-    rgba(0, 0, 0, 0.2) 1px,
-    rgba(0, 0, 0, 0.2) 2px
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
   );
 }
 html.virtual-boy .crt-display::before {
@@ -673,8 +674,8 @@ html.virtual-boy .crt-display::before {
     0deg,
     transparent 0px,
     transparent 4px,
-    rgba(0, 0, 0, 0.12) 4px,
-    rgba(0, 0, 0, 0.12) 5px
+    rgba(0, 0, 0, 0.06) 4px,
+    rgba(0, 0, 0, 0.06) 5px
   );
 }
 html.lcd-green .crt-display {
@@ -682,8 +683,8 @@ html.lcd-green .crt-display {
     0deg,
     transparent 0px,
     transparent 1px,
-    rgba(0, 0, 0, 0.2) 1px,
-    rgba(0, 0, 0, 0.2) 2px
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
   );
 }
 html.lcd-green .crt-display::before {
@@ -691,8 +692,8 @@ html.lcd-green .crt-display::before {
     0deg,
     transparent 0px,
     transparent 4px,
-    rgba(0, 0, 0, 0.12) 4px,
-    rgba(0, 0, 0, 0.12) 5px
+    rgba(0, 0, 0, 0.06) 4px,
+    rgba(0, 0, 0, 0.06) 5px
   );
 }
 html.game-boy-pocket .crt-display {
@@ -700,8 +701,8 @@ html.game-boy-pocket .crt-display {
     0deg,
     transparent 0px,
     transparent 1px,
-    rgba(0, 0, 0, 0.2) 1px,
-    rgba(0, 0, 0, 0.2) 2px
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
   );
 }
 html.game-boy-pocket .crt-display::before {
@@ -709,8 +710,8 @@ html.game-boy-pocket .crt-display::before {
     0deg,
     transparent 0px,
     transparent 4px,
-    rgba(0, 0, 0, 0.12) 4px,
-    rgba(0, 0, 0, 0.12) 5px
+    rgba(0, 0, 0, 0.06) 4px,
+    rgba(0, 0, 0, 0.06) 5px
   );
 }
 

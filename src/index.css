@@ -45,12 +45,12 @@ html.game-boy-pocket .question-matrix-glow {
   --font-title-code: 'Cascadia Code', 'JetBrains Mono', Consolas, Monaco, monospace;
   --color-placeholder: rgba(0, 255, 65, 0.32);
   --color-form-input-text: #00ff41;
-  /* デフォルト＝ダーク（緑）と同じ */
+  /* デフォルト＝ダーク（緑）と同じ。やや明るめのグレー系 */
   color-scheme: dark;
-  --color-bg: #100F0F;
-  --color-bg-center: rgba(28, 28, 30, 0.58);
-  --color-bg-elevated: #161515;
-  --color-bg-survey: rgba(22, 21, 21, 0.82);
+  --color-bg: #1a1a1a;
+  --color-bg-center: rgba(36, 36, 38, 0.65);
+  --color-bg-elevated: #222222;
+  --color-bg-survey: rgba(30, 30, 30, 0.88);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-accent: #00ff41;
@@ -63,18 +63,18 @@ html.game-boy-pocket .question-matrix-glow {
   --color-stepper-connector: rgba(255, 255, 255, 0.25);
   --color-button-bg: #2d2d2d;
   --color-button-text: rgba(255, 255, 255, 0.87);
-  --glitch-bg: #0a0a0c;
-  --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
-  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-bg: #141414;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.75);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.7);
 }
 
 html.dark {
   color-scheme: dark;
-  /* Cover.vue の中央背景に合わせる (--j-bg-base: #100F0F) */
-  --color-bg: #100F0F;
-  --color-bg-center: rgba(28, 28, 30, 0.58);
-  --color-bg-elevated: #161515;
-  --color-bg-survey: rgba(22, 21, 21, 0.82);
+  /* 1番テーマ：やや明るめのグレー系で見やすく */
+  --color-bg: #1a1a1a;
+  --color-bg-center: rgba(36, 36, 38, 0.65);
+  --color-bg-elevated: #222222;
+  --color-bg-survey: rgba(30, 30, 30, 0.88);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-accent: #00ff41;
@@ -89,18 +89,18 @@ html.dark {
   --color-button-text: rgba(255, 255, 255, 0.87);
   --color-placeholder: rgba(0, 255, 65, 0.32);
   --color-form-input-text: #00ff41;
-  --glitch-bg: #0a0a0c;
-  --glitch-outer-vignette: rgba(0, 0, 0, 0.8);
-  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-bg: #141414;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.75);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.7);
 }
 
-/* Virtual Boy 風：暗い背景＋赤アクセント（ライトモード廃止後の代替テーマ） */
+/* Virtual Boy 風：2番テーマ。やや明るめのグレー系で見やすく */
 html.virtual-boy {
   color-scheme: dark;
-  --color-bg: #0f0808;
-  --color-bg-center: rgba(28, 18, 18, 0.6);
-  --color-bg-elevated: #160c0c;
-  --color-bg-survey: rgba(22, 12, 12, 0.88);
+  --color-bg: #1c1818;
+  --color-bg-center: rgba(36, 30, 30, 0.65);
+  --color-bg-elevated: #252020;
+  --color-bg-survey: rgba(32, 26, 26, 0.88);
   --color-text: rgba(255, 220, 220, 0.9);
   --color-text-muted: rgba(255, 180, 180, 0.6);
   --color-accent: #ff0040;
@@ -115,9 +115,9 @@ html.virtual-boy {
   --color-button-text: rgba(255, 255, 255, 0.9);
   --color-placeholder: rgba(255, 0, 64, 0.35);
   --color-form-input-text: #ff0040;
-  --glitch-bg: #0a0505;
-  --glitch-outer-vignette: rgba(0, 0, 0, 0.85);
-  --glitch-center-vignette: rgba(0, 0, 0, 0.8);
+  --glitch-bg: #141010;
+  --glitch-outer-vignette: rgba(0, 0, 0, 0.75);
+  --glitch-center-vignette: rgba(0, 0, 0, 0.7);
 }
 
 /* 液晶緑：暗い緑背景＋液晶グリーンアクセント */
@@ -849,6 +849,18 @@ html.game-boy-pocket .crt-scanlines-beam {
 
 .crt-effect-screen.crt-effect-turn-off {
   animation-name: crt-turn-off;
+}
+
+/* モニター枠（ビゼル）：スクリーン境界の軽い定義のみ（暗くしない） */
+.bezel-screen-well {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  /* 枠の内側の境界をわずかに定義。暗くせず、CRTの明るさを維持 */
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
 }
 
 /* 枠（ビゼル）内に収めるためインセット */
