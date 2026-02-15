@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 // import { LiquidGlass } from '@liquidglass/react';
-import { Camera, CameraOff, ChevronLeft, ChevronRight, Power, Send } from "lucide-react";
+import { ArrowRightToLine, Camera, CameraOff, ChevronLeft, ChevronRight, CornerDownLeft, Power, Send } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useTheme, type ThemeId } from "./lib/useDarkMode";
 import { TitleAsciiGlitch } from "./components/ui/text/title-ascii-glitch";
@@ -497,16 +497,33 @@ function App() {
               <p className="tv-on-label">ADiXi SESSION SURVEY</p>
               <div className="tv-on-form flex flex-col items-stretch gap-3">
                 <label htmlFor="tv-on-name" className="sr-only">Username</label>
-                <input
-                  id="tv-on-name"
-                  type="text"
-                  value={initialName}
-                  onChange={(e) => setInitialName(e.target.value)}
-                  placeholder="Username"
-                  className="tv-on-name-input"
-                  autoComplete="username"
-                  aria-label="Usernameを入力するとモニターONが有効になります"
-                />
+                <div className="relative flex items-center">
+                  <input
+                    id="tv-on-name"
+                    type="text"
+                    value={initialName}
+                    onChange={(e) => setInitialName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && initialName.trim() !== '') {
+                        e.preventDefault()
+                        setTvUnlocked(true)
+                        setShowCrtOn(true)
+                        loadingStartRef.current = Date.now()
+                        setShowLoading(true)
+                        setLoadingExiting(false)
+                        setLoadingFadeDone(false)
+                      }
+                    }}
+                    placeholder="Username"
+                    className="tv-on-name-input tv-on-name-input-with-hint pr-24"
+                    autoComplete="username"
+                    aria-label="Usernameを入力するとモニターONが有効になります"
+                  />
+                  <span className="tv-on-key-hint absolute right-3 inline-flex items-center gap-1.5 text-xs opacity-60" style={{ color: getAccentColor(theme) }}>
+                    <ArrowRightToLine className="size-3.5 shrink-0" aria-hidden />
+                    Tab
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={() => {
@@ -518,10 +535,14 @@ function App() {
                     setLoadingFadeDone(false)
                   }}
                   disabled={initialName.trim() === ''}
-                  className={`tv-on-btn ${initialName.trim() !== '' ? 'tv-on-btn-ready' : ''}`}
+                  className={`tv-on-btn tv-on-btn-with-hint relative ${initialName.trim() !== '' ? 'tv-on-btn-ready' : ''}`}
                   aria-label="モニターON"
                 >
                   モニターON
+                  <span className="tv-on-key-hint absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 text-xs opacity-60" style={{ color: getAccentColor(theme) }}>
+                    <CornerDownLeft className="size-3.5 shrink-0" aria-hidden />
+                    Enter
+                  </span>
                 </button>
               </div>
             </div>
@@ -640,14 +661,22 @@ function App() {
                           </button>
                         )}
                         renderNextButton={({ onClick, isLastStep }) => (
-                          <button
-                            type="button"
-                            onClick={onClick}
-                            aria-label={isLastStep ? "送信" : "次へ"}
-                            className="hacker-btn relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)]"
-                          >
-                            {isLastStep ? <Send className="size-5 shrink-0" aria-hidden /> : <ChevronRight className="size-5 shrink-0" aria-hidden />}
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={onClick}
+                              aria-label={isLastStep ? "送信" : "次へ"}
+                              className="hacker-btn relative z-10 inline-flex h-9 w-9 min-h-9 min-w-9 flex-shrink-0 items-center justify-center rounded-none p-0 transition hover:opacity-90 active:scale-[0.98] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)]"
+                            >
+                              {isLastStep ? <Send className="size-5 shrink-0" aria-hidden /> : <ChevronRight className="size-5 shrink-0" aria-hidden />}
+                            </button>
+                            {isLastStep && (
+                              <span className="flex items-center gap-1.5 text-xs opacity-60" style={{ color: getAccentColor(theme) }}>
+                                <CornerDownLeft className="size-3.5 shrink-0" aria-hidden />
+                                Enter
+                              </span>
+                            )}
+                          </div>
                         )}
                       >
                         {/* 名前は初期画面で入力済みのため、アンケート画面では1問目を表示しない（送信時は answers に含まれる） */}
