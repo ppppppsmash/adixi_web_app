@@ -8,9 +8,9 @@ const MATRIX_CHARS =
 
 const THEME_COLORS: Record<ThemeId, { color: string; stroke: string; filter: string }> = {
   dark: {
-    color: "#00ff41",
-    stroke: "#00ff41",
-    filter: "drop-shadow(0 0 12px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.4))",
+    color: "#18ff62",
+    stroke: "#18ff62",
+    filter: "drop-shadow(0 0 12px rgba(24, 255, 98, 0.8)) drop-shadow(0 0 24px rgba(24, 255, 98, 0.4))",
   },
   virtualboy: {
     color: "#ff0040",

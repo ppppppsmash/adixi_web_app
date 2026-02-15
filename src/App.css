@@ -353,11 +353,11 @@ select.form-input-base option {
   background: var(--color-bg-elevated);
   color: var(--color-form-input-text);
 }
-/* 入力欄の文字・色（step-content-font の上書きを打ち消す） */
+/* 入力欄の文字・色（サンプル準拠：monofont） */
 .step-content-font input.form-input-base,
 .step-content-font textarea.form-input-base,
 .step-content-font select.form-input-base {
-  font-family: var(--font-hacker-mono) !important;
+  font-family: monofont, var(--font-hacker-mono) !important;
   color: var(--color-form-input-text) !important;
 }
 .form-input-base::placeholder {
@@ -367,7 +367,7 @@ select.form-input-base option {
 }
 .step-content-font input.form-input-base::placeholder,
 .step-content-font textarea.form-input-base::placeholder {
-  font-family: var(--font-hacker-mono) !important;
+  font-family: monofont, var(--font-hacker-mono) !important;
 }
 .form-input-base[data-focus],
 .form-input-base:focus {
@@ -491,17 +491,17 @@ html.game-boy-pocket .form-checkbox-check-icon {
 }
 /* チェックボックス・ラジオの選択肢ラベル：ダーク=緑、Virtual Boy=赤、液晶緑、Game Boy Pocket=グレー */
 .form-label-option {
-  color: #00ff41;
-  font-family: var(--font-hacker-mono) !important;
+  color: #12db50;
+  font-family: monofont, var(--font-hacker-mono) !important;
 }
 html.virtual-boy .form-label-option {
-  color: #ff0040;
+  color: #dd0038;
 }
 html.lcd-green .form-label-option {
-  color: #9bbc0f;
+  color: #8bac0f;
 }
 html.game-boy-pocket .form-label-option {
-  color: #ada59a;
+  color: #8b7355;
 }
 .form-radio-dot {
   @apply invisible size-2 rounded-none transition;
@@ -556,27 +556,9 @@ html.game-boy-pocket .form-radio-outer[data-focus] {
   @apply text-sm font-medium mb-2;
 }
 
-/* ステップ：問題タイトルと質問内容の幅・上端を揃える ＋ ネオ風 */
+/* ステップ：問題タイトルと質問内容の幅・上端を揃える（サンプル準拠） */
 .step-content {
   @apply block w-full min-w-0 max-w-full;
-}
-/* ネオ風テキスト（軽いグロー・字間） */
-.step-content-neo,
-.step-content-neo label,
-.step-content-neo input,
-.step-content-neo textarea,
-.step-content-neo legend,
-.step-content-neo p,
-.step-content-neo span {
-  letter-spacing: 0.02em;
-}
-.step-content-neo label,
-.step-content-neo legend {
-  text-shadow: 0 0 20px rgba(97, 220, 163, 0.15);
-}
-.step-content-neo input::placeholder,
-.step-content-neo textarea::placeholder {
-  letter-spacing: 0.02em;
 }
 .step-title {
   @apply block w-full min-w-0 max-w-full text-left;
@@ -715,60 +697,9 @@ html.game-boy-pocket .crt-display::before {
   );
 }
 
-/* アンケートエリア：ブラウン管風エフェクト（スキャンライン＋ビネット） */
+/* アンケートエリア */
 .survey-area-crt {
   position: relative;
-  overflow: hidden;
-}
-.survey-area-crt::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 85% 85% at 50% 50%,
-    transparent 0%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.08) 100%
-  );
-  z-index: 1;
-}
-html.dark .survey-area-crt::before,
-html.virtual-boy .survey-area-crt::before,
-html.lcd-green .survey-area-crt::before,
-html.game-boy-pocket .survey-area-crt::before {
-  background: radial-gradient(
-    ellipse 85% 85% at 50% 50%,
-    transparent 0%,
-    transparent 55%,
-    rgba(0, 0, 0, 0.25) 100%
-  );
-}
-.survey-area-crt::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.04) 2px,
-    rgba(0, 0, 0, 0.04) 3px
-  );
-  z-index: 2;
-}
-html.dark .survey-area-crt::after,
-html.virtual-boy .survey-area-crt::after,
-html.lcd-green .survey-area-crt::after,
-html.game-boy-pocket .survey-area-crt::after {
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.12) 2px,
-    rgba(0, 0, 0, 0.12) 3px
-  );
 }
 
 /* カーソルUI：ネオ風の弱い点滅グロー（--cursor-color で色を指定） */

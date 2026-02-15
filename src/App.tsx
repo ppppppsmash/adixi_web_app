@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import LetterGlitch from "./components/background/LetterGlitch";
 // import { LiquidGlass } from '@liquidglass/react';
 import { Camera, CameraOff, ChevronLeft, ChevronRight, Power, Send } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useTheme, type ThemeId } from "./lib/useDarkMode";
-import { TitleMatrixGlitch } from "./components/ui/text/title-matrix-glitch";
+import { TitleAsciiGlitch } from "./components/ui/text/title-ascii-glitch";
 import Stepper, { Step } from "./components/ui/stepper/stepper";
 import {
   Input,
@@ -27,48 +26,26 @@ import { MatrixLoading } from "./components/loading/matrix-loading";
 import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 import { CommentPanel } from "./components/comments/CommentPanel";
 import { CrtEffectOverlay } from "./components/crt/CrtEffectOverlay";
-import { CrtScanlines } from "./components/crt/CrtScanlines";
 
-/** 背景グリッチ：緑テーマ用 */
-const GLITCH_COLORS = ['#0a1f0a', '#0d2818', '#00ff41', '#008c2a', '#2b4539', '#1a4d2a', '#61dca3']
-/** 背景グリッチ：Virtual Boy テーマ用（赤系のみ） */
-const GLITCH_COLORS_VIRTUALBOY = ['#1f0a0a', '#2a0d18', '#ff0040', '#b30033', '#4d1a2a', '#2a0d0d', '#ff4060']
-/** 背景グリッチ：液晶緑テーマ用 */
-const GLITCH_COLORS_LCDGREEN = ['#0a1a0a', '#0d2810', '#9bbc0f', '#8bac0f', '#306230', '#1a3d1a', '#7fa82e']
-/** 背景グリッチ：Game Boy Pocket テーマ用（あの画面のグレー） */
-const GLITCH_COLORS_GAMEBOYPOCKET = ['#1a1a18', '#2d2d28', '#5c574f', '#8b7355', '#ada59a', '#3d3d35', '#dedede']
+/** サンプル準拠：monofont + 控えめなテキストシャドウ */
+const QUESTION_FONT = "monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
+const QUESTION_COLOR_DARK = '#12db50'
+const QUESTION_COLOR_VIRTUALBOY = '#dd0038'
+const QUESTION_COLOR_LCDGREEN = '#8bac0f'
+const QUESTION_COLOR_GAMEBOYPOCKET = '#8b7355'
 
-function getGlitchColors(theme: ThemeId): string[] {
-  if (theme === 'virtualboy') return GLITCH_COLORS_VIRTUALBOY
-  if (theme === 'lcdgreen') return GLITCH_COLORS_LCDGREEN
-  if (theme === 'gameboypocket') return GLITCH_COLORS_GAMEBOYPOCKET
-  return GLITCH_COLORS
+function getQuestionColor(theme: ThemeId): string {
+  if (theme === 'virtualboy') return QUESTION_COLOR_VIRTUALBOY
+  if (theme === 'lcdgreen') return QUESTION_COLOR_LCDGREEN
+  if (theme === 'gameboypocket') return QUESTION_COLOR_GAMEBOYPOCKET
+  return QUESTION_COLOR_DARK
 }
 
-/** LetterGlitch 用の文字セット（JSX 内に {} を書くとパーサーが誤解するため定数化） */
-const GLITCH_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789'
-
-/** 問題内容用フォント（日本語対応・ネオ風） */
-const QUESTION_FONT = "'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif"
-/** 問題文タイトル：マトリックス／ハッカー風（モノスペース・緑） */
-const QUESTION_MATRIX_FONT = "'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
-const QUESTION_MATRIX_COLOR_DARK = '#00ff41'
-const QUESTION_MATRIX_COLOR_VIRTUALBOY = '#ff0040'
-const QUESTION_MATRIX_COLOR_LCDGREEN = '#9bbc0f'
-const QUESTION_MATRIX_COLOR_GAMEBOYPOCKET = '#ada59a'
-
-function getQuestionMatrixColor(theme: ThemeId): string {
-  if (theme === 'virtualboy') return QUESTION_MATRIX_COLOR_VIRTUALBOY
-  if (theme === 'lcdgreen') return QUESTION_MATRIX_COLOR_LCDGREEN
-  if (theme === 'gameboypocket') return QUESTION_MATRIX_COLOR_GAMEBOYPOCKET
-  return QUESTION_MATRIX_COLOR_DARK
-}
-
-function getQuestionMatrixGlow(theme: ThemeId): string {
-  if (theme === 'virtualboy') return '0 0 8px rgba(255, 0, 64, 0.4)'
-  if (theme === 'lcdgreen') return '0 0 8px rgba(155, 188, 15, 0.4)'
-  if (theme === 'gameboypocket') return '0 0 8px rgba(173, 165, 154, 0.4)'
-  return '0 0 8px rgba(0, 255, 65, 0.4)'
+function getQuestionTextShadow(theme: ThemeId): string {
+  if (theme === 'virtualboy') return '0 0 2px rgba(255, 10, 10, 0.6)'
+  if (theme === 'lcdgreen') return '0 0 2px rgba(139, 255, 10, 0.6)'
+  if (theme === 'gameboypocket') return '0 0 2px rgba(173, 165, 154, 0.6)'
+  return '0 0 2px rgba(10, 255, 10, 0.6)'
 }
 
 function getSurveyId(): string | null {
@@ -96,19 +73,20 @@ function SurveyStepContent({
   const namePlaceholder = isFirstItem ? "お名前を入力" : "入力してください"
 
   return (
-    <div className="step-content step-content-neo w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
-      <h2 className="step-title question-matrix-glow w-full min-w-0 text-left mb-2! flex items-baseline gap-1 flex-wrap">
+    <div className="step-content step-content-sample w-full min-w-0 space-y-4" style={{ fontFamily: QUESTION_FONT }}>
+      <h2 className="step-title w-full min-w-0 text-left mb-2! flex items-baseline gap-1 flex-wrap">
         <TerminalTypingText
           text={item.question}
           charDelay={40}
           startDelay={200}
           startWhen={startTyping}
           cursorAfterComplete={true}
-          className="text-[1.15rem] font-medium"
+          className="text-[1rem]"
           style={{
-            fontFamily: QUESTION_MATRIX_FONT,
-            color: getQuestionMatrixColor(theme),
-            textShadow: getQuestionMatrixGlow(theme),
+            fontFamily: QUESTION_FONT,
+            color: getQuestionColor(theme),
+            textShadow: getQuestionTextShadow(theme),
+            lineHeight: 1.25,
           }}
         />
         {item.isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -267,17 +245,10 @@ const AVATAR_PALETTES: Record<ThemeId, string[]> = {
 }
 
 function getAccentColor(theme: ThemeId): string {
-  if (theme === 'virtualboy') return '#ff0040'
-  if (theme === 'lcdgreen') return '#9bbc0f'
-  if (theme === 'gameboypocket') return '#ada59a'
-  return '#00ff41'
-}
-
-function getVignetteGradient(theme: ThemeId): string {
-  if (theme === 'virtualboy') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(255, 0, 64, 0.08) 0%, transparent 55%)'
-  if (theme === 'lcdgreen') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(155, 188, 15, 0.08) 0%, transparent 55%)'
-  if (theme === 'gameboypocket') return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(173, 165, 154, 0.08) 0%, transparent 55%)'
-  return 'radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 255, 65, 0.07) 0%, transparent 55%)'
+  if (theme === 'virtualboy') return '#dd0038'
+  if (theme === 'lcdgreen') return '#8bac0f'
+  if (theme === 'gameboypocket') return '#8b7355'
+  return '#12db50'
 }
 
 function App() {
@@ -295,9 +266,6 @@ function App() {
   const [initialName, setInitialName] = useState('')
   /** 最初の CRT ON エフェクト（モニターONクリック後に1回） */
   const [showCrtOn, setShowCrtOn] = useState(false)
-  /** CRT点灯後、コンテンツを上から下へリビールするエフェクト */
-  const [crtRevealActive, setCrtRevealActive] = useState(false)
-  const prevShowCrtOnRef = useRef(showCrtOn)
   /** 最後の CRT OFF エフェクト（送信完了時など） */
   const [showCrtOff, setShowCrtOff] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
@@ -372,16 +340,6 @@ function App() {
     }, remaining)
     return () => clearTimeout(t)
   }, [tvUnlocked, loading])
-
-  /* CRT ON エフェクト終了時、コンテンツを上から下へリビール */
-  useEffect(() => {
-    if (prevShowCrtOnRef.current && !showCrtOn) {
-      setCrtRevealActive(true)
-      const t = setTimeout(() => setCrtRevealActive(false), 1800)
-      return () => clearTimeout(t)
-    }
-    prevShowCrtOnRef.current = showCrtOn
-  }, [showCrtOn])
 
   /* ローディングはアンマウントしない（opacity 0 のまま残す）。外すと一瞬真っ黒になるため */
 
@@ -543,57 +501,35 @@ function App() {
   const underlayTransition = loadingExiting ? `${LOADING_FADEOUT_MS}ms` : '0ms'
 
   return (
-    <div data-root="app" className="relative">
+    <div data-root="app" className="relative min-h-[100vh] flex items-center justify-center bg-black">
       {/* 最初: CRT ON エフェクト（約4秒で消える） */}
       <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
       {/* 最後: モニターOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
       <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} />
-      {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#111]" aria-hidden />}
-      {!showCrtOff && <CrtScanlines dynamic />}
+      {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#000]" aria-hidden />}
       {!showCrtOff && (
       <>
       <div
-        className="survey-cursor-none relative z-0 min-h-[100svh] w-full bg-[var(--color-bg)]"
+        className="ander-crt survey-cursor-none"
         style={{
-          transform: 'translateZ(0)',
           opacity: underlayVisible ? 1 : 0,
           transition: `opacity ${underlayTransition} ease-out`,
         }}
       >
-      <RealtimeCursorsOverlay
-          cursors={otherCursors}
-          myCursorRef={myCursorRef}
-          myCursorInfo={myCursorInfo}
-          cameraStream={isCameraOn ? cameraStream ?? null : null}
-          remoteStreams={remoteStreams}
-        />
-
-      {/* 最下層: LetterGlitch。その上: 全幅で透明背景。最前面: 中央枠は border のみ（translateZ(0)でレイヤ化しフェード時に黒くならない） */}
-      {/* CRT点灯時の素材感：brightness(1.2) saturate(1.3) でテレビから表示している明るさに */}
-      <div className="fixed inset-0 z-0 flex flex-col items-center justify-center overflow-hidden" style={{ transform: 'translateZ(0)' }}>
-        <div
-          className={`crt-screen-wobble crt-content-reveal absolute inset-0 flex flex-col items-center justify-center overflow-hidden ${crtRevealActive ? 'crt-reveal-active' : ''}`}
-          style={{ filter: 'brightness(1.2) saturate(1.3)' }}
-        >
-        <div className="absolute inset-0 z-0">
-          <LetterGlitch
-            glitchSpeed={50}
-            centerVignette={theme === 'dark' || theme === 'lcdgreen'}
-            outerVignette={false}
-            smooth={true}
-            glitchColors={getGlitchColors(theme)}
-            characters={GLITCH_CHARACTERS}
-            adixiLoopIntervalMs={10000}
-          />
-        </div>
-        <div className="absolute inset-0 z-[1] bg-[var(--color-bg-center)]" aria-hidden />
-        {/* マトリックス風：中央にごく薄い緑のビネット（ライト時はやや暗い緑） */}
-        <div
-          className="pointer-events-none absolute inset-0 z-[1]"
-          style={{ background: getVignetteGradient(theme) }}
-          aria-hidden
-        />
-        <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent">
+        <div className="ander-screen">
+          <div className="ander-wrapper">
+            <div className="ander-interlace" aria-hidden />
+            <div className="ander-scanline" aria-hidden />
+            <div className="ander-envelope">
+              <div className="ander-content flex flex-col overflow-y-auto h-full">
+                <RealtimeCursorsOverlay
+                  cursors={otherCursors}
+                  myCursorRef={myCursorRef}
+                  myCursorInfo={myCursorInfo}
+                  cameraStream={isCameraOn ? cameraStream ?? null : null}
+                  remoteStreams={remoteStreams}
+                />
+        <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent min-h-0">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
           {(submittedNames.length > 0) && (
             <div className={`flex w-full shrink-0 justify-center ${borderClass}`}>
@@ -602,20 +538,19 @@ function App() {
               </div>
             </div>
           )}
-          {/* タイトル帯：マトリックス雨のように文字が不安定に変わるが全体は読める */}
+          {/* タイトル帯：サンプル風ASCIIアート＋記号がランダムにグリッチ */}
           <div className={`flex w-full justify-center ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 pt-20 pb-16 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
-              <TitleMatrixGlitch
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 pt-12 pb-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <h1 className="sr-only">ADiXi SURVEY</h1>
+              <TitleAsciiGlitch
                 theme={theme}
-                fontFamily="var(--font-title-code)"
-                fontSize="clamp(1.9rem, 4.8vw, 3.5rem)"
-              >
-                ADiXi SESSION SURVEY
-              </TitleMatrixGlitch>
+                fontFamily="monofont, var(--font-title-code)"
+                fontSize="clamp(0.85rem, 2.8vw, 1.4rem)"
+              />
               <p
                 className="text-sm tracking-widest opacity-90"
                 style={{
-                  fontFamily: 'var(--font-hacker-mono)',
+                  fontFamily: 'monofont, var(--font-hacker-mono)',
                   color: getAccentColor(theme),
                 }}
                 aria-hidden
@@ -672,7 +607,7 @@ function App() {
 
           {/* アンケートカード帯：外枠は最初から常に描画し、中身だけ survey 到着時に差し替え（レンダー遅延で真っ黒を防ぐ） */}
           <div className={`flex w-full flex-1 justify-center ${borderClass}`}>
-            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center bg-[var(--color-bg-survey)] py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
               <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
                 {survey ? (
                 <>
@@ -757,31 +692,13 @@ function App() {
             <div className={`mx-4 w-full max-w-[1120px] sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
         </div>
+              </div>
+            </div>
+          </div>
         </div>
-        {/* CRT表示方式：スキャンライン＋端の減光（ブラウン管の表示の見え方） */}
-        <div className="crt-display pointer-events-none absolute inset-0 z-[100]" aria-hidden />
       </div>
-      </div>
-      {/* モニター枠（ビゼル）：最前面・全画面に固定。transform の外で確実に表示 */}
-      <div
-        className="bezel-frame fixed inset-0 z-[300] pointer-events-none flex items-stretch justify-stretch"
-        style={{ left: 0, top: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
-        aria-hidden
-      >
-        {/* スクリーン奥行き・光の表現：モニターから表示している感じを強調 */}
-        <div
-          className="bezel-screen-well"
-          aria-hidden
-        />
-        <img
-          src="/images/bezel.png"
-          alt=""
-          className="block w-full h-full min-w-0 min-h-0"
-          style={{ width: '100%', height: '100%', objectFit: 'fill' }}
-        />
-      </div>
-      {/* ツールバー：枠内に収めて操作可能に */}
-      <div className="hacker-toolbar fixed z-[350] flex flex-col items-end gap-3" style={{ top: '140px', right: '140px' }}>
+      {/* ツールバー：CRT右上付近に配置 */}
+      <div className="hacker-toolbar fixed z-[350] flex flex-col items-end gap-3" style={{ top: '1rem', right: '1rem' }}>
         <AnimatedThemeToggler />
         <button
           type="button"

@@ -5,7 +5,220 @@
 /* タイトル用：コード・IDE風（Cascadia Code = VS Code / Windows Terminal 系） */
 @import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@200;300;400;500;600;700&display=swap');
 
-/* ステップ内のすべてのテキストにフォントを継承（Tailwind の外で指定して確実に反映） */
+/* ========== AnderShell CRT Demo Style (retro-css-shell-demo) ========== */
+@font-face {
+  font-family: monofont;
+  font-weight: normal;
+  font-style: normal;
+  src: url('/fonts/monofonto.svg#Monofonto-Regular') format('svg');
+}
+.ander-crt {
+  position: relative;
+  z-index: 10;
+  background: #7b8e78;
+  width: min(1500px, 95vw);
+  height: min(1000px, 95vh);
+  max-width: 95vw;
+  max-height: 95vh;
+  border-radius: 1em;
+  box-shadow: inset 0.25em 0.25em 2px rgba(255, 255, 255, 0.4), inset -0.25em -0.25em 2px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  font-size: 18px;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+.ander-screen {
+  position: relative;
+  z-index: 20;
+  width: calc(100% - 3em);
+  height: calc(100% - 3em);
+  margin-top: 1.5em;
+  margin-left: 1.5em;
+  background: #000;
+  border-radius: 1em;
+  overflow: hidden;
+  box-shadow: 0 0 1px 3px rgba(10, 10, 10, 0.7);
+}
+.ander-screen::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  box-shadow: inset 0 0 1em 0.5em rgba(255, 255, 255, 0.08);
+  border-radius: 1em;
+  pointer-events: none;
+}
+.ander-screen::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  opacity: 0.1;
+  background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+  pointer-events: none;
+}
+.ander-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  transform-origin: 50% 50%;
+  animation: ander-pulse 5s linear infinite;
+}
+.ander-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 31;
+  background: radial-gradient(ellipse at center, rgba(0, 30, 30, 0) 0%, rgba(0, 30, 30, 0.5) 100%);
+  pointer-events: none;
+}
+.ander-wrapper::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 32;
+  opacity: 0.5;
+  background: radial-gradient(ellipse at center, rgba(0, 255, 119, 1) 0%, rgba(0, 255, 119, 0) 100%);
+  pointer-events: none;
+  animation: ander-glow 2s linear infinite;
+}
+.ander-interlace {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 21;
+  opacity: 0.25;
+  background: linear-gradient(#888 50%, #000 50%);
+  background-size: 100% 4px;
+  background-repeat: repeat-y;
+  pointer-events: none;
+}
+.ander-envelope {
+  position: absolute;
+  left: 2em;
+  top: 2em;
+  right: 2em;
+  bottom: 2em;
+  z-index: 40;
+  border-radius: 0.5em;
+  background: rgba(0, 0, 0, 0.25);
+  animation: ander-skew 5s linear infinite;
+}
+.ander-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1em;
+  opacity: 0.1;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 250, 250, 1) 50%, rgba(100, 255, 100, 1) 50%, transparent 100%);
+  animation: ander-scanline 1.25s linear infinite;
+  z-index: 22;
+  pointer-events: none;
+}
+.ander-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  color: #12db50;
+  text-shadow: 0 0 2px rgba(10, 255, 10, 0.6);
+  font-family: monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace;
+  font-size: inherit;
+  line-height: 1.25;
+  background: transparent;
+  animation: ander-blur 5s linear infinite;
+}
+@keyframes ander-scanline {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+@keyframes ander-skew {
+  0% { transform: skewX(0.5deg); }
+  8% { transform: skewX(1deg) scale(1.0001); }
+  15% { transform: skewX(0.6deg) skewY(-0.05deg); }
+  30% { transform: skewX(0.6deg); }
+  100% { transform: skewX(0.1deg); }
+}
+@keyframes ander-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.005); }
+  100% { transform: scale(1); }
+}
+@keyframes ander-blur {
+  50% {
+    color: #0fcc4a;
+    text-shadow: 2px 0 2px rgba(10, 255, 10, 0.9);
+  }
+}
+@keyframes ander-glow {
+  50% { transform: scale(1.2); }
+}
+@media (max-width: 1280px) {
+  .ander-crt {
+    width: 95vw;
+    height: 95vh;
+    font-size: 14px;
+  }
+}
+
+/* AnderShell: CRT内の全テキストを monofont + 控えめな緑 に統一 */
+.ander-content,
+.ander-content *,
+.ander-content input,
+.ander-content textarea,
+.ander-content select,
+.ander-content label,
+.ander-content p,
+.ander-content span,
+.ander-content h1,
+.ander-content h2,
+.ander-content button {
+  font-family: monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace !important;
+  color: inherit;
+  text-shadow: 0 0 2px rgba(10, 255, 10, 0.6);
+}
+.ander-content input::placeholder,
+.ander-content textarea::placeholder {
+  color: rgba(18, 219, 80, 0.5) !important;
+}
+.ander-content .form-input-base,
+.ander-content .form-label,
+.ander-content .form-label-option {
+  font-family: monofont, 'JetBrains Mono', Consolas, Monaco, monospace !important;
+  color: inherit;
+  border-color: rgba(18, 219, 80, 0.5);
+  background: transparent;
+}
+.ander-content .form-input-base:focus {
+  border-color: #12db50;
+  box-shadow: 0 0 0 2px rgba(18, 219, 80, 0.25);
+}
+/* ASCIIアートタイトル：Unicodeブロック文字対応フォント＋letter-spacing 0 で縦横を揃える */
+.title-ascii-glitch,
+.title-ascii-glitch * {
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  letter-spacing: 0 !important;
+}
+/* サンプル準拠：ステップ内テキストを monofont に統一 */
 .step-content-font,
 .step-content-font label,
 .step-content-font input,
@@ -15,21 +228,46 @@
 .step-content-font p,
 .step-content-font span,
 .step-content-font legend {
-  font-family: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif !important;
+  font-family: monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace !important;
 }
 
-/* 問題文タイトル：マトリックス風の緑＋わずかなグロー */
-.question-matrix-glow {
-  filter: drop-shadow(0 0 6px rgba(0, 255, 65, 0.5)) drop-shadow(0 0 12px rgba(0, 255, 65, 0.25));
+/* サンプル準拠：問題文エリア（控えめなスタイル） */
+.step-content-sample,
+.step-content-sample label,
+.step-content-sample input,
+.step-content-sample textarea,
+.step-content-sample legend,
+.step-content-sample p,
+.step-content-sample span {
+  font-family: monofont, 'JetBrains Mono', Consolas, Monaco, monospace !important;
+  color: inherit;
+  text-shadow: 0 0 2px rgba(10, 255, 10, 0.6);
+  line-height: 1.25;
+  letter-spacing: 0;
 }
-html.virtual-boy .question-matrix-glow {
-  filter: drop-shadow(0 0 6px rgba(255, 0, 64, 0.5)) drop-shadow(0 0 12px rgba(255, 0, 64, 0.25));
+html.virtual-boy .step-content-sample,
+html.virtual-boy .step-content-sample label,
+html.virtual-boy .step-content-sample input,
+html.virtual-boy .step-content-sample textarea,
+html.virtual-boy .step-content-sample p,
+html.virtual-boy .step-content-sample span {
+  text-shadow: 0 0 2px rgba(255, 10, 10, 0.6);
 }
-html.lcd-green .question-matrix-glow {
-  filter: drop-shadow(0 0 6px rgba(139, 172, 15, 0.5)) drop-shadow(0 0 12px rgba(155, 188, 15, 0.25));
+html.lcd-green .step-content-sample,
+html.lcd-green .step-content-sample label,
+html.lcd-green .step-content-sample input,
+html.lcd-green .step-content-sample textarea,
+html.lcd-green .step-content-sample p,
+html.lcd-green .step-content-sample span {
+  text-shadow: 0 0 2px rgba(139, 255, 10, 0.6);
 }
-html.game-boy-pocket .question-matrix-glow {
-  filter: drop-shadow(0 0 6px rgba(173, 165, 154, 0.5)) drop-shadow(0 0 12px rgba(173, 165, 154, 0.25));
+html.game-boy-pocket .step-content-sample,
+html.game-boy-pocket .step-content-sample label,
+html.game-boy-pocket .step-content-sample input,
+html.game-boy-pocket .step-content-sample textarea,
+html.game-boy-pocket .step-content-sample p,
+html.game-boy-pocket .step-content-sample span {
+  text-shadow: 0 0 2px rgba(173, 165, 154, 0.6);
 }
 
 :root {
@@ -43,9 +281,7 @@ html.game-boy-pocket .question-matrix-glow {
   --font-hacker-neo: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
   --font-hacker-mono: 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace;
   --font-title-code: 'Cascadia Code', 'JetBrains Mono', Consolas, Monaco, monospace;
-  --color-placeholder: rgba(0, 255, 65, 0.32);
-  --color-form-input-text: #00ff41;
-  /* デフォルト＝ダーク（緑）と同じ。やや明るめのグレー系 */
+  /* AnderShell風：#18ff62 をデフォルトアクセントに */
   color-scheme: dark;
   --color-bg: #1a1a1a;
   --color-bg-center: rgba(36, 36, 38, 0.65);
@@ -53,16 +289,18 @@ html.game-boy-pocket .question-matrix-glow {
   --color-bg-survey: rgba(30, 30, 30, 0.88);
   --color-text: rgba(255, 255, 255, 0.87);
   --color-text-muted: rgba(255, 255, 255, 0.6);
-  --color-accent: #00ff41;
-  --color-accent-hover: #22ff55;
   --color-border: #3d3d3d;
   --color-border-title: #4a4a4a;
-  --color-form-border: rgba(0, 255, 65, 0.45);
+  --color-form-border: rgba(18, 219, 80, 0.45);
   --color-form-bg: rgba(10, 31, 10, 0.08);
   --color-stepper-inactive-bg: rgba(255, 255, 255, 0.18);
   --color-stepper-connector: rgba(255, 255, 255, 0.25);
   --color-button-bg: #2d2d2d;
   --color-button-text: rgba(255, 255, 255, 0.87);
+  --color-accent: #12db50;
+  --color-accent-hover: #18ff62;
+  --color-placeholder: rgba(18, 219, 80, 0.35);
+  --color-form-input-text: #12db50;
   --glitch-bg: #141414;
   --glitch-outer-vignette: rgba(0, 0, 0, 0.75);
   --glitch-center-vignette: rgba(0, 0, 0, 0.7);
@@ -199,10 +437,12 @@ body {
   width: 100%;
 }
 
+/* AnderShell layout: black background, centered CRT */
 body {
   display: flex;
-  place-items: center;
-  background-color: var(--color-bg);
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
   color: var(--color-text);
 }
 
@@ -501,7 +741,7 @@ html.game-boy-pocket button:focus-visible {
   font-family: var(--font-hacker-mono);
 }
 .tv-on-screen .tv-on-label {
-  color: rgba(0, 255, 65, 0.5);
+  color: rgba(24, 255, 98, 0.5);
   font-size: 0.75rem;
   letter-spacing: 0.35em;
 }
@@ -519,39 +759,39 @@ html.game-boy-pocket button:focus-visible {
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: #00ff41;
+  color: #18ff62;
   background: transparent;
-  border: 1px solid #00ff41;
+  border: 1px solid #18ff62;
   padding: 14px 24px;
   border-radius: 0;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), inset 0 0 20px rgba(0, 255, 65, 0.03);
+  box-shadow: 0 0 12px rgba(24, 255, 98, 0.2), inset 0 0 20px rgba(24, 255, 98, 0.03);
   transition: box-shadow 0.2s, text-shadow 0.2s, background 0.2s;
 }
 .tv-on-btn:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.4), 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 24px rgba(0, 255, 65, 0.06);
-  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
-  background: rgba(0, 255, 65, 0.06);
+  box-shadow: 0 0 20px rgba(24, 255, 98, 0.4), 0 0 40px rgba(24, 255, 98, 0.15), inset 0 0 24px rgba(24, 255, 98, 0.06);
+  text-shadow: 0 0 8px rgba(24, 255, 98, 0.6);
+  background: rgba(24, 255, 98, 0.06);
 }
 .tv-on-btn:active {
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3), inset 0 0 16px rgba(0, 255, 65, 0.04);
+  box-shadow: 0 0 8px rgba(24, 255, 98, 0.3), inset 0 0 16px rgba(24, 255, 98, 0.04);
 }
 .tv-on-btn::before {
   content: " ";
   display: inline-block;
   width: 8px;
   height: 8px;
-  background: #00ff41;
-  border: 1px solid #00ff41;
-  box-shadow: 0 0 8px #00ff41;
+  background: #18ff62;
+  border: 1px solid #18ff62;
+  box-shadow: 0 0 8px #18ff62;
   flex-shrink: 0;
 }
 .tv-on-btn:hover::before {
-  box-shadow: 0 0 12px #00ff41, 0 0 4px #00ff41;
+  box-shadow: 0 0 12px #18ff62, 0 0 4px #18ff62;
 }
 /* 名前入力後：モニターONボタン左の点を点滅 */
 @keyframes tv-on-dot-blink {
-  0%, 100% { opacity: 1; box-shadow: 0 0 8px #00ff41; }
-  50% { opacity: 0.25; box-shadow: 0 0 4px #00ff41; }
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #18ff62; }
+  50% { opacity: 0.25; box-shadow: 0 0 4px #18ff62; }
 }
 .tv-on-btn-ready:not(:disabled)::before {
   animation: tv-on-dot-blink 1.2s ease-in-out infinite;
@@ -561,17 +801,17 @@ html.game-boy-pocket button:focus-visible {
 }
 .tv-on-btn:disabled {
   cursor: not-allowed;
-  color: rgba(0, 255, 65, 0.35);
-  border-color: rgba(0, 255, 65, 0.35);
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08);
+  color: rgba(24, 255, 98, 0.35);
+  border-color: rgba(24, 255, 98, 0.35);
+  box-shadow: 0 0 8px rgba(24, 255, 98, 0.08);
 }
 .tv-on-btn:disabled::before {
-  background: rgba(0, 255, 65, 0.35);
-  border-color: rgba(0, 255, 65, 0.35);
+  background: rgba(24, 255, 98, 0.35);
+  border-color: rgba(24, 255, 98, 0.35);
   box-shadow: none;
 }
 .tv-on-btn:disabled:hover {
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08);
+  box-shadow: 0 0 8px rgba(24, 255, 98, 0.08);
   background: transparent;
   text-shadow: none;
 }
@@ -735,21 +975,21 @@ html.game-boy-pocket .tv-on-name-input:focus {
   font-family: var(--font-hacker-mono);
   font-size: 0.95rem;
   letter-spacing: 0.08em;
-  color: #00ff41;
+  color: #18ff62;
   background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(0, 255, 65, 0.5);
+  border: 1px solid rgba(24, 255, 98, 0.5);
   padding: 12px 24px;
   border-radius: 0;
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px rgba(24, 255, 98, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .tv-on-name-input::placeholder {
-  color: rgba(0, 255, 65, 0.4);
+  color: rgba(24, 255, 98, 0.4);
 }
 .tv-on-name-input:focus {
   outline: none;
-  border-color: #00ff41;
-  box-shadow: 0 0 14px rgba(0, 255, 65, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
+  border-color: #18ff62;
+  box-shadow: 0 0 14px rgba(24, 255, 98, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
 /* 右上アイコン群：ハッカー風 */
@@ -939,7 +1179,7 @@ html.game-boy-pocket .crt-scanlines-beam {
 .crt-effect-overlay-label {
   position: relative;
   font-size: 60px;
-  color: #00ff41;
+  color: #18ff62;
   visibility: hidden;
   pointer-events: none;
   font-family: var(--font-hacker-mono);
