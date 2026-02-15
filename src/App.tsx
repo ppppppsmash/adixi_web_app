@@ -26,6 +26,7 @@ import { MatrixLoading } from "./components/loading/matrix-loading";
 import { TerminalTypingText } from "./components/ui/text/terminal-typing-text";
 import { CommentPanel } from "./components/comments/CommentPanel";
 import { CrtEffectOverlay } from "./components/crt/CrtEffectOverlay";
+import LetterGlitch from "./components/background/LetterGlitch";
 
 /** サンプル準拠：monofont + 控えめなテキストシャドウ */
 const QUESTION_FONT = "monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace"
@@ -251,6 +252,14 @@ function getAccentColor(theme: ThemeId): string {
   return '#12db50'
 }
 
+/** LetterGlitch：緑系にボリューム感（青系なし、暗め〜明るめの黄緑バリエーション） */
+const LETTER_GLITCH_COLORS: Record<ThemeId, string[]> = {
+  dark: ['#0a5a24', '#0d7a32', '#12db50', '#2ee66a', '#4ade80', '#22c55e', '#16a34a', '#15803d'],
+  virtualboy: ['#3d1a1a', '#dd0038', '#ff4068'],
+  lcdgreen: ['#1a2e1a', '#8bac0f', '#9bbc0f'],
+  gameboypocket: ['#2a2825', '#8b7355', '#ada59a'],
+};
+
 function App() {
   const theme = useTheme()
   const [survey, setSurvey] = useState<PublicSurvey | null>(null)
@@ -419,14 +428,7 @@ function App() {
     ])
   }
 
-  /* アンケート表示中のみカーソル非表示（初期・モニターOFF時はデフォルトカーソル） */
-  useEffect(() => {
-    if (tvUnlocked && !showCrtOff && !showLoading && !error && survey) {
-      document.body.classList.add("survey-cursor-none")
-      return () => document.body.classList.remove("survey-cursor-none")
-    }
-    document.body.classList.remove("survey-cursor-none")
-  }, [tvUnlocked, showCrtOff, showLoading, error, survey])
+  /* 枠の外側はデフォルトカーソル、枠内のみ survey-cursor-none（ander-crt にクラス付与） */
 
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
@@ -501,7 +503,30 @@ function App() {
   const underlayTransition = loadingExiting ? `${LOADING_FADEOUT_MS}ms` : '0ms'
 
   return (
-    <div data-root="app" className="relative min-h-[100vh] flex items-center justify-center bg-black">
+    <div data-root="app" className="relative min-h-[100vh] flex items-center justify-center cursor-default">
+      {/* 枠（CRT）の外側：LetterGlitch を枠と同じタイミングで表示 */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: 0,
+          opacity: underlayVisible ? 1 : 0,
+          transition: `opacity ${underlayTransition} ease-out`,
+        }}
+        aria-hidden
+      >
+        <LetterGlitch
+          glitchColors={LETTER_GLITCH_COLORS[theme]}
+          glitchSpeed={50}
+          centerVignette={false}
+          outerVignette={true}
+          smooth={true}
+        />
+        {/* LetterGlitch 全体に暗いレイヤー */}
+        <div
+          className="absolute inset-0 bg-black/50"
+          aria-hidden
+        />
+      </div>
       {/* 最初: CRT ON エフェクト（約4秒で消える） */}
       <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
       {/* 最後: モニターOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}

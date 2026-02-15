@@ -1,10 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type { ThemeId } from "../../../lib/useDarkMode";
-
-/** サンプル風：ASCIIアート用の記号・文字（グリッチ時に切り替わる） */
-const ASCII_GLITCH_CHARS = "@#$%&*!.:-=+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /** サンプル準拠：控えめな明るさ（#12db50 = やや暗めの緑 + 弱いシャドウ） */
 const THEME_COLORS: Record<ThemeId, { color: string; textShadow: string }> = {
@@ -41,12 +38,11 @@ const TITLE_ASCII_ART = [
 ].join("\n");
 
 /**
- * サンプル風：記号・文字で構成されたASCIIアートタイトル。
- * 各文字がランダムにグリッチして別の記号に変わる。
+ * 静的ASCIIアートタイトル（グリッチなし）
  */
 export function TitleAsciiGlitch({
   theme,
-  fontFamily: _fontFamily,
+  fontFamily,
   fontSize,
   className = "",
 }: {
@@ -56,42 +52,13 @@ export function TitleAsciiGlitch({
   className?: string;
 }) {
   const lines = useMemo(() => TITLE_ASCII_ART.split("\n"), []);
-  const charsPerLine = useMemo(
-    () => lines.map((line) => Array.from(line)),
-    [lines]
-  );
-  const [displayed, setDisplayed] = useState<string[][]>(() =>
-    charsPerLine.map((row) => [...row])
-  );
   const { color, textShadow } = THEME_COLORS[theme];
-
-  useEffect(() => {
-    setDisplayed(charsPerLine.map((row) => [...row]));
-  }, [charsPerLine]);
-
-  useEffect(() => {
-    const GLITCH_PROB = 0.04;
-    const interval = setInterval(() => {
-      setDisplayed(
-        charsPerLine.map((row) =>
-          row.map((c) =>
-            c === " " || c === "\n"
-              ? c
-              : Math.random() < GLITCH_PROB
-                ? ASCII_GLITCH_CHARS[Math.floor(Math.random() * ASCII_GLITCH_CHARS.length)]
-                : c
-          )
-        )
-      );
-    }, 180);
-    return () => clearInterval(interval);
-  }, [charsPerLine]);
 
   return (
     <pre
       className={`title-ascii-glitch ${className}`.trim()}
       style={{
-        fontFamily: "'JetBrains Mono', 'Consolas', 'Monaco', monospace",
+        fontFamily: fontFamily,
         fontSize,
         fontWeight: 400,
         color,
@@ -105,9 +72,9 @@ export function TitleAsciiGlitch({
         overflow: "visible",
       }}
     >
-      {displayed.map((row, rowIdx) => (
+      {lines.map((line, rowIdx) => (
         <span key={rowIdx} style={{ display: "block" }}>
-          {row.map((c) => (c === " " ? "\u00A0" : c)).join("")}
+          {line.split("").map((c) => (c === " " ? "\u00A0" : c)).join("")}
         </span>
       ))}
     </pre>

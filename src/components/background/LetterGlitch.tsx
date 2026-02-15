@@ -338,7 +338,7 @@ const LetterGlitch = ({
 
   return (
     <div
-      className="fixed inset-0 w-full h-full overflow-hidden -z-10 bg-[var(--glitch-bg)]"
+      className="fixed inset-0 w-full h-full overflow-hidden z-0 bg-[var(--glitch-bg)]"
       aria-hidden
     >
       <canvas ref={canvasRef} className="block w-full h-full" />
