@@ -16,10 +16,10 @@
   position: relative;
   z-index: 10;
   background: #7b8e78;
-  width: min(1500px, 95vw);
-  height: min(1000px, 95vh);
-  max-width: 95vw;
-  max-height: 95vh;
+  width: min(1800px, 98vw);
+  height: min(1200px, 98vh);
+  max-width: 98vw;
+  max-height: 98vh;
   border-radius: 1em;
   box-shadow: inset 0.25em 0.25em 2px rgba(255, 255, 255, 0.4), inset -0.25em -0.25em 2px rgba(0, 0, 0, 0.4);
   user-select: none;
@@ -174,8 +174,8 @@
 }
 @media (max-width: 1280px) {
   .ander-crt {
-    width: 95vw;
-    height: 95vh;
+    width: 98vw;
+    height: 98vh;
     font-size: 14px;
   }
 }
@@ -1138,6 +1138,10 @@ html.game-boy-pocket .crt-scanlines-beam {
   z-index: 180;
   pointer-events: none;
   overflow: hidden;
+}
+/* 枠内に収めるバリアント */
+.crt-effect-overlay-contained {
+  position: absolute;
 }
 
 .crt-effect-screen {

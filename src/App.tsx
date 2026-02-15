@@ -204,6 +204,8 @@ function LoadingOverlay(
     durationMs: number
     theme: ThemeId
     onFadeEnd?: () => void
+    /** true: 枠内に収める（absolute）。false: 全画面（fixed） */
+    contained?: boolean
   }
 ) {
   const [fadeDone, setFadeDone] = useState(false)
@@ -218,7 +220,7 @@ function LoadingOverlay(
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center overflow-hidden bg-transparent"
+      className={`${props.contained ? 'absolute' : 'fixed'} inset-0 z-[60] flex items-center justify-center overflow-hidden bg-transparent`}
       style={{
         opacity: isVisible ? 1 : 0,
         transition: `opacity ${duration} ease-out`,
@@ -233,7 +235,7 @@ function LoadingOverlay(
       }}
       aria-hidden
     >
-      <MatrixLoading theme={props.theme} />
+      <MatrixLoading theme={props.theme} contained={props.contained} />
     </div>
   )
 }
@@ -429,6 +431,12 @@ function App() {
   }
 
   /* 枠の外側はデフォルトカーソル、枠内のみ survey-cursor-none（ander-crt にクラス付与） */
+  useEffect(() => {
+    if (showCrtOff) {
+      document.body.classList.add('crt-off-cursor-default')
+      return () => document.body.classList.remove('crt-off-cursor-default')
+    }
+  }, [showCrtOff])
 
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
@@ -447,59 +455,9 @@ function App() {
     }
   }
 
-  /* モニターONされるまで画面の真ん中に名前入力＋ボタン（名前未入力時はボタン非活性） */
-  if (!tvUnlocked) {
-    const nameValid = initialName.trim() !== ''
-    return (
-      <div className="tv-on-screen fixed inset-0 z-[200] flex flex-col items-center justify-center gap-6 text-white cursor-default" style={{ cursor: 'default' }}>
-        <p className="tv-on-label">ADiXi SESSION SURVEY</p>
-        <div className="tv-on-form flex flex-col items-stretch gap-3">
-          <label htmlFor="tv-on-name" className="sr-only">Username</label>
-          <input
-            id="tv-on-name"
-            type="text"
-            value={initialName}
-            onChange={(e) => setInitialName(e.target.value)}
-            placeholder="Username"
-            className="tv-on-name-input"
-            autoComplete="username"
-            aria-label="Usernameを入力するとモニターONが有効になります"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setTvUnlocked(true)
-              setShowCrtOn(true)
-              loadingStartRef.current = Date.now()
-              setShowLoading(true)
-              setLoadingExiting(false)
-              setLoadingFadeDone(false)
-            }}
-            disabled={!nameValid}
-            className={`tv-on-btn ${nameValid ? 'tv-on-btn-ready' : ''}`}
-            aria-label="モニターON"
-          >
-            モニターON
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  /* エラーは取得完了後のみ表示。取得中は下地を描画した上でオーバーレイだけ重ねる（途中で真っ黒にしない） */
-  if (!loading && (error || !survey)) {
-    const message = error ?? 'アンケートを取得できませんでした。'
-    return (
-      <div className="flex h-[100svh] w-full items-center justify-center px-4 text-center text-[var(--color-text)]">
-        {message}
-      </div>
-    )
-  }
-
   const borderClass = ''
-
-  /* マトリックス雨のみ表示中は下地を非表示、フェード時に下地を 0→100% で表示 */
-  const underlayVisible = !showLoading || loadingExiting
+  /* 枠・LetterGlitch：最初から表示。マトリックス雨・CRTエフェクトは枠内に収める */
+  const underlayVisible = true
   const underlayTransition = loadingExiting ? `${LOADING_FADEOUT_MS}ms` : '0ms'
 
   return (
@@ -527,21 +485,61 @@ function App() {
           aria-hidden
         />
       </div>
-      {/* 最初: CRT ON エフェクト（約4秒で消える） */}
-      <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} />
-      {/* 最後: モニターOFFで CRT OFF エフェクト。エフェクト中はアンケート画面を非表示にする */}
-      <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} />
-      {showCrtOff && <div className="fixed inset-0 z-[10] bg-[#000]" aria-hidden />}
-      {!showCrtOff && (
-      <>
       <div
-        className="ander-crt survey-cursor-none"
+        className={`ander-crt ${!showCrtOff ? 'survey-cursor-none' : 'cursor-default'}`}
         style={{
           opacity: underlayVisible ? 1 : 0,
           transition: `opacity ${underlayTransition} ease-out`,
         }}
       >
-        <div className="ander-screen">
+        <div className="ander-screen relative">
+          {/* CRT ON/OFF エフェクト：枠内に表示 */}
+          <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} contained />
+          <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} contained />
+          {/* テレビOFF中は枠内コンテンツを非表示（カーソル表示＋エフェクト終了と同期） */}
+          {!showCrtOff && (
+          <>
+          {/* モニターON前：名前入力＋ボタンを枠内に表示 */}
+          {!tvUnlocked && (
+            <div className="tv-on-screen absolute inset-0 z-[50] flex flex-col items-center justify-center gap-6 text-white cursor-default" style={{ cursor: 'default' }}>
+              <p className="tv-on-label">ADiXi SESSION SURVEY</p>
+              <div className="tv-on-form flex flex-col items-stretch gap-3">
+                <label htmlFor="tv-on-name" className="sr-only">Username</label>
+                <input
+                  id="tv-on-name"
+                  type="text"
+                  value={initialName}
+                  onChange={(e) => setInitialName(e.target.value)}
+                  placeholder="Username"
+                  className="tv-on-name-input"
+                  autoComplete="username"
+                  aria-label="Usernameを入力するとモニターONが有効になります"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTvUnlocked(true)
+                    setShowCrtOn(true)
+                    loadingStartRef.current = Date.now()
+                    setShowLoading(true)
+                    setLoadingExiting(false)
+                    setLoadingFadeDone(false)
+                  }}
+                  disabled={initialName.trim() === ''}
+                  className={`tv-on-btn ${initialName.trim() !== '' ? 'tv-on-btn-ready' : ''}`}
+                  aria-label="モニターON"
+                >
+                  モニターON
+                </button>
+              </div>
+            </div>
+          )}
+          {/* マトリックス雨：枠内に表示 */}
+          {tvUnlocked && !showCrtOn && (
+            <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} theme={theme} onFadeEnd={() => setLoadingFadeDone(true)} contained />
+          )}
+          {/* アンケート内容 or エラー */}
+          {tvUnlocked && (!showLoading || loadingExiting) && (
           <div className="ander-wrapper">
             <div className="ander-interlace" aria-hidden />
             <div className="ander-scanline" aria-hidden />
@@ -697,6 +695,10 @@ function App() {
                     </div>
                   </div>
                 </>
+                ) : (error || !survey) ? (
+                  <div className="flex flex-col items-center justify-center px-6 py-12 text-center text-[var(--color-text)]">
+                    {error ?? 'アンケートを取得できませんでした。'}
+                  </div>
                 ) : null}
               </div>
             </div>
@@ -720,9 +722,13 @@ function App() {
               </div>
             </div>
           </div>
+        )}
+          </>
+          )}
         </div>
       </div>
-      {/* ツールバー：CRT右上付近に配置 */}
+      {/* ツールバー：CRT右上付近に配置（モニターON前・モニターOFFエフェクト中は非表示） */}
+      {tvUnlocked && !showCrtOff && (
       <div className="hacker-toolbar fixed z-[350] flex flex-col items-end gap-3" style={{ top: '1rem', right: '1rem' }}>
         <AnimatedThemeToggler />
         <button
@@ -744,11 +750,6 @@ function App() {
           <Power className="h-4 w-4" aria-hidden />
         </button>
       </div>
-      {/* テレビが付くまでは matrix rain は出さない。付いたあとだけ Loading 表示 */}
-      {!showCrtOn && (
-        <LoadingOverlay show={showLoading} exiting={loadingExiting} durationMs={LOADING_FADEOUT_MS} theme={theme} onFadeEnd={() => setLoadingFadeDone(true)} />
-      )}
-      </>
       )}
     </div>
   )

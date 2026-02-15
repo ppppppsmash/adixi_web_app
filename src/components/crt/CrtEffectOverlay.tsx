@@ -11,10 +11,13 @@ export function CrtEffectOverlay({
   show,
   mode,
   onEnd,
+  contained = false,
 }: {
   show: boolean;
   mode: "on" | "off";
   onEnd: () => void;
+  /** true: 枠内に収める（absolute）。false: 全画面（fixed） */
+  contained?: boolean;
 }) {
   const onEndRef = useRef(onEnd);
   useEffect(() => {
@@ -35,7 +38,7 @@ export function CrtEffectOverlay({
   const isOn = mode === "on";
   return (
     <div
-      className="crt-effect-overlay"
+      className={`crt-effect-overlay ${contained ? "crt-effect-overlay-contained" : ""}`}
       aria-hidden
       style={{ pointerEvents: "none" }}
     >

@@ -13,14 +13,15 @@ const THEME_MATRIX = {
 /**
  * ローディング用マトリックス雨エフェクト（ManzDev/twitch-matrix-canvas を参考に実装）
  * https://github.com/ManzDev/twitch-matrix-canvas/
+ * @param contained true のとき親要素のサイズを使用（枠内表示用）
  */
-export function MatrixLoading({ theme = "dark" }: { theme?: ThemeId }) {
+export function MatrixLoading({ theme = "dark", contained = false }: { theme?: ThemeId; contained?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
+    const container = contained ? canvas.parentElement : null;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -63,10 +64,16 @@ export function MatrixLoading({ theme = "dark" }: { theme?: ThemeId }) {
     };
 
     const resize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
+      if (contained && container) {
+        const rect = container.getBoundingClientRect();
+        width = canvas.width = rect.width;
+        height = canvas.height = rect.height;
+      } else {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
       init();
     };
 
@@ -105,16 +112,19 @@ export function MatrixLoading({ theme = "dark" }: { theme?: ThemeId }) {
     };
 
     resize();
+    const ro = contained && container ? new ResizeObserver(resize) : null;
+    if (ro && container) ro.observe(container);
     window.addEventListener("resize", resize);
     rafId = requestAnimationFrame((t) => matrixIteration(t));
 
     return () => {
+      ro?.disconnect();
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(rafId);
     };
-  }, [theme]);
+  }, [theme, contained]);
 
-  return (
+  const canvas = (
     <canvas
       ref={canvasRef}
       className="absolute inset-0 block h-full w-full"
@@ -122,4 +132,13 @@ export function MatrixLoading({ theme = "dark" }: { theme?: ThemeId }) {
       aria-hidden
     />
   );
+
+  if (contained) {
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        {canvas}
+      </div>
+    );
+  }
+  return canvas;
 }

@@ -731,6 +731,12 @@ html.game-boy-pocket .crt-display::before {
   animation: cursor-neo-label-pulse 2.5s ease-in-out infinite;
 }
 
+/* テレビOFF時：body にクラスを付与して全画面でデフォルトカーソルを強制 */
+body.crt-off-cursor-default,
+body.crt-off-cursor-default * {
+  cursor: default !important;
+}
+
 /* 枠（CRT）内のみカーソル非表示。枠の外側はデフォルトカーソル */
 .survey-cursor-none,
 .survey-cursor-none *,
