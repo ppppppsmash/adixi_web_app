@@ -430,14 +430,6 @@ function App() {
     ])
   }
 
-  /* 枠の外側はデフォルトカーソル、枠内のみ survey-cursor-none（ander-crt にクラス付与） */
-  useEffect(() => {
-    if (showCrtOff) {
-      document.body.classList.add('crt-off-cursor-default')
-      return () => document.body.classList.remove('crt-off-cursor-default')
-    }
-  }, [showCrtOff])
-
   const handleSubmit = async () => {
     if (!survey || submitStatus === 'sending') return
     setSubmitStatus('sending')
@@ -486,7 +478,7 @@ function App() {
         />
       </div>
       <div
-        className={`ander-crt ${!showCrtOff ? 'survey-cursor-none' : 'cursor-default'}`}
+        className="ander-crt survey-cursor-none"
         style={{
           opacity: underlayVisible ? 1 : 0,
           transition: `opacity ${underlayTransition} ease-out`,
@@ -545,13 +537,6 @@ function App() {
             <div className="ander-scanline" aria-hidden />
             <div className="ander-envelope">
               <div className="ander-content flex flex-col overflow-y-auto h-full">
-                <RealtimeCursorsOverlay
-                  cursors={otherCursors}
-                  myCursorRef={myCursorRef}
-                  myCursorInfo={myCursorInfo}
-                  cameraStream={isCameraOn ? cameraStream ?? null : null}
-                  remoteStreams={remoteStreams}
-                />
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent min-h-0">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
           {(submittedNames.length > 0) && (
@@ -750,6 +735,17 @@ function App() {
           <Power className="h-4 w-4" aria-hidden />
         </button>
       </div>
+      )}
+      {/* カスタムカーソル：ルートレベルで常に表示（モニターON/OFF問わず） */}
+      {underlayVisible && (
+        <RealtimeCursorsOverlay
+          cursors={otherCursors}
+          myCursorRef={myCursorRef}
+          myCursorInfo={myCursorInfo}
+          accentColor={getAccentColor(theme)}
+          cameraStream={isCameraOn ? cameraStream ?? null : null}
+          remoteStreams={remoteStreams}
+        />
       )}
     </div>
   )
