@@ -231,39 +231,18 @@ html.game-boy-pocket .ander-content button.hacker-btn-back {
   color: #ada59a;
 }
 
-/* アバター：80s/90s風（角型・シンプル枠・ターミナル風） */
+/* アバター：80s/90s風（角型・現在のスタイルに合わせる） */
 .avatar-retro {
-  border: 1px solid #00ff41;
+  border: 1px solid var(--color-form-border);
   box-shadow: none;
-}
-html.virtual-boy .avatar-retro {
-  border-color: #ff0040;
-}
-html.lcd-green .avatar-retro {
-  border-color: #9bbc0f;
-}
-html.game-boy-pocket .avatar-retro {
-  border-color: #ada59a;
 }
 .avatar-retro-tooltip {
   font-family: monofont, var(--font-hacker-mono);
-  background: rgba(0, 0, 0, 0.95);
-  color: #00ff41;
-  border: 1px solid #00ff41;
+  background: var(--color-bg);
+  color: var(--color-form-input-text);
+  border: 1px solid var(--color-form-border);
   box-shadow: none;
   letter-spacing: 0.05em;
-}
-html.virtual-boy .avatar-retro-tooltip {
-  color: #ff0040;
-  border-color: #ff0040;
-}
-html.lcd-green .avatar-retro-tooltip {
-  color: #9bbc0f;
-  border-color: #9bbc0f;
-}
-html.game-boy-pocket .avatar-retro-tooltip {
-  color: #ada59a;
-  border-color: #ada59a;
 }
 
 /* アバター：ハッカー風（緑枠・グロー） */

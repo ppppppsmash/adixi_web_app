@@ -247,6 +247,14 @@ function getAccentColor(theme: ThemeId): string {
   return '#12db50'
 }
 
+/** アバター用：背景＝--color-bg、文字＝--color-form-input-text と統一 */
+function getAvatarColors(theme: ThemeId): { bg: string; text: string } {
+  if (theme === 'virtualboy') return { bg: '1c1818', text: 'ff0040' }
+  if (theme === 'lcdgreen') return { bg: '0f380f', text: '9bbc0f' }
+  if (theme === 'gameboypocket') return { bg: '2d2d28', text: 'ada59a' }
+  return { bg: '1a1a1a', text: '00ff41' }
+}
+
 /** LetterGlitch：緑系にボリューム感（青系なし、暗め〜明るめの黄緑バリエーション） */
 const LETTER_GLITCH_COLORS: Record<ThemeId, string[]> = {
   dark: ['#0a5a24', '#0d7a32', '#12db50', '#2ee66a', '#4ade80', '#22c55e', '#16a34a', '#15803d'],
@@ -588,8 +596,7 @@ function App() {
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
                 /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
-                const accentColor = getAccentColor(theme);
-                const avatarBg = accentColor.startsWith('#') ? accentColor.slice(1) : accentColor;
+                const { bg: avatarBg, text: avatarText } = getAvatarColors(theme);
                 const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
                 const submittedSet = new Set(submittedNames.map((name) => name.trim()).filter(Boolean));
                 const byName = new Map<string, { name: string; designation: string }>();
@@ -616,7 +623,7 @@ function App() {
                   id: i,
                   name: p.name,
                   designation: p.designation,
-                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + avatarBg + '&color=ffffff',
+                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + avatarBg + '&color=' + avatarText,
                   stream: null,
                 }));
                 return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="xs" variant="retro" />) : null;
