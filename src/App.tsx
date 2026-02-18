@@ -559,7 +559,7 @@ function App() {
             <div className="ander-interlace" aria-hidden />
             <div className="ander-scanline" aria-hidden />
             <div className="ander-envelope">
-              <div className="ander-content flex flex-col overflow-y-auto h-full">
+              <div className="ander-content flex flex-col overflow-hidden h-full min-h-0">
         <div className="relative z-10 flex w-full flex-1 flex-col items-center bg-transparent min-h-0">
           {/* 最上部：送信した人の名前のみ表示（1人以上いるときだけ） */}
           {(submittedNames.length > 0) && (
