@@ -470,6 +470,7 @@ function App() {
           centerVignette={false}
           outerVignette={true}
           smooth={true}
+          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
         />
         {/* LetterGlitch 全体に暗いレイヤー */}
         <div

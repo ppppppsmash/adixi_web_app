@@ -481,28 +481,12 @@ html.game-boy-pocket button:focus-visible {
   animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
 }
 
+/* CRT風の軽い揺らぎ（矢印などが点滅しないよう、変化幅を抑える） */
 @keyframes crt-flicker {
-  0% { opacity: 0.9; }
-  5% { opacity: 0.1; }
-  10% { opacity: 0.95; }
-  15% { opacity: 0.2; }
-  20% { opacity: 0.88; }
-  25% { opacity: 0.15; }
-  30% { opacity: 0.92; }
-  35% { opacity: 0.18; }
-  40% { opacity: 0.85; }
-  45% { opacity: 0.12; }
+  0%, 100% { opacity: 0.96; }
+  25% { opacity: 0.94; }
   50% { opacity: 0.97; }
-  55% { opacity: 0.08; }
-  60% { opacity: 0.9; }
-  65% { opacity: 0.22; }
-  70% { opacity: 0.87; }
-  75% { opacity: 0.14; }
-  80% { opacity: 0.93; }
-  85% { opacity: 0.19; }
-  90% { opacity: 0.86; }
-  95% { opacity: 0.11; }
-  100% { opacity: 0.91; }
+  75% { opacity: 0.93; }
 }
 
 @keyframes crt-turn-on {
@@ -649,7 +633,7 @@ html.game-boy-pocket button:focus-visible {
 }
 
 .crt-container.crt-on.crt-flicker::after {
-  animation: crt-flicker 0.15s infinite;
+  animation: crt-flicker 0.8s ease-in-out infinite;
 }
 
 .crt-screen {

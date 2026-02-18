@@ -213,6 +213,24 @@ html.game-boy-pocket .hacker-btn-back:hover {
   box-shadow: 0 0 10px rgba(173, 165, 154, 0.3);
 }
 
+/* ステッパー矢印：ander-content の color: inherit で親アニメーションの影響を受けないよう、色を固定 */
+.ander-content button.hacker-btn,
+.ander-content button.hacker-btn-back {
+  color: #00ff41;
+}
+html.virtual-boy .ander-content button.hacker-btn,
+html.virtual-boy .ander-content button.hacker-btn-back {
+  color: #ff0040;
+}
+html.lcd-green .ander-content button.hacker-btn,
+html.lcd-green .ander-content button.hacker-btn-back {
+  color: #9bbc0f;
+}
+html.game-boy-pocket .ander-content button.hacker-btn,
+html.game-boy-pocket .ander-content button.hacker-btn-back {
+  color: #ada59a;
+}
+
 /* アバター：ハッカー風（緑枠・グロー） */
 .avatar-hacker {
   border: 1px solid #00ff41;
