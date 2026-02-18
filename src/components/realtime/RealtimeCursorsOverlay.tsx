@@ -36,8 +36,8 @@ function MyCursorVideo({ stream }: { stream: MediaStream }) {
   );
 }
 
-/** Oldschool カーソル：ポインター式（矢印）、モニター内テキストと同じ色 */
-function OldschoolCursorPointer({ color }: { color: string }) {
+/** 80s/90s 風カーソル：細い矢印（当時のパソコンらしいシンプルなポインター） */
+function RetroCursorPointer({ color }: { color: string }) {
   return (
     <svg
       className="shrink-0"
@@ -46,7 +46,7 @@ function OldschoolCursorPointer({ color }: { color: string }) {
       height="20"
       style={{
         filter: `drop-shadow(0 0 2px ${color}80)`,
-        transform: "translate(-2px, -2px)", /* 矢印の先端をカーソル位置に合わせる */
+        transform: "translate(-2px, -2px)",
       }}
     >
       <path
@@ -103,7 +103,7 @@ export function RealtimeCursorsOverlay({
             </>
           ) : (
             <>
-              <OldschoolCursorPointer color={accentColor} />
+              <RetroCursorPointer color={accentColor} />
               <span
                 className="ml-1 min-w-max rounded-none px-2 py-0.5 text-xs font-medium whitespace-nowrap"
                 style={{
@@ -195,7 +195,7 @@ const RemoteCursor = memo(function RemoteCursor({
         </>
       ) : (
         <>
-          <OldschoolCursorPointer color={accentColor} />
+          <RetroCursorPointer color={accentColor} />
           <span
             className="ml-1 min-w-max rounded-none px-2 py-0.5 text-xs font-medium whitespace-nowrap"
             style={{

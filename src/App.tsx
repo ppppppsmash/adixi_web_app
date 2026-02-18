@@ -240,13 +240,6 @@ function LoadingOverlay(
   )
 }
 
-const AVATAR_PALETTES: Record<ThemeId, string[]> = {
-  dark: ["00ff41", "008c2a", "20c997", "14b8a6", "0d9488", "2dd4bf", "0f766e", "5eead4", "064e3b", "134e4a"],
-  virtualboy: ["ff0040", "dd0038", "ff2055", "cc0033", "ff4068", "b3002e", "ff6080", "99002a", "e6003a", "8c0026"],
-  lcdgreen: ["9bbc0f", "8bac0f", "7fa82e", "6b8e23", "5a7c1e", "4a6b18", "3d5a14", "306230", "2a5012", "1a3810"],
-  gameboypocket: ["ada59a", "8b7355", "5c574f", "c4beb2", "dedede", "6b655c", "9e9e9e", "3d3d35", "b0b0b0", "4a4a4a"],
-}
-
 function getAccentColor(theme: ThemeId): string {
   if (theme === 'virtualboy') return '#dd0038'
   if (theme === 'lcdgreen') return '#8bac0f'
@@ -595,30 +588,26 @@ function App() {
             <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
               {(() => {
                 /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
-                const avatarPalette = AVATAR_PALETTES[theme];
-                const colorForName = (name: string) => {
-                  let n = 0;
-                  for (let i = 0; i < name.length; i++) n += name.charCodeAt(i);
-                  return "#" + avatarPalette[Math.abs(n) % avatarPalette.length];
-                };
+                const accentColor = getAccentColor(theme);
+                const avatarBg = accentColor.startsWith('#') ? accentColor.slice(1) : accentColor;
                 const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
                 const submittedSet = new Set(submittedNames.map((name) => name.trim()).filter(Boolean));
-                const byName = new Map<string, { name: string; color: string; designation: string }>();
+                const byName = new Map<string, { name: string; designation: string }>();
                 submittedNames.forEach((name) => {
                   const n = name.trim();
-                  if (n) byName.set(n, { name: n, color: colorForName(n), designation: "送信済み" });
+                  if (n) byName.set(n, { name: n, designation: "送信済み" });
                 });
                 if (myCursorInfo && hasName(myCursorInfo.name)) {
                   const n = myCursorInfo.name.trim();
                   if (!submittedSet.has(n)) {
-                    byName.set(n, { name: n, color: myCursorInfo.color, designation: "参加中" });
+                    byName.set(n, { name: n, designation: "参加中" });
                   }
                 }
                 otherCursors.forEach((c) => {
                   if (hasName(c.name)) {
                     const n = c.name.trim();
                     if (!submittedSet.has(n)) {
-                      byName.set(n, { name: n, color: c.color, designation: "参加中" });
+                      byName.set(n, { name: n, designation: "参加中" });
                     }
                   }
                 });
@@ -627,10 +616,10 @@ function App() {
                   id: i,
                   name: p.name,
                   designation: p.designation,
-                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + (p.color.startsWith('#') ? p.color.slice(1) : p.color),
+                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + avatarBg + '&color=ffffff',
                   stream: null,
                 }));
-                return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="sm" />) : null;
+                return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="xs" variant="retro" />) : null;
               })()}
             </div>
           </div>
