@@ -272,12 +272,12 @@ function getAvatarColors(theme: ThemeId): { bg: string; text: string } {
   return { bg: '1a1a1a', text: '00ff41' }
 }
 
-/** LetterGlitch：緑系にボリューム感（青系なし、暗め〜明るめの黄緑バリエーション） */
+/** LetterGlitch：テキストと被らない程度に明るめ */
 const LETTER_GLITCH_COLORS: Record<ThemeId, string[]> = {
-  dark: ['#0a5a24', '#0d7a32', '#12db50', '#2ee66a', '#4ade80', '#22c55e', '#16a34a', '#15803d'],
-  virtualboy: ['#3d1a1a', '#dd0038', '#ff4068'],
-  lcdgreen: ['#1a2e1a', '#8bac0f', '#9bbc0f'],
-  gameboypocket: ['#2a2825', '#8b7355', '#ada59a'],
+  dark: ['#156b35', '#1a8742', '#209950', '#178040', '#1e9048'],
+  virtualboy: ['#6a1e2a', '#882838', '#a53045', '#7a2430', '#952c3e'],
+  lcdgreen: ['#2e5828', '#3a6e32', '#48803c', '#346430', '#407638'],
+  gameboypocket: ['#4a4640', '#5a554e', '#68635c', '#504c46', '#5e5952'],
 };
 
 function App() {
@@ -492,7 +492,7 @@ function App() {
         />
         {/* LetterGlitch 全体に暗いレイヤー */}
         <div
-          className="absolute inset-0 bg-black/50"
+          className="absolute inset-0 bg-black/35"
           aria-hidden
         />
       </div>
@@ -504,6 +504,30 @@ function App() {
         }}
       >
         <div className="ander-screen relative">
+          {/* ツールバー：スクリーン内右上 */}
+          {tvUnlocked && !showCrtOff && (
+          <div className="frame-toolbar">
+            <AnimatedThemeToggler />
+            <button
+              type="button"
+              onClick={() => (isCameraOn ? stopCamera() : startCamera())}
+              className="frame-toolbar-btn"
+              title={isCameraOn ? "カメラOFF" : "カメラON"}
+              aria-label={isCameraOn ? "カメラOFF" : "カメラON"}
+            >
+              {isCameraOn ? <CameraOff className="h-3.5 w-3.5" /> : <Camera className="h-3.5 w-3.5" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCrtOff(true)}
+              className="frame-toolbar-btn"
+              title="モニターOFF"
+              aria-label="モニターOFF"
+            >
+              <Power className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          </div>
+          )}
           {/* CRT ON/OFF エフェクト：枠内に表示 */}
           <CrtEffectOverlay show={showCrtOn} mode="on" onEnd={() => setShowCrtOn(false)} contained />
           <CrtEffectOverlay show={showCrtOff} mode="off" onEnd={() => { setShowCrtOff(false); setTvUnlocked(false); }} contained />
@@ -586,31 +610,34 @@ function App() {
               </div>
             </div>
           )}
-          {/* タイトル帯：サンプル風ASCIIアート＋記号がランダムにグリッチ */}
+          {/* タイトル帯 */}
           <div className={`flex w-full justify-center ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 pt-12 pb-12 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
+            <div className={`mx-4 flex w-full max-w-[1120px] flex-col items-center justify-center gap-2 pt-4 pb-4 text-center sm:mx-8 lg:mx-16 ${borderClass}`}>
               <h1 className="sr-only">ADiXi SURVEY</h1>
               <TitleAsciiGlitch
                 theme={theme}
                 fontFamily="monofont, var(--font-title-code)"
-                fontSize="clamp(0.85rem, 2.8vw, 1.4rem)"
+                fontSize="clamp(0.55rem, 1.8vw, 0.9rem)"
               />
               <p
-                className="text-sm tracking-widest opacity-90"
+                className="text-xs tracking-widest opacity-80"
                 style={{
                   fontFamily: 'monofont, var(--font-hacker-mono)',
                   color: getAccentColor(theme),
+                  borderLeft: `2px solid ${getAccentColor(theme)}`,
+                  paddingLeft: '0.75em',
                 }}
                 aria-hidden
               >
-                — スペシャリスト勉強会参加者向け・リアルタイムアンケート —
+                スペシャリスト勉強会参加者向け・リアルタイムアンケート
               </p>
             </div>
           </div>
 
-          {/* タイトル下：送信済み＋現在入力中の名前のアイコン（カメラON/OFFに関係なく常にアイコンのみ表示） */}
-          <div className={`flex w-full flex-1 justify-center ${borderClass}`}>
-            <div className={`mx-4 flex w-full max-w-[1120px] flex-1 items-center justify-center gap-3 py-3 sm:mx-8 lg:mx-16 ${borderClass}`}>
+          {/* オンラインユーザー */}
+          <div className={`flex w-full justify-center pt-6 ${borderClass}`}>
+            <div className={`flex items-center justify-center gap-3 py-2 ${borderClass}`}>
+              <span className="text-xs shrink-0 opacity-60" style={{ fontFamily: 'var(--font-hacker-mono)', color: getAccentColor(theme) }}>&gt; ONLINE:</span>
               {(() => {
                 /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
                 const { bg: avatarBg, text: avatarText } = getAvatarColors(theme);
@@ -648,13 +675,13 @@ function App() {
             </div>
           </div>
 
-          {/* アンケートカード帯：外枠は最初から常に描画し、中身だけ survey 到着時に差し替え（レンダー遅延で真っ黒を防ぐ） */}
-          <div className={`flex w-full flex-1 justify-center ${borderClass}`}>
-            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] flex-1 items-start justify-center py-8 sm:mx-8 lg:mx-16 ${borderClass}`}>
-              <div className="relative z-10 w-full max-w-[min(46rem,90%)]">
+          {/* アンケートカード */}
+          <div className={`flex w-full flex-1 justify-center items-center ${borderClass}`}>
+            <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] justify-center pb-4 sm:mx-8 lg:mx-16 ${borderClass}`}>
+              <div className="survey-card relative z-10 w-full max-w-[min(46rem,90%)]">
                 {survey ? (
                 <>
-                  <div className="flex min-w-0 flex-col gap-y-10 px-6 pt-10 pb-8 w-full sm:px-14">
+                  <div className="flex min-w-0 flex-col gap-y-4 w-full">
                     <div className="min-w-0 flex flex-col justify-start">
                       <Stepper
                         initialStep={1}
@@ -743,7 +770,7 @@ function App() {
             </div>
           </div>
 
-          <div className={`flex h-16 w-full flex-grow justify-center ${borderClass}`}>
+          <div className={`flex w-full shrink-0 justify-center ${borderClass}`}>
             <div className={`mx-4 w-full max-w-[1120px] sm:mx-8 lg:mx-16 ${borderClass}`} />
           </div>
         </div>
@@ -755,30 +782,7 @@ function App() {
           )}
         </div>
       </div>
-      {/* ツールバー：CRT右上付近に配置（モニターON前・モニターOFFエフェクト中は非表示） */}
-      {tvUnlocked && !showCrtOff && (
-      <div className="hacker-toolbar fixed z-[350] flex flex-col items-end gap-3" style={{ top: '1rem', right: '1rem' }}>
-        <AnimatedThemeToggler />
-        <button
-          type="button"
-          onClick={() => (isCameraOn ? stopCamera() : startCamera())}
-          className="hacker-toolbar-btn"
-          title={isCameraOn ? "カメラOFF" : "カメラON"}
-          aria-label={isCameraOn ? "カメラOFF" : "カメラON"}
-        >
-          {isCameraOn ? <CameraOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowCrtOff(true)}
-          className="hacker-toolbar-btn"
-          title="モニターOFF"
-          aria-label="モニターOFF"
-        >
-          <Power className="h-4 w-4" aria-hidden />
-        </button>
-      </div>
-      )}
+      {/* ツールバー：フレームあご部分に統合済み */}
       {/* カスタムカーソル：ルートレベルで常に表示（モニターON/OFF問わず） */}
       {underlayVisible && (
         <RealtimeCursorsOverlay

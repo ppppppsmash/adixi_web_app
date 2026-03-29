@@ -87,26 +87,63 @@ export default function Stepper({
 
   return (
     <div
-      className="flex min-h-full w-full min-w-0 flex-1 flex-col items-stretch justify-center p-4"
+      className="flex w-full min-w-0 flex-col items-stretch p-4"
       {...rest}
     >
       <div
-        className={`flex w-full min-w-0 flex-col ${stepCircleContainerClassName}`}
+        className={`flex w-full min-w-0 flex-col flex-1 ${stepCircleContainerClassName}`}
       >
-        <StepContentWrapper
-          isCompleted={isCompleted}
-          currentStep={currentStep}
-          direction={direction}
-          className={`step-content-font min-w-0 space-y-2 px-4 pb-2 text-[var(--color-text)] sm:px-6 ${contentClassName}`}
-        >
-          {stepsArray[currentStep - 1]}
-        </StepContentWrapper>
+        {/* 非progressBarOnlyのステップインジケーター */}
+        {!progressBarOnly && (
+          <div className={`shrink-0 ${stepContainerClassName} flex w-full min-w-0 items-center px-4 py-4 sm:px-6`}>
+            {stepsArray.map((_, index) => {
+              const stepNumber = index + 1;
+              const isNotLastStep = index < totalSteps - 1;
+              return (
+                <React.Fragment key={stepNumber}>
+                  {renderStepIndicator ? (
+                    renderStepIndicator({
+                      step: stepNumber,
+                      currentStep,
+                      onStepClick: clicked => {
+                        setDirection(clicked > currentStep ? 1 : -1);
+                        updateStep(clicked);
+                      }
+                    })
+                  ) : (
+                    <StepIndicator
+                      step={stepNumber}
+                      disableStepIndicators={disableStepIndicators}
+                      currentStep={currentStep}
+                      onClickStep={clicked => {
+                        setDirection(clicked > currentStep ? 1 : -1);
+                        updateStep(clicked);
+                      }}
+                    />
+                  )}
+                  {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        )}
 
-        <div className="shrink-0 pt-12 pb-6">
-          {progressBarOnly ? (
-            <div className={`${stepContainerClassName} w-full min-w-0 px-4 sm:px-6`}>
+        {/* 質問コンテンツ + プログレスバー + ナビ：同じ幅で揃える */}
+        <div className="px-4 sm:px-6">
+          <StepContentWrapper
+            isCompleted={isCompleted}
+            currentStep={currentStep}
+            direction={direction}
+            className={`step-content-font min-w-0 space-y-4 pb-2 text-[var(--color-text)] ${contentClassName}`}
+          >
+            {stepsArray[currentStep - 1]}
+          </StepContentWrapper>
+
+          {/* プログレスバー */}
+          {progressBarOnly && (
+            <div className="mt-10 flex items-center gap-3">
               <div
-                className="stepper-progress-track h-2 w-full overflow-hidden rounded-none"
+                className="stepper-progress-track h-1 flex-1 overflow-hidden rounded-full"
                 role="progressbar"
                 aria-valuenow={isCompleted ? totalSteps : currentStep}
                 aria-valuemin={1}
@@ -114,63 +151,25 @@ export default function Stepper({
                 aria-label="進捗"
               >
                 <motion.div
-                  className="hacker-progress-fill h-full rounded-none"
+                  className="stepper-progress-fill h-full rounded-full"
                   initial={false}
                   transition={{ duration: 0.4 }}
-                  style={{
-                    width: `${isCompleted ? 100 : (currentStep / totalSteps) * 100}%`
-                  }}
+                  style={{ width: `${isCompleted ? 100 : (currentStep / totalSteps) * 100}%` }}
                 />
               </div>
-              <div className="mt-1 flex justify-end">
-                <span
-                  key={`progress-${currentStep}-${totalSteps}`}
-                  className="stepper-progress-text text-xs tabular-nums"
-                  style={{ fontFamily: "var(--font-hacker-mono)", color: 'var(--color-accent)' }}
-                  aria-hidden
-                >
-                  {isCompleted ? totalSteps : currentStep} / {totalSteps}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className={`${stepContainerClassName} flex w-full min-w-0 items-center px-4 py-4 sm:px-6`}>
-              {stepsArray.map((_, index) => {
-                const stepNumber = index + 1;
-                const isNotLastStep = index < totalSteps - 1;
-                return (
-                  <React.Fragment key={stepNumber}>
-                    {renderStepIndicator ? (
-                      renderStepIndicator({
-                        step: stepNumber,
-                        currentStep,
-                        onStepClick: clicked => {
-                          setDirection(clicked > currentStep ? 1 : -1);
-                          updateStep(clicked);
-                        }
-                      })
-                    ) : (
-                      <StepIndicator
-                        step={stepNumber}
-                        disableStepIndicators={disableStepIndicators}
-                        currentStep={currentStep}
-                        onClickStep={clicked => {
-                          setDirection(clicked > currentStep ? 1 : -1);
-                          updateStep(clicked);
-                        }}
-                      />
-                    )}
-                    {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
-                  </React.Fragment>
-                );
-              })}
+              <span
+                className="text-[11px] tabular-nums shrink-0 opacity-50"
+                style={{ fontFamily: "var(--font-hacker-mono)", color: 'var(--color-accent)' }}
+                aria-hidden
+              >
+                {isCompleted ? totalSteps : currentStep}/{totalSteps}
+              </span>
             </div>
           )}
-        </div>
 
-        {!isCompleted && (
-          <div className={`px-4 pb-8 sm:px-6 ${footerClassName}`}>
-            <div className={`mt-10 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'}`}>
+          {/* ナビボタン */}
+          {!isCompleted && (
+            <div className={`mt-4 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'} ${footerClassName}`}>
               {currentStep !== 1 &&
                 (renderBackButton ? (
                   renderBackButton({ onClick: handleBack, children: backButtonText })
@@ -201,8 +200,8 @@ export default function Stepper({
                 </button>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

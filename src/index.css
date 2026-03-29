@@ -12,67 +12,98 @@
   font-style: normal;
   src: url('/fonts/monofonto.svg#Monofonto-Regular') format('svg');
 }
+/* ========== Terminal Frame ========== */
 .ander-crt {
   position: relative;
   z-index: 10;
-  background: #7b8e78;
   width: min(1550px, 92vw);
   height: min(1000px, 92vh);
   max-width: 92vw;
   max-height: 92vh;
-  border-radius: 1em;
-  box-shadow: inset 0.25em 0.25em 2px rgba(255, 255, 255, 0.4), inset -0.25em -0.25em 2px rgba(0, 0, 0, 0.4);
   user-select: none;
   font-size: 18px;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
-  perspective: 1000px;
+  background: #111318;
+  border-radius: 12px;
+  border: none;
+  box-shadow:
+    0 8px 80px rgba(0, 0, 0, 0.95),
+    0 2px 20px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  box-sizing: border-box;
 }
-html.virtual-boy .ander-crt {
-  background: #8e7878;
+/* 装飾なし：::before, ::after はスクリーンのベゼル用 */
+.ander-crt::before { display: none; }
+.ander-crt::after { display: none; }
+/* コーナーブラケットは画面内に移動 */
+.frame-bracket { display: none; }
+/* ステータスバー削除 */
+.frame-status-bar { display: none; }
+/* ツールバー（スクリーン内右上） */
+.frame-toolbar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
 }
-html.lcd-green .ander-crt {
-  background: #6b8e6b;
+.frame-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  backdrop-filter: blur(4px);
 }
-html.game-boy-pocket .ander-crt {
-  background: #8a8a82;
+.frame-toolbar-btn:hover {
+  color: var(--color-accent);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
 }
+.frame-toolbar-btn:active {
+  background: rgba(255, 255, 255, 0.02);
+}
+/* スクリーン */
 .ander-screen {
   position: relative;
   z-index: 20;
-  width: calc(100% - 3em);
-  height: calc(100% - 3em);
-  margin-top: 1.5em;
-  margin-left: 1.5em;
-  background: #000;
-  border-radius: 1em;
+  width: 100%;
+  height: 100%;
+  background: #0a0c10;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 0 1px 3px rgba(10, 10, 10, 0.7);
+  box-shadow: inset 0 0 80px 20px rgba(0, 0, 0, 0.4);
 }
 .ander-screen::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  left: 0; top: 0; right: 0; bottom: 0;
   z-index: 70;
-  box-shadow: inset 0 0 1em 0.5em rgba(255, 255, 255, 0.08);
-  border-radius: 1em;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
   pointer-events: none;
 }
 .ander-screen::after {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  left: 0; top: 0; right: 0; bottom: 0;
   z-index: 60;
-  opacity: 0.1;
-  background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+  opacity: 0.02;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 40%);
   pointer-events: none;
 }
+/* ビネット（エッジ暗転）のみ残す */
 .ander-wrapper {
   position: absolute;
   left: 0;
@@ -80,8 +111,6 @@ html.game-boy-pocket .ander-crt {
   right: 0;
   bottom: 0;
   z-index: 30;
-  transform-origin: 50% 50%;
-  animation: ander-pulse 5s linear infinite;
 }
 .ander-wrapper::before {
   content: '';
@@ -91,85 +120,44 @@ html.game-boy-pocket .ander-crt {
   right: 0;
   bottom: 0;
   z-index: 31;
-  background: radial-gradient(ellipse at center, rgba(0, 30, 30, 0) 0%, rgba(0, 30, 30, 0.5) 100%);
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.35) 100%);
   pointer-events: none;
 }
-html.virtual-boy .ander-wrapper::before {
-  background: radial-gradient(ellipse at center, rgba(30, 0, 10, 0) 0%, rgba(30, 0, 10, 0.5) 100%);
-}
-html.lcd-green .ander-wrapper::before {
-  background: radial-gradient(ellipse at center, rgba(10, 30, 10, 0) 0%, rgba(10, 30, 10, 0.5) 100%);
-}
-html.game-boy-pocket .ander-wrapper::before {
-  background: radial-gradient(ellipse at center, rgba(20, 20, 18, 0) 0%, rgba(20, 20, 18, 0.5) 100%);
-}
-.ander-wrapper::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 32;
-  opacity: 0.5;
-  background: radial-gradient(ellipse at center, rgba(0, 255, 119, 1) 0%, rgba(0, 255, 119, 0) 100%);
-  pointer-events: none;
-  animation: ander-glow 2s linear infinite;
-}
-html.virtual-boy .ander-wrapper::after {
-  background: radial-gradient(ellipse at center, rgba(255, 0, 64, 1) 0%, rgba(255, 0, 64, 0) 100%);
-}
-html.lcd-green .ander-wrapper::after {
-  background: radial-gradient(ellipse at center, rgba(155, 188, 15, 1) 0%, rgba(155, 188, 15, 0) 100%);
-}
-html.game-boy-pocket .ander-wrapper::after {
-  background: radial-gradient(ellipse at center, rgba(173, 165, 154, 1) 0%, rgba(173, 165, 154, 0) 100%);
-}
+/* interlace: 削除済み（重すぎ） */
 .ander-interlace {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 21;
-  opacity: 0.25;
-  background: linear-gradient(#888 50%, #000 50%);
-  background-size: 100% 4px;
-  background-repeat: repeat-y;
-  pointer-events: none;
+  display: none;
 }
+/* envelope: スキューアニメーション削除、余白縮小 */
 .ander-envelope {
   position: absolute;
-  left: 2em;
-  top: 2em;
-  right: 2em;
-  bottom: 2em;
+  left: 1.5em;
+  top: 1em;
+  right: 1.5em;
+  bottom: 1em;
   z-index: 40;
-  border-radius: 0.5em;
-  background: rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  animation: ander-skew 5s linear infinite;
 }
+/* scanline: 軽量化（opacity低、速度遅） */
 .ander-scanline {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1em;
-  opacity: 0.1;
-  background: linear-gradient(to bottom, transparent 0%, rgba(255, 250, 250, 1) 50%, rgba(100, 255, 100, 1) 50%, transparent 100%);
-  animation: ander-scanline 1.25s linear infinite;
+  opacity: 0.05;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.6) 50%, rgba(100, 255, 100, 0.4) 50%, transparent 100%);
+  animation: ander-scanline 3s linear infinite;
   z-index: 22;
   pointer-events: none;
 }
 html.virtual-boy .ander-scanline {
-  background: linear-gradient(to bottom, transparent 0%, rgba(255, 240, 240, 1) 50%, rgba(255, 60, 80, 1) 50%, transparent 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 240, 240, 0.6) 50%, rgba(255, 60, 80, 0.4) 50%, transparent 100%);
 }
 html.lcd-green .ander-scanline {
-  background: linear-gradient(to bottom, transparent 0%, rgba(200, 230, 180, 1) 50%, rgba(155, 188, 15, 1) 50%, transparent 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(200, 230, 180, 0.6) 50%, rgba(155, 188, 15, 0.4) 50%, transparent 100%);
 }
 html.game-boy-pocket .ander-scanline {
-  background: linear-gradient(to bottom, transparent 0%, rgba(230, 230, 225, 1) 50%, rgba(173, 165, 154, 1) 50%, transparent 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(230, 230, 225, 0.6) 50%, rgba(173, 165, 154, 0.4) 50%, transparent 100%);
 }
 .ander-content {
   position: relative;
@@ -179,77 +167,69 @@ html.game-boy-pocket .ander-scanline {
   overflow: hidden;
   z-index: 50;
   color: #12db50;
-  text-shadow: 0 0 2px rgba(10, 255, 10, 0.6);
+  text-shadow: 0 0 1px rgba(10, 255, 10, 0.4);
   font-family: monofont, 'JetBrains Mono', 'M PLUS 1 Code', Consolas, Monaco, monospace;
   font-size: inherit;
   line-height: 1.25;
   background: transparent;
-  animation: ander-blur 5s linear infinite;
+  animation: screen-flicker 30s linear infinite;
 }
 html.virtual-boy .ander-content {
   color: #dd0038;
-  text-shadow: 0 0 2px rgba(255, 10, 10, 0.6);
-  animation-name: ander-blur-virtualboy;
+  text-shadow: 0 0 1px rgba(255, 10, 10, 0.4);
 }
 html.lcd-green .ander-content {
   color: #8bac0f;
-  text-shadow: 0 0 2px rgba(139, 255, 10, 0.6);
-  animation-name: ander-blur-lcdgreen;
+  text-shadow: 0 0 1px rgba(139, 255, 10, 0.4);
 }
 html.game-boy-pocket .ander-content {
   color: #ada59a;
-  text-shadow: 0 0 2px rgba(173, 165, 154, 0.6);
-  animation-name: ander-blur-gameboypocket;
+  text-shadow: 0 0 1px rgba(173, 165, 154, 0.4);
+}
+/* 稀なフリッカー（30秒に1回） */
+@keyframes screen-flicker {
+  0%, 49%, 51%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
 }
 @keyframes ander-scanline {
   0% { top: 0; }
   100% { top: 100%; }
 }
-@keyframes ander-skew {
-  0% { transform: skewX(0.5deg); }
-  8% { transform: skewX(1deg) scale(1.0001); }
-  15% { transform: skewX(0.6deg) skewY(-0.05deg); }
-  30% { transform: skewX(0.6deg); }
-  100% { transform: skewX(0.1deg); }
-}
-@keyframes ander-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.005); }
-  100% { transform: scale(1); }
-}
-@keyframes ander-blur {
-  50% {
-    color: #0fcc4a;
-    text-shadow: 2px 0 2px rgba(10, 255, 10, 0.9);
-  }
-}
-@keyframes ander-blur-virtualboy {
-  50% {
-    color: #cc0030;
-    text-shadow: 2px 0 2px rgba(255, 10, 10, 0.9);
-  }
-}
-@keyframes ander-blur-lcdgreen {
-  50% {
-    color: #7a9a0d;
-    text-shadow: 2px 0 2px rgba(139, 172, 15, 0.9);
-  }
-}
-@keyframes ander-blur-gameboypocket {
-  50% {
-    color: #9a9488;
-    text-shadow: 2px 0 2px rgba(173, 165, 154, 0.9);
-  }
-}
-@keyframes ander-glow {
-  50% { transform: scale(1.2); }
-}
+/* 旧アニメーション削除済み（ander-skew, ander-pulse, ander-blur, ander-glow） */
 @media (max-width: 1280px) {
   .ander-crt {
     width: 92vw;
     height: 92vh;
     font-size: 14px;
   }
+}
+@media (max-width: 768px) {
+  .ander-crt {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    font-size: 14px;
+  }
+  .ander-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .ander-envelope {
+    left: 0.5em;
+    right: 0.5em;
+    top: 0.5em;
+    bottom: 0.5em;
+  }
+  .frame-status-bar { display: none; }
+  .frame-toolbar { top: 8px; right: 8px; }
+}
+@media (max-width: 480px) {
+  .title-ascii-glitch { display: none; }
 }
 
 /* AnderShell: CRT内の全テキストを monofont + 控えめな緑 に統一 */
@@ -376,6 +356,11 @@ html.game-boy-pocket .step-content-sample span {
   --glitch-bg: #141414;
   --glitch-outer-vignette: rgba(0, 0, 0, 0.75);
   --glitch-center-vignette: rgba(0, 0, 0, 0.7);
+  /* フレーム変数 */
+  --frame-metal: #1a1d21;
+  --frame-metal-light: #2a2d32;
+  --frame-edge-glow: var(--color-accent);
+  --frame-inset: #0d0f12;
 }
 
 html.dark {
@@ -844,15 +829,11 @@ html.game-boy-pocket button:focus-visible {
 .tv-on-btn:hover::before {
   box-shadow: 0 0 12px #18ff62, 0 0 4px #18ff62;
 }
-/* 名前入力後：モニターONボタン左の点を点滅 */
 @keyframes tv-on-dot-blink {
   0%, 100% { opacity: 1; box-shadow: 0 0 8px #18ff62; }
   50% { opacity: 0.25; box-shadow: 0 0 4px #18ff62; }
 }
 .tv-on-btn-ready:not(:disabled)::before {
-  animation: tv-on-dot-blink 1.2s ease-in-out infinite;
-}
-.tv-on-btn-ready:hover::before {
   animation: tv-on-dot-blink 1.2s ease-in-out infinite;
 }
 .tv-on-btn:disabled {
@@ -874,158 +855,44 @@ html.game-boy-pocket button:focus-visible {
 .tv-on-btn-with-hint {
   padding-right: 5rem;
 }
-/* Virtual Boy：最初の画面を赤に */
-html.virtual-boy .tv-on-screen .tv-on-label {
-  color: rgba(255, 0, 64, 0.5);
-}
-html.virtual-boy .tv-on-btn {
-  color: #ff0040;
-  border-color: #ff0040;
-  box-shadow: 0 0 12px rgba(255, 0, 64, 0.2), inset 0 0 20px rgba(255, 0, 64, 0.03);
-}
-html.virtual-boy .tv-on-btn:hover {
-  box-shadow: 0 0 20px rgba(255, 0, 64, 0.4), 0 0 40px rgba(255, 0, 64, 0.15), inset 0 0 24px rgba(255, 0, 64, 0.06);
-  text-shadow: 0 0 8px rgba(255, 0, 64, 0.6);
-  background: rgba(255, 0, 64, 0.06);
-}
-html.virtual-boy .tv-on-btn::before {
-  background: #ff0040;
-  border-color: #ff0040;
-  box-shadow: 0 0 8px #ff0040;
-}
-html.virtual-boy .tv-on-btn:hover::before {
-  box-shadow: 0 0 12px #ff0040, 0 0 4px #ff0040;
-}
-@keyframes tv-on-dot-blink-vb {
-  0%, 100% { opacity: 1; box-shadow: 0 0 8px #ff0040; }
-  50% { opacity: 0.25; box-shadow: 0 0 4px #ff0040; }
-}
-html.virtual-boy .tv-on-btn-ready:not(:disabled)::before {
-  animation: tv-on-dot-blink-vb 1.2s ease-in-out infinite;
-}
-html.virtual-boy .tv-on-btn:disabled {
-  color: rgba(255, 0, 64, 0.35);
-  border-color: rgba(255, 0, 64, 0.35);
-  box-shadow: 0 0 8px rgba(255, 0, 64, 0.08);
-}
-html.virtual-boy .tv-on-btn:disabled::before {
-  background: rgba(255, 0, 64, 0.35);
-  border-color: rgba(255, 0, 64, 0.35);
-}
-html.virtual-boy .tv-on-name-input {
-  color: #ff0040;
-  border-color: rgba(255, 0, 64, 0.5);
-  box-shadow: 0 0 10px rgba(255, 0, 64, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
-html.virtual-boy .tv-on-name-input::placeholder {
-  color: rgba(255, 0, 64, 0.4);
-}
-html.virtual-boy .tv-on-name-input:focus {
-  border-color: #ff0040;
-  box-shadow: 0 0 14px rgba(255, 0, 64, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
-/* 液晶緑：最初の画面を液晶グリーンに */
-html.lcd-green .tv-on-screen .tv-on-label {
-  color: rgba(155, 188, 15, 0.5);
-}
-html.lcd-green .tv-on-btn {
-  color: #9bbc0f;
-  border-color: #9bbc0f;
-  box-shadow: 0 0 12px rgba(155, 188, 15, 0.2), inset 0 0 20px rgba(155, 188, 15, 0.03);
-}
-html.lcd-green .tv-on-btn:hover {
-  box-shadow: 0 0 20px rgba(155, 188, 15, 0.4), 0 0 40px rgba(155, 188, 15, 0.15), inset 0 0 24px rgba(155, 188, 15, 0.06);
-  text-shadow: 0 0 8px rgba(155, 188, 15, 0.6);
-  background: rgba(155, 188, 15, 0.06);
-}
-html.lcd-green .tv-on-btn::before {
-  background: #9bbc0f;
-  border-color: #9bbc0f;
-  box-shadow: 0 0 8px #9bbc0f;
-}
-html.lcd-green .tv-on-btn:hover::before {
-  box-shadow: 0 0 12px #9bbc0f, 0 0 4px #9bbc0f;
-}
-@keyframes tv-on-dot-blink-lcd {
-  0%, 100% { opacity: 1; box-shadow: 0 0 8px #9bbc0f; }
-  50% { opacity: 0.25; box-shadow: 0 0 4px #9bbc0f; }
-}
-html.lcd-green .tv-on-btn-ready:not(:disabled)::before {
-  animation: tv-on-dot-blink-lcd 1.2s ease-in-out infinite;
-}
-html.lcd-green .tv-on-btn:disabled {
-  color: rgba(155, 188, 15, 0.35);
-  border-color: rgba(155, 188, 15, 0.35);
-  box-shadow: 0 0 8px rgba(155, 188, 15, 0.08);
-}
-html.lcd-green .tv-on-btn:disabled::before {
-  background: rgba(155, 188, 15, 0.35);
-  border-color: rgba(155, 188, 15, 0.35);
-}
-html.lcd-green .tv-on-name-input {
-  color: #9bbc0f;
-  border-color: rgba(155, 188, 15, 0.5);
-  box-shadow: 0 0 10px rgba(155, 188, 15, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
-html.lcd-green .tv-on-name-input::placeholder {
-  color: rgba(155, 188, 15, 0.4);
-}
-html.lcd-green .tv-on-name-input:focus {
-  border-color: #9bbc0f;
-  box-shadow: 0 0 14px rgba(155, 188, 15, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
-/* Game Boy Pocket：あの画面のグレーで */
-html.game-boy-pocket .tv-on-screen .tv-on-label {
-  color: rgba(173, 165, 154, 0.5);
-}
-html.game-boy-pocket .tv-on-btn {
-  color: #ada59a;
-  border-color: #ada59a;
-  box-shadow: 0 0 12px rgba(173, 165, 154, 0.2), inset 0 0 20px rgba(173, 165, 154, 0.03);
-}
-html.game-boy-pocket .tv-on-btn:hover {
-  box-shadow: 0 0 20px rgba(173, 165, 154, 0.4), 0 0 40px rgba(173, 165, 154, 0.15), inset 0 0 24px rgba(173, 165, 154, 0.06);
-  text-shadow: 0 0 8px rgba(173, 165, 154, 0.6);
-  background: rgba(173, 165, 154, 0.06);
-}
-html.game-boy-pocket .tv-on-btn::before {
-  background: #ada59a;
-  border-color: #ada59a;
-  box-shadow: 0 0 8px #ada59a;
-}
-html.game-boy-pocket .tv-on-btn:hover::before {
-  box-shadow: 0 0 12px #ada59a, 0 0 4px #ada59a;
-}
-@keyframes tv-on-dot-blink-gbp {
-  0%, 100% { opacity: 1; box-shadow: 0 0 8px #ada59a; }
-  50% { opacity: 0.25; box-shadow: 0 0 4px #ada59a; }
-}
-html.game-boy-pocket .tv-on-btn-ready:not(:disabled)::before {
-  animation: tv-on-dot-blink-gbp 1.2s ease-in-out infinite;
-}
-html.game-boy-pocket .tv-on-btn:disabled {
-  color: rgba(173, 165, 154, 0.35);
-  border-color: rgba(173, 165, 154, 0.35);
-  box-shadow: 0 0 8px rgba(173, 165, 154, 0.08);
-}
-html.game-boy-pocket .tv-on-btn:disabled::before {
-  background: rgba(173, 165, 154, 0.35);
-  border-color: rgba(173, 165, 154, 0.35);
-}
-html.game-boy-pocket .tv-on-name-input {
-  color: #ada59a;
-  border-color: rgba(173, 165, 154, 0.5);
-  box-shadow: 0 0 10px rgba(173, 165, 154, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
-html.game-boy-pocket .tv-on-name-input::placeholder {
-  color: rgba(173, 165, 154, 0.4);
-}
-html.game-boy-pocket .tv-on-name-input:focus {
-  border-color: #ada59a;
-  box-shadow: 0 0 14px rgba(173, 165, 154, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
-}
+/* Virtual Boy */
+html.virtual-boy .tv-on-screen .tv-on-label { color: rgba(255, 0, 64, 0.5); }
+html.virtual-boy .tv-on-btn { color: #ff0040; border-color: #ff0040; box-shadow: 0 0 12px rgba(255, 0, 64, 0.2), inset 0 0 20px rgba(255, 0, 64, 0.03); }
+html.virtual-boy .tv-on-btn:hover { box-shadow: 0 0 20px rgba(255, 0, 64, 0.4), 0 0 40px rgba(255, 0, 64, 0.15); text-shadow: 0 0 8px rgba(255, 0, 64, 0.6); background: rgba(255, 0, 64, 0.06); }
+html.virtual-boy .tv-on-btn::before { background: #ff0040; border-color: #ff0040; box-shadow: 0 0 8px #ff0040; }
+@keyframes tv-on-dot-blink-vb { 0%, 100% { opacity: 1; box-shadow: 0 0 8px #ff0040; } 50% { opacity: 0.25; box-shadow: 0 0 4px #ff0040; } }
+html.virtual-boy .tv-on-btn-ready:not(:disabled)::before { animation: tv-on-dot-blink-vb 1.2s ease-in-out infinite; }
+html.virtual-boy .tv-on-btn:disabled { color: rgba(255, 0, 64, 0.35); border-color: rgba(255, 0, 64, 0.35); }
+html.virtual-boy .tv-on-btn:disabled::before { background: rgba(255, 0, 64, 0.35); border-color: rgba(255, 0, 64, 0.35); }
+html.virtual-boy .tv-on-name-input { color: #ff0040; border-color: rgba(255, 0, 64, 0.5); box-shadow: 0 0 10px rgba(255, 0, 64, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3); }
+html.virtual-boy .tv-on-name-input::placeholder { color: rgba(255, 0, 64, 0.4); }
+html.virtual-boy .tv-on-name-input:focus { border-color: #ff0040; box-shadow: 0 0 14px rgba(255, 0, 64, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3); }
+/* LCD Green */
+html.lcd-green .tv-on-screen .tv-on-label { color: rgba(155, 188, 15, 0.5); }
+html.lcd-green .tv-on-btn { color: #9bbc0f; border-color: #9bbc0f; box-shadow: 0 0 12px rgba(155, 188, 15, 0.2), inset 0 0 20px rgba(155, 188, 15, 0.03); }
+html.lcd-green .tv-on-btn:hover { box-shadow: 0 0 20px rgba(155, 188, 15, 0.4), 0 0 40px rgba(155, 188, 15, 0.15); text-shadow: 0 0 8px rgba(155, 188, 15, 0.6); background: rgba(155, 188, 15, 0.06); }
+html.lcd-green .tv-on-btn::before { background: #9bbc0f; border-color: #9bbc0f; box-shadow: 0 0 8px #9bbc0f; }
+@keyframes tv-on-dot-blink-lcd { 0%, 100% { opacity: 1; box-shadow: 0 0 8px #9bbc0f; } 50% { opacity: 0.25; box-shadow: 0 0 4px #9bbc0f; } }
+html.lcd-green .tv-on-btn-ready:not(:disabled)::before { animation: tv-on-dot-blink-lcd 1.2s ease-in-out infinite; }
+html.lcd-green .tv-on-btn:disabled { color: rgba(155, 188, 15, 0.35); border-color: rgba(155, 188, 15, 0.35); }
+html.lcd-green .tv-on-btn:disabled::before { background: rgba(155, 188, 15, 0.35); border-color: rgba(155, 188, 15, 0.35); }
+html.lcd-green .tv-on-name-input { color: #9bbc0f; border-color: rgba(155, 188, 15, 0.5); box-shadow: 0 0 10px rgba(155, 188, 15, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3); }
+html.lcd-green .tv-on-name-input::placeholder { color: rgba(155, 188, 15, 0.4); }
+html.lcd-green .tv-on-name-input:focus { border-color: #9bbc0f; box-shadow: 0 0 14px rgba(155, 188, 15, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3); }
+/* Game Boy Pocket */
+html.game-boy-pocket .tv-on-screen .tv-on-label { color: rgba(173, 165, 154, 0.5); }
+html.game-boy-pocket .tv-on-btn { color: #ada59a; border-color: #ada59a; box-shadow: 0 0 12px rgba(173, 165, 154, 0.2), inset 0 0 20px rgba(173, 165, 154, 0.03); }
+html.game-boy-pocket .tv-on-btn:hover { box-shadow: 0 0 20px rgba(173, 165, 154, 0.4), 0 0 40px rgba(173, 165, 154, 0.15); text-shadow: 0 0 8px rgba(173, 165, 154, 0.6); background: rgba(173, 165, 154, 0.06); }
+html.game-boy-pocket .tv-on-btn::before { background: #ada59a; border-color: #ada59a; box-shadow: 0 0 8px #ada59a; }
+@keyframes tv-on-dot-blink-gbp { 0%, 100% { opacity: 1; box-shadow: 0 0 8px #ada59a; } 50% { opacity: 0.25; box-shadow: 0 0 4px #ada59a; } }
+html.game-boy-pocket .tv-on-btn-ready:not(:disabled)::before { animation: tv-on-dot-blink-gbp 1.2s ease-in-out infinite; }
+html.game-boy-pocket .tv-on-btn:disabled { color: rgba(173, 165, 154, 0.35); border-color: rgba(173, 165, 154, 0.35); }
+html.game-boy-pocket .tv-on-btn:disabled::before { background: rgba(173, 165, 154, 0.35); border-color: rgba(173, 165, 154, 0.35); }
+html.game-boy-pocket .tv-on-name-input { color: #ada59a; border-color: rgba(173, 165, 154, 0.5); box-shadow: 0 0 10px rgba(173, 165, 154, 0.1), inset 0 0 12px rgba(0, 0, 0, 0.3); }
+html.game-boy-pocket .tv-on-name-input::placeholder { color: rgba(173, 165, 154, 0.4); }
+html.game-boy-pocket .tv-on-name-input:focus { border-color: #ada59a; box-shadow: 0 0 14px rgba(173, 165, 154, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3); }
 
-/* モニターON前の名前入力：幅はボタンと一致（.tv-on-form でストレッチ） */
+/* モニターON前の名前入力 */
 .tv-on-name-input {
   width: 100%;
   min-width: 0;
@@ -1048,6 +915,9 @@ html.game-boy-pocket .tv-on-name-input:focus {
   outline: none;
   border-color: #18ff62;
   box-shadow: 0 0 14px rgba(24, 255, 98, 0.25), inset 0 0 12px rgba(0, 0, 0, 0.3);
+}
+.tv-on-name-input-with-hint {
+  padding-right: 6rem;
 }
 .tv-on-key-hint {
   pointer-events: none;

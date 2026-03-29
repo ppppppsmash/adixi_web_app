@@ -5,6 +5,11 @@
   min-height: 100vh;
 }
 
+/* アンケートカード */
+.survey-card {
+  position: relative;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -122,44 +127,13 @@ html.game-boy-pocket .stepper-connector-complete {
   box-shadow: 0 0 8px rgba(173, 165, 154, 0.35);
 }
 
-/* ----- ハッカー／マトリックス風：プログレスバーとボタン ----- */
+/* ----- プログレスバー ----- */
 .stepper-progress-track {
-  background: rgba(10, 31, 10, 0.85);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.08);
 }
-html.virtual-boy .stepper-progress-track {
-  background: rgba(30, 8, 12, 0.85);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-html.lcd-green .stepper-progress-track {
-  background: rgba(15, 56, 15, 0.9);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-html.game-boy-pocket .stepper-progress-track {
-  background: rgba(45, 45, 40, 0.9);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.hacker-progress-fill {
-  background: linear-gradient(90deg, #008c2a 0%, #00ff41 50%, #00ff41 100%);
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.3);
-  transition: box-shadow 0.2s ease;
-}
-html.dark .hacker-progress-fill {
-  background: linear-gradient(90deg, #0a2f12 0%, #00ff41 50%, #00ff41 100%);
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.7), 0 0 24px rgba(0, 255, 65, 0.35);
-}
-html.virtual-boy .hacker-progress-fill {
-  background: linear-gradient(90deg, #2f0a12 0%, #ff0040 50%, #ff0040 100%);
-  box-shadow: 0 0 8px rgba(255, 0, 64, 0.5), 0 0 16px rgba(255, 0, 64, 0.25);
-}
-html.lcd-green .hacker-progress-fill {
-  background: linear-gradient(90deg, #0f380f 0%, #9bbc0f 50%, #9bbc0f 100%);
-  box-shadow: 0 0 8px rgba(155, 188, 15, 0.5), 0 0 16px rgba(155, 188, 15, 0.25);
-}
-html.game-boy-pocket .hacker-progress-fill {
-  background: linear-gradient(90deg, #2d2d28 0%, #ada59a 50%, #ada59a 100%);
-  box-shadow: 0 0 8px rgba(173, 165, 154, 0.5), 0 0 16px rgba(173, 165, 154, 0.25);
+.stepper-progress-fill {
+  background: var(--color-accent);
+  transition: width 0.4s ease;
 }
 
 .hacker-btn {
@@ -425,10 +399,10 @@ html.game-boy-pocket .stepper-next-button {
   97% { opacity: 0.99; }
 }
 
-/* Headless UI フォーム共通（ハッカー風モノスペース・文字色緑） */
+/* Headless UI フォーム共通（ターミナル風） */
 .form-input-base {
   font-family: var(--font-hacker-mono) !important;
-  @apply w-full min-w-0 max-w-full rounded-none border-2 px-3 py-2 text-[length:inherit] transition box-border;
+  @apply w-full min-w-0 max-w-full rounded-none border px-3 py-2 text-[length:inherit] transition box-border;
   border-color: var(--color-form-border) !important;
   background-color: var(--color-form-bg);
   color: var(--color-form-input-text);
