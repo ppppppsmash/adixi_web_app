@@ -46,22 +46,30 @@
 
 /* カレントの丸：デュアルトーンのグロー */
 @keyframes stepper-glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 12px #61dca3, 0 0 24px rgba(97, 220, 163, 0.35), 0 0 0 1px rgba(97, 179, 220, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 18px #61dca3, 0 0 36px rgba(97, 220, 163, 0.5), 0 0 0 1px rgba(97, 179, 220, 0.4);
-  }
+  0%, 100% { box-shadow: 0 0 12px var(--color-accent), 0 0 24px rgba(0, 255, 65, 0.35); }
+  50% { box-shadow: 0 0 18px var(--color-accent), 0 0 36px rgba(0, 255, 65, 0.5); }
 }
-.stepper-active-glow {
-  animation: stepper-glow-pulse 2s ease-in-out infinite;
+@keyframes stepper-glow-pulse-vb {
+  0%, 100% { box-shadow: 0 0 12px #ff4068, 0 0 24px rgba(255, 0, 64, 0.35); }
+  50% { box-shadow: 0 0 18px #ff4068, 0 0 36px rgba(255, 0, 64, 0.5); }
 }
+@keyframes stepper-glow-pulse-lcd {
+  0%, 100% { box-shadow: 0 0 12px #9bbc0f, 0 0 24px rgba(155, 188, 15, 0.35); }
+  50% { box-shadow: 0 0 18px #9bbc0f, 0 0 36px rgba(155, 188, 15, 0.5); }
+}
+@keyframes stepper-glow-pulse-gbp {
+  0%, 100% { box-shadow: 0 0 12px #ada59a, 0 0 24px rgba(173, 165, 154, 0.35); }
+  50% { box-shadow: 0 0 18px #ada59a, 0 0 36px rgba(173, 165, 154, 0.5); }
+}
+.stepper-active-glow { animation: stepper-glow-pulse 2s ease-in-out infinite; }
+html.virtual-boy .stepper-active-glow { animation-name: stepper-glow-pulse-vb; }
+html.lcd-green .stepper-active-glow { animation-name: stepper-glow-pulse-lcd; }
+html.game-boy-pocket .stepper-active-glow { animation-name: stepper-glow-pulse-gbp; }
 
 /* アクティブの内側ドット：ふわっとした脈動 */
 @keyframes stepper-active-dot-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: inset 0 0 4px rgba(97, 220, 163, 0.5); }
-  50% { opacity: 0.9; transform: scale(1.05); box-shadow: inset 0 0 6px rgba(97, 220, 163, 0.7); }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
 }
 .stepper-active-dot {
   animation: stepper-active-dot-pulse 2.5s ease-in-out infinite;
@@ -69,25 +77,49 @@
 
 /* 完了（チェック）のグロー＋チェック線のトーン */
 @keyframes stepper-complete-glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 8px rgba(97, 220, 163, 0.4), 0 0 0 1px rgba(43, 69, 57, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(97, 220, 163, 0.55), 0 0 0 1px rgba(97, 179, 220, 0.25);
-  }
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 255, 65, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(0, 255, 65, 0.55); }
 }
-.stepper-complete-glow {
-  animation: stepper-complete-glow-pulse 3s ease-in-out infinite;
+@keyframes stepper-complete-glow-pulse-vb {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 0, 64, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(255, 0, 64, 0.55); }
 }
+@keyframes stepper-complete-glow-pulse-lcd {
+  0%, 100% { box-shadow: 0 0 8px rgba(155, 188, 15, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(155, 188, 15, 0.55); }
+}
+@keyframes stepper-complete-glow-pulse-gbp {
+  0%, 100% { box-shadow: 0 0 8px rgba(173, 165, 154, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(173, 165, 154, 0.55); }
+}
+.stepper-complete-glow { animation: stepper-complete-glow-pulse 3s ease-in-out infinite; }
+html.virtual-boy .stepper-complete-glow { animation-name: stepper-complete-glow-pulse-vb; }
+html.lcd-green .stepper-complete-glow { animation-name: stepper-complete-glow-pulse-lcd; }
+html.game-boy-pocket .stepper-complete-glow { animation-name: stepper-complete-glow-pulse-gbp; }
+
 .stepper-check-icon {
-  filter: drop-shadow(0 0 2px rgba(97, 220, 163, 0.4));
+  filter: drop-shadow(0 0 2px rgba(0, 255, 65, 0.4));
 }
+html.virtual-boy .stepper-check-icon { filter: drop-shadow(0 0 2px rgba(255, 0, 64, 0.4)); }
+html.lcd-green .stepper-check-icon { filter: drop-shadow(0 0 2px rgba(155, 188, 15, 0.4)); }
+html.game-boy-pocket .stepper-check-icon { filter: drop-shadow(0 0 2px rgba(173, 165, 154, 0.4)); }
 
 /* コネクター（プログレスバー）完了時：グラデ＋軽いグロー */
 .stepper-connector-complete {
   background: linear-gradient(90deg, #61dca3 0%, #61b3dc 100%);
   box-shadow: 0 0 8px rgba(97, 220, 163, 0.35);
+}
+html.virtual-boy .stepper-connector-complete {
+  background: linear-gradient(90deg, #ff4068 0%, #ff0040 100%);
+  box-shadow: 0 0 8px rgba(255, 0, 64, 0.35);
+}
+html.lcd-green .stepper-connector-complete {
+  background: linear-gradient(90deg, #9bbc0f 0%, #a8c91a 100%);
+  box-shadow: 0 0 8px rgba(155, 188, 15, 0.35);
+}
+html.game-boy-pocket .stepper-connector-complete {
+  background: linear-gradient(90deg, #ada59a 0%, #c4beb2 100%);
+  box-shadow: 0 0 8px rgba(173, 165, 154, 0.35);
 }
 
 /* ----- ハッカー／マトリックス風：プログレスバーとボタン ----- */
@@ -289,12 +321,20 @@ html.game-boy-pocket .avatar-hacker-tooltip {
 
 /* ステッパー：Previous / Next ボタン（Headless UI Button）ネオ風ピカピカ */
 @keyframes stepper-btn-glow {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(97, 220, 163, 0.5), 0 0 24px rgba(97, 220, 163, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(97, 220, 163, 0.7), 0 0 40px rgba(97, 179, 220, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  }
+  0%, 100% { box-shadow: 0 0 12px rgba(97, 220, 163, 0.5), 0 0 24px rgba(97, 220, 163, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(97, 220, 163, 0.7), 0 0 40px rgba(97, 220, 163, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+}
+@keyframes stepper-btn-glow-vb {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 0, 64, 0.5), 0 0 24px rgba(255, 0, 64, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(255, 0, 64, 0.7), 0 0 40px rgba(255, 0, 64, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+}
+@keyframes stepper-btn-glow-lcd {
+  0%, 100% { box-shadow: 0 0 12px rgba(155, 188, 15, 0.5), 0 0 24px rgba(155, 188, 15, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(155, 188, 15, 0.7), 0 0 40px rgba(155, 188, 15, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+}
+@keyframes stepper-btn-glow-gbp {
+  0%, 100% { box-shadow: 0 0 12px rgba(173, 165, 154, 0.5), 0 0 24px rgba(173, 165, 154, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(173, 165, 154, 0.7), 0 0 40px rgba(173, 165, 154, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
 }
 @keyframes stepper-btn-shine {
   0% { opacity: 0; transform: translateX(-100%) skewX(-12deg); }
@@ -312,6 +352,18 @@ html.game-boy-pocket .avatar-hacker-tooltip {
   border-color: rgba(97, 220, 163, 0.6);
   box-shadow: 0 0 12px rgba(97, 220, 163, 0.25);
 }
+html.virtual-boy .stepper-back-button:hover {
+  border-color: rgba(255, 0, 64, 0.6);
+  box-shadow: 0 0 12px rgba(255, 0, 64, 0.25);
+}
+html.lcd-green .stepper-back-button:hover {
+  border-color: rgba(155, 188, 15, 0.6);
+  box-shadow: 0 0 12px rgba(155, 188, 15, 0.25);
+}
+html.game-boy-pocket .stepper-back-button:hover {
+  border-color: rgba(173, 165, 154, 0.6);
+  box-shadow: 0 0 12px rgba(173, 165, 154, 0.25);
+}
 .stepper-next-button {
   position: relative;
   overflow: hidden;
@@ -320,6 +372,24 @@ html.game-boy-pocket .avatar-hacker-tooltip {
   border: none;
   text-shadow: 0 0 20px rgba(43, 69, 57, 0.3);
   animation: stepper-btn-glow 2.5s ease-in-out infinite;
+}
+html.virtual-boy .stepper-next-button {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%) #ff4068;
+  color: #3d1a1a;
+  text-shadow: 0 0 20px rgba(61, 26, 26, 0.3);
+  animation-name: stepper-btn-glow-vb;
+}
+html.lcd-green .stepper-next-button {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%) #9bbc0f;
+  color: #1a2e1a;
+  text-shadow: 0 0 20px rgba(26, 46, 26, 0.3);
+  animation-name: stepper-btn-glow-lcd;
+}
+html.game-boy-pocket .stepper-next-button {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%) #ada59a;
+  color: #2d2d28;
+  text-shadow: 0 0 20px rgba(45, 45, 40, 0.3);
+  animation-name: stepper-btn-glow-gbp;
 }
 .stepper-next-button::before {
   content: "";
@@ -359,31 +429,41 @@ html.game-boy-pocket .avatar-hacker-tooltip {
 .form-input-base {
   font-family: var(--font-hacker-mono) !important;
   @apply w-full min-w-0 max-w-full rounded-none border-2 px-3 py-2 text-[length:inherit] transition box-border;
-  border-color: var(--color-form-border);
+  border-color: var(--color-form-border) !important;
   background-color: var(--color-form-bg);
   color: var(--color-form-input-text);
 }
-/* select: 矢印をハッカー緑に・見た目統一 */
-select.form-input-base {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300ff41' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.6rem center;
-  background-size: 1.1rem;
+/* Headless UI Listbox：カスタムセレクト */
+.form-select-button {
+  position: relative;
   padding-right: 2.25rem;
-}
-html.virtual-boy select.form-input-base {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff0040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
-html.lcd-green select.form-input-base {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239bbc0f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
-html.game-boy-pocket select.form-input-base {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ada59a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
-select.form-input-base option {
-  background: var(--color-bg-elevated);
+  cursor: pointer;
+  border-color: var(--color-form-border) !important;
+  background-color: var(--color-form-bg);
   color: var(--color-form-input-text);
+}
+.form-select-button[data-focus],
+.form-select-button[data-open],
+.form-select-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+.form-select-options {
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-form-border);
+  font-family: var(--font-hacker-mono);
+}
+.form-select-option {
+  color: var(--color-form-input-text);
+  font-family: var(--font-hacker-mono);
+  transition: background-color 0.1s;
+}
+.form-select-option[data-selected] {
+  color: var(--color-accent);
+}
+.step-content-font .form-select-button,
+.step-content-font .form-select-option {
+  font-family: monofont, var(--font-hacker-mono) !important;
 }
 /* 入力欄の文字・色（サンプル準拠：monofont） */
 .step-content-font input.form-input-base,
@@ -404,23 +484,23 @@ select.form-input-base option {
 .form-input-base[data-focus],
 .form-input-base:focus {
   outline: none;
-  border-color: #00ff41;
+  border-color: #00ff41 !important;
   background-color: var(--color-form-bg);
   box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.2), 0 0 12px rgba(0, 255, 65, 0.15);
 }
 html.virtual-boy .form-input-base[data-focus],
 html.virtual-boy .form-input-base:focus {
-  border-color: #ff0040;
+  border-color: #ff0040 !important;
   box-shadow: 0 0 0 3px rgba(255, 0, 64, 0.25), 0 0 12px rgba(255, 0, 64, 0.15);
 }
 html.lcd-green .form-input-base[data-focus],
 html.lcd-green .form-input-base:focus {
-  border-color: #9bbc0f;
+  border-color: #9bbc0f !important;
   box-shadow: 0 0 0 3px rgba(155, 188, 15, 0.25), 0 0 12px rgba(155, 188, 15, 0.15);
 }
 html.game-boy-pocket .form-input-base[data-focus],
 html.game-boy-pocket .form-input-base:focus {
-  border-color: #ada59a;
+  border-color: #ada59a !important;
   box-shadow: 0 0 0 3px rgba(173, 165, 154, 0.25), 0 0 12px rgba(173, 165, 154, 0.15);
 }
 .form-input-base[data-hover]:not([data-focus]) {

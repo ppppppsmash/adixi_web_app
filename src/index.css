@@ -28,6 +28,15 @@
   backface-visibility: hidden;
   perspective: 1000px;
 }
+html.virtual-boy .ander-crt {
+  background: #8e7878;
+}
+html.lcd-green .ander-crt {
+  background: #6b8e6b;
+}
+html.game-boy-pocket .ander-crt {
+  background: #8a8a82;
+}
 .ander-screen {
   position: relative;
   z-index: 20;
@@ -85,6 +94,15 @@
   background: radial-gradient(ellipse at center, rgba(0, 30, 30, 0) 0%, rgba(0, 30, 30, 0.5) 100%);
   pointer-events: none;
 }
+html.virtual-boy .ander-wrapper::before {
+  background: radial-gradient(ellipse at center, rgba(30, 0, 10, 0) 0%, rgba(30, 0, 10, 0.5) 100%);
+}
+html.lcd-green .ander-wrapper::before {
+  background: radial-gradient(ellipse at center, rgba(10, 30, 10, 0) 0%, rgba(10, 30, 10, 0.5) 100%);
+}
+html.game-boy-pocket .ander-wrapper::before {
+  background: radial-gradient(ellipse at center, rgba(20, 20, 18, 0) 0%, rgba(20, 20, 18, 0.5) 100%);
+}
 .ander-wrapper::after {
   content: '';
   position: absolute;
@@ -97,6 +115,15 @@
   background: radial-gradient(ellipse at center, rgba(0, 255, 119, 1) 0%, rgba(0, 255, 119, 0) 100%);
   pointer-events: none;
   animation: ander-glow 2s linear infinite;
+}
+html.virtual-boy .ander-wrapper::after {
+  background: radial-gradient(ellipse at center, rgba(255, 0, 64, 1) 0%, rgba(255, 0, 64, 0) 100%);
+}
+html.lcd-green .ander-wrapper::after {
+  background: radial-gradient(ellipse at center, rgba(155, 188, 15, 1) 0%, rgba(155, 188, 15, 0) 100%);
+}
+html.game-boy-pocket .ander-wrapper::after {
+  background: radial-gradient(ellipse at center, rgba(173, 165, 154, 1) 0%, rgba(173, 165, 154, 0) 100%);
 }
 .ander-interlace {
   position: absolute;
@@ -135,6 +162,15 @@
   z-index: 22;
   pointer-events: none;
 }
+html.virtual-boy .ander-scanline {
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 240, 240, 1) 50%, rgba(255, 60, 80, 1) 50%, transparent 100%);
+}
+html.lcd-green .ander-scanline {
+  background: linear-gradient(to bottom, transparent 0%, rgba(200, 230, 180, 1) 50%, rgba(155, 188, 15, 1) 50%, transparent 100%);
+}
+html.game-boy-pocket .ander-scanline {
+  background: linear-gradient(to bottom, transparent 0%, rgba(230, 230, 225, 1) 50%, rgba(173, 165, 154, 1) 50%, transparent 100%);
+}
 .ander-content {
   position: relative;
   width: 100%;
@@ -149,6 +185,21 @@
   line-height: 1.25;
   background: transparent;
   animation: ander-blur 5s linear infinite;
+}
+html.virtual-boy .ander-content {
+  color: #dd0038;
+  text-shadow: 0 0 2px rgba(255, 10, 10, 0.6);
+  animation-name: ander-blur-virtualboy;
+}
+html.lcd-green .ander-content {
+  color: #8bac0f;
+  text-shadow: 0 0 2px rgba(139, 255, 10, 0.6);
+  animation-name: ander-blur-lcdgreen;
+}
+html.game-boy-pocket .ander-content {
+  color: #ada59a;
+  text-shadow: 0 0 2px rgba(173, 165, 154, 0.6);
+  animation-name: ander-blur-gameboypocket;
 }
 @keyframes ander-scanline {
   0% { top: 0; }
@@ -170,6 +221,24 @@
   50% {
     color: #0fcc4a;
     text-shadow: 2px 0 2px rgba(10, 255, 10, 0.9);
+  }
+}
+@keyframes ander-blur-virtualboy {
+  50% {
+    color: #cc0030;
+    text-shadow: 2px 0 2px rgba(255, 10, 10, 0.9);
+  }
+}
+@keyframes ander-blur-lcdgreen {
+  50% {
+    color: #7a9a0d;
+    text-shadow: 2px 0 2px rgba(139, 172, 15, 0.9);
+  }
+}
+@keyframes ander-blur-gameboypocket {
+  50% {
+    color: #9a9488;
+    text-shadow: 2px 0 2px rgba(173, 165, 154, 0.9);
   }
 }
 @keyframes ander-glow {

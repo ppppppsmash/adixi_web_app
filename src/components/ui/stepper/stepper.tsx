@@ -309,8 +309,17 @@ interface StepIndicatorProps {
   disableStepIndicators?: boolean;
 }
 
+/** テーマ別ステッパーインジケーターカラー */
+const STEPPER_COLORS: Record<string, { accent: string; accentRgba: string; contrast: string; glowSm: string; glowLg: string; dotShadow: string }> = {
+  dark:          { accent: '#61dca3', accentRgba: 'rgba(97,220,163,', contrast: '#2b4539', glowSm: '0 0 8px rgba(97,220,163,0.4)', glowLg: '0 0 12px #61dca3, 0 0 24px rgba(97,220,163,0.35)', dotShadow: 'inset 0 0 4px rgba(97,220,163,0.5)' },
+  virtualboy:    { accent: '#ff4068', accentRgba: 'rgba(255,64,104,', contrast: '#3d1a1a', glowSm: '0 0 8px rgba(255,0,64,0.4)', glowLg: '0 0 12px #ff4068, 0 0 24px rgba(255,0,64,0.35)', dotShadow: 'inset 0 0 4px rgba(255,0,64,0.5)' },
+  lcdgreen:      { accent: '#9bbc0f', accentRgba: 'rgba(155,188,15,', contrast: '#1a2e1a', glowSm: '0 0 8px rgba(155,188,15,0.4)', glowLg: '0 0 12px #9bbc0f, 0 0 24px rgba(155,188,15,0.35)', dotShadow: 'inset 0 0 4px rgba(155,188,15,0.5)' },
+  gameboypocket: { accent: '#ada59a', accentRgba: 'rgba(173,165,154,', contrast: '#2d2d28', glowSm: '0 0 8px rgba(173,165,154,0.4)', glowLg: '0 0 12px #ada59a, 0 0 24px rgba(173,165,154,0.35)', dotShadow: 'inset 0 0 4px rgba(173,165,154,0.5)' },
+};
+
 function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators = false }: StepIndicatorProps) {
   const theme = useTheme();
+  const c = STEPPER_COLORS[theme] ?? STEPPER_COLORS.dark;
   /** 全テーマとも暗い背景のため、ラベルは常に明るい色 */
   const stepLabelColor = theme === 'virtualboy' ? 'rgba(255,220,220,0.9)' : theme === 'lcdgreen' ? 'rgba(155,188,15,0.95)' : theme === 'gameboypocket' ? 'rgba(222,222,222,0.95)' : 'rgba(255,255,255,0.9)';
   const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
@@ -338,24 +347,24 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
           },
           active: {
             scale: 1,
-            backgroundColor: '#61dca3',
-            color: '#61dca3',
-            boxShadow: '0 0 12px #61dca3, 0 0 24px rgba(97,220,163,0.35)'
+            backgroundColor: c.accent,
+            color: c.accent,
+            boxShadow: c.glowLg,
           },
           complete: {
             scale: 1,
-            backgroundColor: '#61dca3',
-            color: '#2b4539',
-            boxShadow: '0 0 8px rgba(97,220,163,0.4)'
+            backgroundColor: c.accent,
+            color: c.contrast,
+            boxShadow: c.glowSm,
           }
         }}
         transition={{ duration: 0.3 }}
         className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-none font-semibold text-base ${status === 'active' ? 'stepper-active-glow' : ''} ${status === 'complete' ? 'stepper-complete-glow' : ''}`}
       >
         {status === 'complete' ? (
-          <CheckIcon className="stepper-check-icon h-4 w-4 text-[#2b4539]" />
+          <CheckIcon className="stepper-check-icon h-4 w-4" style={{ color: c.contrast }} />
         ) : status === 'active' ? (
-          <div className="stepper-active-dot h-3 w-3 rounded-none bg-[#2b4539] shadow-[inset_0_0_4px_rgba(97,220,163,0.5)]" />
+          <div className="stepper-active-dot h-3 w-3 rounded-none" style={{ backgroundColor: c.contrast, boxShadow: c.dotShadow }} />
         ) : (
           <FuzzyText
             fontSize="0.875rem"

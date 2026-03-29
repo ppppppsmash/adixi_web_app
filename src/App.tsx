@@ -14,6 +14,10 @@ import {
   Label,
   Fieldset,
   Legend,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
 } from '@headlessui/react'
 import { getPublicSurvey, getLatestPublicSurvey, submitSurveyResponse, getSurveyRespondentNames, type PublicSurvey, type SurveyItem } from "./api/survey";
 import { supabase } from "./lib/supabase";
@@ -180,16 +184,29 @@ function SurveyStepContent({
 
       {item.questionType === 'select' && (
         <Field className="form-field-group w-full min-w-0">
-          <select
-            value={(value as string) ?? ''}
-            onChange={(e) => onChange(e.target.value)}
-            className="form-input-base"
-          >
-            <option value="">選択してください</option>
-            {options.map((opt) => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
+          <Listbox value={(value as string) ?? ''} onChange={(v: string) => onChange(v)}>
+            <div className="relative">
+              <ListboxButton className="form-input-base form-select-button w-full text-left">
+                <span className={`block truncate ${!(value as string) ? 'opacity-50' : ''}`}>
+                  {(value as string) || '選択してください'}
+                </span>
+                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg className="h-4 w-4" style={{ color: 'var(--color-form-input-text)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </ListboxButton>
+              <ListboxOptions anchor={{ to: 'bottom start', gap: 4 }} className="form-select-options z-50 max-h-60 w-[var(--button-width)] overflow-auto py-1">
+                {options.map((opt) => (
+                  <ListboxOption
+                    key={opt}
+                    value={opt}
+                    className="form-select-option cursor-pointer select-none px-3 py-2 data-[focus]:bg-[var(--color-form-border)] data-[selected]:font-bold"
+                  >
+                    {opt}
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
+            </div>
+          </Listbox>
         </Field>
       )}
     </div>
