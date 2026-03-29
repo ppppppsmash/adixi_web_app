@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-// import { LiquidGlass } from '@liquidglass/react';
 import { ArrowRightToLine, Camera, CameraOff, ChevronLeft, ChevronRight, CornerDownLeft, Power, Send } from "lucide-react";
 import { AnimatedThemeToggler } from "./components/ui/button/animated-theme-toggler";
 import { useTheme, type ThemeId } from "./lib/useDarkMode";
