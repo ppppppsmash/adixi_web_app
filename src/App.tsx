@@ -631,49 +631,64 @@ function App() {
             </div>
           </div>
 
-          {/* オンラインユーザー */}
-          <div className={`flex w-full justify-center pt-6 ${borderClass}`}>
-            <div className={`flex items-center justify-center gap-3 py-2 ${borderClass}`}>
-              <span className="text-xs shrink-0 opacity-60" style={{ fontFamily: 'var(--font-hacker-mono)', color: getAccentColor(theme) }}>&gt; ONLINE:</span>
-              {(() => {
-                /** 送信済み＝DBの回答者。参加中＝今いるがまだ送信していない人。同一名は送信済みを優先。 */
-                const { bg: avatarBg, text: avatarText } = getAvatarColors(theme);
-                const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
-                const submittedSet = new Set(submittedNames.map((name) => name.trim()).filter(Boolean));
-                const byName = new Map<string, { name: string; designation: string }>();
-                submittedNames.forEach((name) => {
-                  const n = name.trim();
-                  if (n) byName.set(n, { name: n, designation: "送信済み" });
-                });
-                if (myCursorInfo && hasName(myCursorInfo.name)) {
-                  const n = myCursorInfo.name.trim();
-                  if (!submittedSet.has(n)) {
-                    byName.set(n, { name: n, designation: "参加中" });
-                  }
-                }
-                otherCursors.forEach((c) => {
-                  if (hasName(c.name)) {
-                    const n = c.name.trim();
-                    if (!submittedSet.has(n)) {
-                      byName.set(n, { name: n, designation: "参加中" });
-                    }
-                  }
-                });
-                const forAvatarList = Array.from(byName.entries());
-                const avatarItems = forAvatarList.map(([, p], i) => ({
-                  id: i,
-                  name: p.name,
-                  designation: p.designation,
-                  image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.name.slice(0, 2)) + '&background=' + avatarBg + '&color=' + avatarText,
-                  stream: null,
-                }));
-                return avatarItems.length > 0 ? (<AnimatedAvatar items={avatarItems} size="xs" variant="retro" />) : null;
-              })()}
-            </div>
-          </div>
+          {/* ユーザー一覧：送信済み＋参加中 */}
+          {(() => {
+            const { bg: avatarBg, text: avatarText } = getAvatarColors(theme);
+            const hasName = (n: string) => (n?.trim() || "") !== "" && n?.trim() !== "ゲスト";
+            const submittedSet = new Set(submittedNames.map((name) => name.trim()).filter(Boolean));
+            const submitted: string[] = [];
+            const online: string[] = [];
+            submittedNames.forEach((name) => {
+              const n = name.trim();
+              if (n) submitted.push(n);
+            });
+            if (myCursorInfo && hasName(myCursorInfo.name)) {
+              const n = myCursorInfo.name.trim();
+              if (!submittedSet.has(n)) online.push(n);
+            }
+            otherCursors.forEach((c) => {
+              if (hasName(c.name)) {
+                const n = c.name.trim();
+                if (!submittedSet.has(n) && !online.includes(n)) online.push(n);
+              }
+            });
+            const makeItems = (names: string[], designation: string) =>
+              names.map((name, i) => ({
+                id: i,
+                name,
+                designation,
+                image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name.slice(0, 2)) + '&background=' + avatarBg + '&color=' + avatarText,
+                stream: null,
+              }));
+            const labelStyle = { fontFamily: 'var(--font-hacker-mono)', color: getAccentColor(theme) };
+            if (submitted.length === 0 && online.length === 0) return null;
+            const colCount = (submitted.length > 0 && online.length > 0) ? 2 : 1;
+            return (
+              <div className={`flex w-full justify-center pt-4 px-4 sm:px-8 ${borderClass}`}>
+                <div className={`grid w-full max-w-[1120px] gap-4 py-2 ${colCount === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                  {submitted.length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] opacity-40 tracking-widest uppercase" style={labelStyle}>送信済み ({submitted.length})</span>
+                      <div className="flex flex-wrap gap-1">
+                        <AnimatedAvatar items={makeItems(submitted, "送信済み")} size="xs" variant="retro" />
+                      </div>
+                    </div>
+                  )}
+                  {online.length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] opacity-40 tracking-widest uppercase" style={labelStyle}>参加中 ({online.length})</span>
+                      <div className="flex flex-wrap gap-1">
+                        <AnimatedAvatar items={makeItems(online, "参加中")} size="xs" variant="retro" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* アンケートカード */}
-          <div className={`flex w-full flex-1 justify-center items-center ${borderClass}`}>
+          <div className={`flex w-full flex-1 justify-center items-start pt-[10%] ${borderClass}`}>
             <div className={`survey-area-crt mx-4 flex w-full max-w-[1120px] justify-center pb-4 sm:mx-8 lg:mx-16 ${borderClass}`}>
               <div className="survey-card relative z-10 w-full max-w-[min(46rem,90%)]">
                 {survey ? (
