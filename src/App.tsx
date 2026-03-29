@@ -616,7 +616,7 @@ function App() {
               <h1 className="sr-only">ADiXi SURVEY</h1>
               <TitleAsciiGlitch
                 theme={theme}
-                fontFamily="monofont, var(--font-title-code)"
+                fontFamily="'JetBrains Mono', Consolas, Monaco, monospace"
                 fontSize="clamp(0.55rem, 1.8vw, 0.9rem)"
               />
               <p
@@ -624,8 +624,6 @@ function App() {
                 style={{
                   fontFamily: 'monofont, var(--font-hacker-mono)',
                   color: getAccentColor(theme),
-                  borderLeft: `2px solid ${getAccentColor(theme)}`,
-                  paddingLeft: '0.75em',
                 }}
                 aria-hidden
               >

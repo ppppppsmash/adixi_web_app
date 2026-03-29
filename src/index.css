@@ -4,6 +4,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=M+PLUS+1+Code:wght@400;600;700;800&display=swap');
 /* タイトル用：コード・IDE風（Cascadia Code = VS Code / Windows Terminal 系） */
 @import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@200;300;400;500;600;700&display=swap');
+/* ASCIIアート用：ボックスドローイング文字対応 */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
 
 /* ========== AnderShell CRT Demo Style (retro-css-shell-demo) ========== */
 @font-face {
@@ -266,9 +268,13 @@ html.game-boy-pocket .ander-content {
 }
 /* ASCIIアートタイトル：Unicodeブロック文字対応フォント＋letter-spacing 0 で縦横を揃える */
 .title-ascii-glitch,
-.title-ascii-glitch * {
-  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+.title-ascii-glitch *,
+.ander-content .title-ascii-glitch,
+.ander-content .title-ascii-glitch * {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
   letter-spacing: 0 !important;
+  -webkit-font-feature-settings: "liga" 0;
+  font-feature-settings: "liga" 0;
 }
 /* サンプル準拠：ステップ内テキストを monofont に統一 */
 .step-content-font,
